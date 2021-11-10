@@ -1,4 +1,6 @@
-# Vue 简介
+# Vue
+
+## Vue 简介
 > 渐进式 `JavaScript` 框架 \
 > 渐进式 : 可以仅引入核心库开发简单应用, 也可以引入各样 `Vue` 插件开发复杂应用.
 
@@ -27,4 +29,17 @@
             {{p.name}} -- {{p.age}}
           </li>
         </ul>
-    - 
+    - 使用`虚拟DOM`和`Diff算法`, 尽量复用 `DOM` 节点.
+2. `Vue` 官网
+    - 可在 [Awesome Vue](https://github.com/vuejs/awesome-vue) 中找到 `Vue` 中优秀的插件.
+
+## 搭建 Vue 开发环境
+1. 引入 `Vue`
+  - 在[官网](https://cn.vuejs.org/v2/guide/installation.html)下载 `Vue` 的文件.
+    - `开发版本(Vue.js)`: 包含完整的警告和调试模式. 
+    - `生产版本(Vue.min.js)`: 删除了警告. 开发环境不要使用生产版本.
+  - 在 `html` 文件中引入 `Vue.js`
+    - ```html
+      <script src="../js/vue.js"></script>
+    - 此时, 多了 `Vue` 这么一个全局对象
+    - ![](../image/Snipaste_2021-11-09_22-16-59.png)
