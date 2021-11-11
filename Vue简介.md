@@ -58,11 +58,22 @@
     - `Vue.config` 是一个对象，包含 `Vue` 的全局配置。可以在启动应用之前修改下列 `property`. [参考官网](https://cn.vuejs.org/v2/api/)
     - ```js
       Vue.config.productionTip = false
-    - 
+4. 注意: 目前为止, `Vue DevTools` 并不会点亮, 仍然是灰色.
 
-
-
-
+## 初识 `Vue`- `Hello World`
+1. 准备容器
+    - 写一个 `div` 标签作为容器, 这里将是 `Vue` 大放异彩的舞台
+    - ```html
+      <div id="root">
+        <h1>Hello, ATGUIGU</h1>
+      </div>
+2. 解决请求图标报错
+    - 因为我使用了 `Live Server` 这个插件打开 `HTML` 文件, 所以该文件所在的目录就会被当作服务器的`根目录`. 浏览器默认向服务器发送 `http://127.0.0.1:5500/favicon.ico` 请求图片资源作为浏览器 `Tab` 页的图标, 但根目录下并无该图标, 所以报错
+    - ![](../image/Snipaste_2021-11-11_22-45-27.png)
+    - 那只需在根目录加上这个图标, 即可消除报错
+    - ![](../image/Snipaste_2021-11-11_22-47-37.png)
+    - `⚠`: 注意一定是根路径, 放在和 `HTML` 同级是没有🙅‍效果的
+    - 我第一次打开调试面板是没有报错的, 必须同时摁下 `Shift` 并点击刷新, 才会有效果.
 
 
 
