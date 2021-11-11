@@ -52,4 +52,25 @@
     -  为什么? 其实提示内容就是无法加载从 `id` 为 `gighmmp..` 的 Chrome 扩展的映射. 如何解决呢? 这个报错的扩展就是大名鼎鼎的 `Adblock`, 所以在扩展管理页面,把 `Adblock` 禁用就可以了.
     - ![](../image/Snipaste_2021-11-10_23-07-32.png)
     - [感谢这位 CSDN 用户的回答](https://blog.csdn.net/qq_44628595/article/details/116061062)
-3. 
+3. 关闭 `Vue` 的生产提示
+    - `Console` 选项卡会进行如下提示. 如果要关闭这个提示, 需要进行 `Vue` 设置
+    - ![](../image/Snipaste_2021-11-11_22-18-13.png)
+    - `Vue.config` 是一个对象，包含 `Vue` 的全局配置。可以在启动应用之前修改下列 `property`. [参考官网](https://cn.vuejs.org/v2/api/)
+    - ```js
+      Vue.config.productionTip = false
+    - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
