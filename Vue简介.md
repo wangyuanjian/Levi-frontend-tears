@@ -1,3 +1,14 @@
+<!-- TOC -->
+
+- [Vue](#vue)
+  - [Vue 简介](#vue-简介)
+  - [搭建 Vue 开发环境](#搭建-vue-开发环境)
+  - [初识 `Vue`- `Hello World`](#初识-vue--hello-world)
+    - [创建 `Vue` 实例](#创建-vue-实例)
+    - [模板语法(v-bind)](#模板语法v-bind)
+
+<!-- /TOC -->
+
 # Vue
 
 ## Vue 简介
@@ -174,6 +185,29 @@
     - 选择`组件` tab, 就能看到当前 `Vue` 实例对象. 下方会出现这个实例对象上的属性
     - 注意, `<Root>` 表示根实例, 并不是因为容器的 `id` 是 `root`
     - 另外一个坑🕳: 如果你在一个页面创建了多个 `Vue` 实例, 那么开发者工具只会默认展示最后一个🙂...
+    - 如果点击 `data` 属性中的某个配置更改其值然后保存,页面会立刻发生变化!
+
+### 模板语法(v-bind)
+1. `v-bind`
+    - 动态地绑定一个或多个 `HTML` `attribute`(属性), 或一个组件 `prop` 到表达式. 当然我们可以增加自定义的属性. 
+      - 表达式需要在 `Vue` 实例中的 `data` 中配置哦~
+    - 例如, 我们想控制 `a` 标签的 `href` 属性和增加一个本不存在 `x` 属性
+      - ```js
+          <div id="root">
+            <h1>Hello, {{name}}</h1>
+            <a :href="url" v-bind:x="name">跳转到新浪首页</a>
+          </div>
+          new Vue({
+            el: '#root'('#root'),
+            data: {
+              name: 'wang',
+              url: 'https://www.sina.com.cn'
+            }
+          })
+      - ![](../image/Snipaste_2021-11-13_17-15-47.png)
+    - 使用简写形式 `:attribute=""`
+    - 一旦使用 `v-bind`, 属性等号后面引号中的内容, **将会被当作 `js` 表达式执行**💯, 所以上面代码中的 `url` 就会被当作 `Vue` 实例中的 `data` 中的一个变量, 如果没有配置 `url` 就会报错.
+    - ![](../image/Snipaste_2021-11-13_17-23-57.png)
 
 
 
