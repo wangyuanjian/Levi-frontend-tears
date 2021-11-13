@@ -77,8 +77,37 @@
     - 插播🔈一个细节: 如果直接打开`http://127.0.0.1:5500/`, 就会展示像文件服务器一样的内容. (PS: 我的页面缩写了, 方便截图😁)
     - ![](../image/Snipaste_2021-11-12_19-23-38.png)
 ### 创建 `Vue` 实例
-1. `el` 配置项
-    - 提供一个在页面上已存在的 `DOM` 元素作为 `Vue` 实例的挂载目标。
+1. 使用 `Vue` 构造函数
+    - ```js
+      const vm = new Vue({})
+2. `el` 配置项
+    - 提供一个在页面上已存在的 `DOM` 元素作为 `Vue` 实例的挂载目标, 建立了容器和 `Vue` 实例对象之间的关系, 容器中变化的数据和交互交由 `Vue` 实例对象保管.
+    - 值可以是 `CSS` 选择器：
+        - `el: '#root'`
+    - 也可以是一个 `HTMLElement` 实例: 
+        - `el: document.getElementById('#root')`
+    - 实例挂载后, 可以使用 `vm.$el` 访问挂载元素
+        - ![](../image/Snipaste_2021-11-12_22-59-20.png)
+    - 最后的样子就是
+        - ```js
+          const vm = new Vue({
+            el: '#root'
+          })
+3. `data` 配置项
+    - `Vue` 实例的数据对象. `data` 中用于存储数据, 数据供 `el` 指定的容器使用
+    - 类型: `Object` 或 `Function`.(目前只用到 `Object`😅)
+    - ```js
+      const x = new Vue({
+        el: '#root',
+        data: {
+          name: 'wang'
+        }
+      })
+    - 如果想要在挂载实例中使用 `data` 中配置的数据项, 需要 `mustache` 语法 `{{}}`
+    - ```html
+      <div id="root">
+        <h1>Hello, {{name}}</h1>
+      </div>
     - 
 
 
