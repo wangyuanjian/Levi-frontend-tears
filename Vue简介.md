@@ -79,7 +79,9 @@
 ### 创建 `Vue` 实例
 1. 使用 `Vue` 构造函数
     - ```js
+      Vue.config.productionTip = false
       const vm = new Vue({})
+    - 当然, 实例化容器应该被配置在关闭 `Vue` 的生产提示之后啦
 2. `el` 配置项
     - 提供一个在页面上已存在的 `DOM` 元素作为 `Vue` 实例的挂载目标, 建立了容器和 `Vue` 实例对象之间的关系, 容器中变化的数据和交互交由 `Vue` 实例对象保管.
     - 值可以是 `CSS` 选择器：
@@ -103,13 +105,69 @@
           name: 'wang'
         }
       })
-    - 如果想要在挂载实例中使用 `data` 中配置的数据项, 需要 `mustache` 语法 `{{}}`
+    - 如果想要在挂载实例(容器)中使用 `data` 中配置的数据项, 需要 `mustache` 语法 `{{}}`. 容器中的代码被称为`Vue模板`
     - ```html
       <div id="root">
         <h1>Hello, {{name}}</h1>
       </div>
-    - 
+    - 最后, 发现目前 `new Vue({})` 的返回值无用, 所以可以不用接收返回值
+4. 问题探讨
+    - **如果页面有两个容器怎么办?**
+      - ```js
+        <div class="root">
+          <h1>Hello, {{name}} 1</h1>
+        </div>
+        <div class="root">
+          <h1>Hello, {{name}} 2</h1>
+        </div>
+        <script>
+          Vue.config.productionTip = false
 
+          new Vue({
+            el: '.root',
+            data: {
+              name: 'wang'
+            }
+          })
+        </script>
+      - ![](../image/Snipaste_2021-11-13_10-00-00.png)
+      - `Vue` 只会接管第一个容器
+    - **如果一个容器对应两个实例怎么办?**
+      - ```js
+        <div id="root">
+          <h1>Hello, {{name}}</h1>
+        </div>
+        <script>
+          Vue.config.productionTip = false
+
+          new Vue({
+            el: '#root',
+            data: {
+              name: 'wang'
+            }
+          })
+          new Vue({
+            el: '#root',
+            data: {
+              name: 'lv'
+            }
+          })
+        </script>
+      - ![](../image/Snipaste_2021-11-13_10-04-04.png)
+      - 容器只会被第一个 `Vue` 实例接管, 可以将两个实例位置颠倒验证
+    - **`{{}}` 里能写什么?**
+      - 能写 `js` 表达式
+        - `js` 表达式: 一个表达式可以产生一个值
+          - `a + b` : 加法运算表达式
+          - `plus(1)` : 函数调用表达式
+          - `x === 1 ? true : false` : 三元表达式
+        - `js` 语句: 
+          - `if`: 条件判断语句
+          - `let a = 1;`: 赋值语句
+      - 举例
+          - `{{1 + 1}}`
+          - `{{Date.now()}}`
+          - `{{name.substring(0, 4)}}`
 
 
 
