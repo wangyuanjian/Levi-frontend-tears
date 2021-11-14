@@ -239,7 +239,51 @@
       - ![](../image/Snipaste_2021-11-14_21-49-09.png)
       - 可以看到, 重复的属性会覆盖.
 4. `class` 绑定
-
+    - 对象语法
+      - 传给 class 一个对象, 用以动态切换 class
+      - ```html
+        <div v-bind:class="{ weight: isWeight, red: isRed }">Bold Font</div>
+      - 上面的语法表示, `weight` 这个 `class` 是否存在取决于 `data` 中的 `isWeight` 是否为真值
+      - ```js
+        new Vue({
+          el: '#root',
+          data: {
+            isWeight: true,
+            isRed: 1 + 1
+          }
+        })
+      - 在 `data` 中的 `isWeight` 属性为真, 所以最终解析出来的 `div` 有 `weight`  这个 `class`
+      - ![](../image/Snipaste_2021-11-14_22-08-35.png)
+      - 那这正的 `class` 样式自然写在 `style` 标签或者 `css` 文件中. 注意到, 值为[真truthy](https://developer.mozilla.org/zh-CN/docs/Glossary/Truthy), 而不一定非得是 `true`
+    - 数组语法
+      - 我们可以把一个数组传给 `v-bind:class`, 以应用一个 `class` 列表
+      - ```html
+        <div v-bind:class="[ redClass, weightClass ]">Font 数组 class</div>
+      - ```js
+         new Vue({
+          el: '#root', // 常用,简单
+          // el: document.getElementById('#root') // 不常用,但要知道
+          data: {
+            redClass: 'red',
+            weightClass: 'weight',
+          }
+         })
+      - 最终渲染出来就是
+      - ![](../image/Snipaste_2021-11-14_22-12-54.png)
+    - 使用三元表达式动态切换
+      - ```html
+        <div v-bind:class="[ isError ? errorClass : rightClass]">三元表达式动态切换</div>
+      - ```js
+        new Vue({
+          el: '#root',
+          data: {
+            isError: false,
+            errorClass: 'red',
+            rightClass: 'right',
+          }
+        })
+      - ![](../image/Snipaste_2021-11-14_22-17-05.png)
+      - `isError` 为 `false`, 所以最终绑定的属性为 `rightClass`, 其值为 `right`, 即如图所示
 
 
 
