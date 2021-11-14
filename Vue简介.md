@@ -208,8 +208,37 @@
     - 使用简写形式 `:attribute=""`
     - 一旦使用 `v-bind`, 属性等号后面引号中的内容, **将会被当作 `js` 表达式执行**💯, 所以上面代码中的 `url` 就会被当作 `Vue` 实例中的 `data` 中的一个变量, 如果没有配置 `url` 就会报错.
     - ![](../image/Snipaste_2021-11-13_17-23-57.png)
-
-
+2. `v-bind` 的其他使用方法
+    - 内联字符串拼接
+      - ```html
+        <a :href="'https://www.books.com/' + bookName" v-bind:x="name">内联字符串</a>
+3. `style` 样式绑定
+    - 对象语法
+      - ```html
+        <div :style="{fontSize: size + 'px'}">32px哦</div>
+      - ![](../image/Snipaste_2021-11-14_21-46-12.png)
+      - 注意: 如果像 `font-size` 这样带 `-` 的 `CSS` 属性, 需要携程驼峰的形式. 而且, 最后不要🙅‍写分号, 会报错.
+    - 数组语法
+      - 如果样式太多, 我们可以将样式定义在对象中, 然后用数组的形式包含这些样式,
+      - ```html
+        <div :style="[styleObjectA, styleObjectB]">我是数组样式</div>
+      - ```js
+        new Vue({
+          el: '#root', 
+          data: {
+            styleObjectA: {
+              color: 'red',
+              fontSize: '20px'
+            },
+            styleObjectB: {
+              fontSize: '32px',
+              color: 'red'
+            }
+          }
+        })
+      - ![](../image/Snipaste_2021-11-14_21-49-09.png)
+      - 可以看到, 重复的属性会覆盖.
+4. `class` 绑定
 
 
 
