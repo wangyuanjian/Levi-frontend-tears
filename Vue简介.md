@@ -261,8 +261,7 @@
         <div v-bind:class="[ redClass, weightClass ]">Font 数组 class</div>
       - ```js
          new Vue({
-          el: '#root', // 常用,简单
-          // el: document.getElementById('#root') // 不常用,但要知道
+          el: '#root',
           data: {
             redClass: 'red',
             weightClass: 'weight',
