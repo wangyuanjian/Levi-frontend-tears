@@ -6,7 +6,7 @@
   - [初识 `Vue`- `Hello World`](#初识-vue--hello-world)
     - [创建 `Vue` 实例](#创建-vue-实例)
     - [模板语法(v-bind)](#模板语法v-bind)
-    - [数据绑定](#数据绑定)
+    - [数据绑定(v-model)](#数据绑定v-model)
 
 <!-- /TOC -->
 
@@ -97,16 +97,22 @@
 2. `el` 配置项
     - 提供一个在页面上已存在的 `DOM` 元素作为 `Vue` 实例的挂载目标, 建立了容器和 `Vue` 实例对象之间的关系, 容器中变化的数据和交互交由 `Vue` 实例对象保管.
     - 值可以是 `CSS` 选择器：
-        - `el: '#root'`
+      - `el: '#root'`
     - 也可以是一个 `HTMLElement` 实例: 
-        - `el: document.getElementById('#root')`
+      - `el: document.getElementById('#root')`
     - 实例挂载后, 可以使用 `vm.$el` 访问挂载元素
-        - ![](../image/Snipaste_2021-11-12_22-59-20.png)
+      - ![](../image/Snipaste_2021-11-12_22-59-20.png)
     - 最后的样子就是
-        - ```js
-          const vm = new Vue({
-            el: '#root'
-          })
+      - ```js
+        const vm = new Vue({
+          el: '#root'
+        })
+    - 另一种挂载实例的方法 `$mount`. 这个方法并不在 `Vue` 上, 而在 `Vue.prototype` 上
+      - ```js
+        const vm = new Vue({
+          el: '#root'
+        })
+        vm.$mount('#root')
 3. `data` 配置项
     - `Vue` 实例的数据对象. `data` 中用于存储数据, 数据供 `el` 指定的容器使用
     - 类型: `Object` 或 `Function`.(目前只用到 `Object`😅)
@@ -123,6 +129,24 @@
         <h1>Hello, {{name}}</h1>
       </div>
     - 最后, 发现目前 `new Vue({})` 的返回值无用, 所以可以不用接收返回值
+    - `data` 的第二种写法: 函数. 注意🐖:组件中 `data` 只能采用这种写法
+      - ```js
+        data: function() {
+          return {
+            firstName: 'wang',
+            lastName: 'Levi'
+          }
+        }
+      - 更简单一点
+      - ```js
+        data() {
+          return {
+            firstName: 'wang',
+            lastName: 'Levi'
+          }
+        }
+      - `⚠`还有一点, 使用普通函数方法时, 函数中的 `this` 就是 `Vue` 实例对象; 如果用箭头函数, `this` 就是 `window`. 
+      - 遇到函数, 究竟用不用箭头函数呢? 原则🐖:是 **`Vue` 管理的函数**就不用箭头函数, 否则使用箭头函数.
 4. 问题探讨
     - **如果页面有两个容器怎么办?**
       - ```js
@@ -285,7 +309,7 @@
       - ![](../image/Snipaste_2021-11-14_22-17-05.png)
       - `isError` 为 `false`, 所以最终绑定的属性为 `rightClass`, 其值为 `right`, 即如图所示
 
-### 数据绑定
+### 数据绑定(v-model)
 1. `v-model`
     - 双向绑定数据, 数据随表单控件类型不同而不同。
     - 🚫限制: 只能使用在下面元素
