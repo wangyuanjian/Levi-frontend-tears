@@ -425,6 +425,9 @@
         }
       }
     - ![](../image/Snipaste_2021-11-17_22-09-30.png)
+    - 如果你说, `data` 配置项里的和 `methods` 配置项里的最后都出现在 `vm` 身上, 那我把 `methods` 里配置的方法写在 `data` 里可以吗? **可以工作**, 但是不建议, 
+      - 一是函数就该写在一起, 不然为什么多一个 `methods` 配置项?
+      - 二是 `Vue` 给 `data` 中的内容做了数据代理, 而 methods 中的内容没有代理, 所以会加重 `vm` 的负担.(😅加重负担这种话, 是天禹老师说的)
 4. `v-on` 指令的简写 `@`
     - ```html
       <div id="root">
@@ -441,6 +444,26 @@
         console.log(event); // undefined
         alert('good night!🌙')
       }
+    - 那问题来了, 如果我就想传事件呢? 当当当当, 用 **`$event`**
+    - ```html
+      <div id="root">
+        <button @click="goodNight2($event)">点击说晚安3</button>
+      </div>
+    - ```js
+      goodNight2(event) {
+        console.log(event); // undefined
+        alert('good night!🌙')
+      }
+6. 传递参数
+    - 绑定事件时需要**带小括号, 并在其中写实参**. 下面的例子, 我们传递三个参数, 一个 `Number`, 一个 `String`, 一个 `DOM` 事件对象, 三个参数的位置随意.
+    - ```html
+      <button @click="goodMorning(7, 'sun', $event)">点击说早安</button>
+    - ```js
+      goodMorning(clock, name, event) {
+        console.log(clock, name, event);
+        alert(`good morning, ${name}, it's ${clock}☀`);
+      }
+    - ![](../image/Snipaste_2021-11-17_22-38-01.png)
 
     
 
