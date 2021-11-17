@@ -5,9 +5,10 @@
   - [搭建 Vue 开发环境](#搭建-vue-开发环境)
   - [初识 `Vue`- `Hello World`](#初识-vue--hello-world)
     - [创建 `Vue` 实例](#创建-vue-实例)
-    - [模板语法(v-bind)](#模板语法v-bind)
-    - [数据绑定(v-model)](#数据绑定v-model)
+  - [模板语法(v-bind)](#模板语法v-bind)
+  - [数据绑定(v-model)](#数据绑定v-model)
     - [数据代理](#数据代理)
+  - [事件处理(v-on)](#事件处理v-on)
 
 <!-- /TOC -->
 
@@ -213,7 +214,7 @@
     - 另外一个坑🕳: 如果你在一个页面创建了多个 `Vue` 实例, 那么开发者工具只会默认展示最后一个🙂...
     - 如果点击 `data` 属性中的某个配置更改其值然后保存,页面会立刻发生变化!
 
-### 模板语法(v-bind)
+## 模板语法(v-bind)
 1. `v-bind`
     - 动态地绑定一个或多个 `HTML` `attribute`(属性), 或一个组件 `prop` 到表达式. 当然我们可以增加自定义的属性. 
       - 表达式需要在 `Vue` 实例中的 `data` 中配置哦~
@@ -310,7 +311,7 @@
       - ![](../image/Snipaste_2021-11-14_22-17-05.png)
       - `isError` 为 `false`, 所以最终绑定的属性为 `rightClass`, 其值为 `right`, 即如图所示
 
-### 数据绑定(v-model)
+## 数据绑定(v-model)
 1. `v-model`
     - 双向绑定数据, 数据随表单控件类型不同而不同。
     - 🚫限制: 只能使用在下面元素
@@ -396,7 +397,52 @@
       - 💡思考一个问题, `Vue` 为什么要为 `_data` 中的数据作代理? 更加简单的操作数据, 因为代理之后就可以直接在模板中使用 `firstName`, 而不是 `_data.firstName`
     - ![](../image/Snipaste_2021-11-16_20-34-02.png)
 
+## 事件处理(v-on)
+1. 用 `v-on` 指令监听 `DOM` 事件, 并在触发时运行一些 `JavaScript` 代码
+    - ```html
+      <div id="root">
+        <button v-on:click="goodNight">点击说晚安</button>
+      </div>
+    - 需要一个全新的配置项, **`methods`**
+    - ```js
+      new Vue({
+        el: '#root',
+        methods: {
+          goodNight() {
+            alert('good night!🌙')
+          }
+        },
+      })
+    - ![](../image/Snipaste_2021-11-17_21-57-46.png)
+2. 函数中的 `this` 就是 `vm` 实例. 如果函数写成箭头函数的形式, 那 `this` 就是全局变量 `window`. 这是的 `vm` 就会多出 `goodNight` 这个方法.
+    - ![](../image/Snipaste_2021-11-17_22-06-50.png)
+3. 函数接收到了参数吗? 是的, 可以接收到原生 `DOM` 事件对象.
+    - ```js
+      methods: {
+        goodNight(a, b, c) {
+          console.log('arguments: ', a, b, c);
+          alert('good night!🌙')
+        }
+      }
+    - ![](../image/Snipaste_2021-11-17_22-09-30.png)
+4. `v-on` 指令的简写 `@`
+    - ```html
+      <div id="root">
+        <button @click="goodNight">点击说晚安</button>
+      </div>
+5. 在模板中绑定事件时, 只能写函数名, 不能写后面的括号吗? **可以**
+    - ```html
+      <div id="root">
+        <button @click="goodNight1()">点击说晚安</button>
+      </div>
+    - 这就涉及调用函数时传参的问题了, 如果只写 `()` 什么也不加, 相当于不传参数. 这样调用时, 即便我们定义函数时加了 `DOM` 事件的形参, 拿到的也是 `undefined`
+    - ```js
+      goodNight1(event) {
+        console.log(event); // undefined
+        alert('good night!🌙')
+      }
 
+    
 
 
 
