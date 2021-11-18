@@ -9,6 +9,7 @@
   - [数据绑定(v-model)](#数据绑定v-model)
     - [数据代理](#数据代理)
   - [事件处理(v-on)](#事件处理v-on)
+    - [事件修饰符](#事件修饰符)
 
 <!-- /TOC -->
 
@@ -464,6 +465,59 @@
         alert(`good morning, ${name}, it's ${clock}☀`);
       }
     - ![](../image/Snipaste_2021-11-17_22-38-01.png)
+7. 如果事件处理的代码很少, 那么可以直接在函数绑定后面写 `js` 代码
+    - ```html
+      <button @click="sum++">点击+1</button>
+    - ```js
+      new Vue({
+        el: '#root',
+        data: {
+          sum: 0
+        }
+      })
+### 事件修饰符
+> 事件修饰符的目的: \
+> 在事件处理程序中调用 `event.preventDefault()` 或 `event.stopPropagation()` 是非常常见的需求。尽管我们可以在方法中轻松实现这点，但更好的方式是：方法只有纯粹的数据逻辑，而不是去处理 DOM 事件细节。\
+> -- 摘自官网
+1. `.prevent`: 阻止默认事件
+    - 如果我们给 `a` 标签绑定点击事件, 那么事件执行完后页面还是会跳转. 如果在 `Vue` 中想要阻止跳转, 按照目前的做法, 只能接收 `event` 参数
+      - ```html
+        <a href="http://www.atguigu.com" @click="goodNight">说晚安</a>
+      - ```js
+        goodNight(event) {
+          event.preventDefault();
+          alert('good night!🌙')
+        }
+    - 使用 `.prevent` 修饰 click 事件, 阻止默认的跳转行为
+      - ```html
+        <a href="http://www.atguigu.com" @click.prevent="goodNight1">说晚安</a>
+2. `.stop`: 阻止事件冒泡
+    - ```html
+      <div class="outer" @click="goodNight1">
+        <button  @click="goodNight1">说晚安</button>
+      </div>
+    - 一般我们接收 `event` 参数并使用 `event.stopPropagation()` 阻止冒泡. 但是使用事件修饰符就很简单
+    - ```html
+      <div class="outer" @click="goodNight1">
+        <button  @click.stop="goodNight1">说晚安</button>
+      </div>
+    - 🐖注意: `.stop` 修饰的是点击事件真实发生的元素
+3. `.once`: 事件只触发一次
+    - ```html
+      <button @click.once="goodNight1">事件只触发一次</button>
+    - 如果不借助 Vue 如何实现原生函数只触发一次呢?
+    **`addEventListener`**
+      - `once`: `Boolean`, 表示 `listener` 在添加之后最多只调用一次. 如果是 `true`, `listener` 会在其被调用之后自动移除.
+      - ```js
+        let once = document.getElementById('once');
+        function boom() {
+          alert('good night!🌙');
+        }
+        once.addEventListener('click', boom, {
+          once: true
+        });
+4. 
+
 
     
 
