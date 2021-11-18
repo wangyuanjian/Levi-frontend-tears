@@ -516,7 +516,38 @@
         once.addEventListener('click', boom, {
           once: true
         });
-4. 
+4. `.capture`: 使用事件捕获模式
+    - ```html
+      <div class="outer2" @click="showMsg(2)">
+        div1
+        <div class="outer" @click="showMsg(1)">
+          div2
+        </div>
+      </div>
+    - ```js
+      showMsg(msg) {
+        console.log('receive message: ', msg);
+      }
+    - 正常情况是事件在冒泡阶段才执行, 所以先输出 `1` 后输出 `2`
+    - 如果使用 `.capture`, 外层的 div 在捕获阶段就执行点击的回调事件, 所以先输出 `2` 后输出 `1`
+    - ```html
+      <div class="outer2" @click.capture="showMsg(2)">
+        div1-事件捕获
+        <div class="outer" @click="showMsg(1)">
+          div2-事件捕获
+        </div>
+      </div>
+    - ![](../image/Snipaste_2021-11-18_21-06-33.png)
+5. `.self`: 只有 `event.target` 是当前操作的元素时才触发事件.
+    - 还是之前阻止冒泡的例子, 虽然冒泡触发了外层 `div` 的 `click` 事件, 但事件本身 `target` 并不是外层 `div`, 而是 `div` 里面的 `button`. 所以, 如果用 `.self` 修饰外层 `div` 的 `click` 事件, 同样可以达到阻止冒泡效果
+    - ```html
+      <div class="outer" @click.self="goodNight1">
+        <button  @click="goodNight1">说晚安(.self)</button>
+      </div>
+    - 如果我们在函数中输出 `event.target`
+    - ![](../image/Snipaste_2021-11-18_22-18-42.png)
+6. `.passive`: 事件的默认行为立即执行, 无需等待事件回调执行完毕
+    - 先举个例子, 我们给页面(`window`)的滚轮轮动事件, 
 
 
     
