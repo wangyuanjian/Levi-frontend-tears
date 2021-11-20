@@ -609,7 +609,22 @@
         <input type="text" id="key" name="username" @keydown.Enter="printUser">
       - ```html
         <input type="text" id="capsLock" name="username" @keydown.caps-lock="printUser">
-4. 
+4. 特殊的几个按键
+    - `tab`
+      - `tab` 键本身就有切换元素的作用, 所以如果使用 `keyup` 事件捕获 `tab` 时, 当按键释放时, 焦点已经失去, 按键捕获失败, 所以只能用 `keydown` 捕获 `tab` 的按键.
+    - 系统修饰键(`ctrl`, `alt`, `shift`, `meta`(win键))
+      - 配合 `keyup` 使用: 按下修饰键的同时, 再按下其他键, 随后释放其他键, 事件才被触发
+      - 配合 `keydown` 使用: 正常触发事件
+5. (🙅‍不推荐🙅‍)使用 `keyCode` 绑定按键
+    - ```html
+      <input type="text" id="keyCode" name="username" @keydown.13="printUser"><br>
+6. 自定义按键修饰符别名
+    - ```js
+      Vue.config.keyCodes.huiche = 13
+    - ```html
+      <input type="text" id="huiche" name="username" @keydown.huiche="printUser"><br>
+7. 
+
 
 
 
