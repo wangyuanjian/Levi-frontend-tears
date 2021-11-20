@@ -547,7 +547,35 @@
     - 如果我们在函数中输出 `event.target`
     - ![](../image/Snipaste_2021-11-18_22-18-42.png)
 6. `.passive`: 事件的默认行为立即执行, 无需等待事件回调执行完毕
-    - 先举个例子, 我们给页面(`window`)的滚轮轮动事件, 
+    - 先举个例子, 我们给页面(`window`)的滚轮轮动事件, 并指定滚动事件的回调函数为打印 10000 个数字
+      - ```js
+        window.addEventListener('wheel', () => {
+          for(let i = 0; i < 10000; i++) {
+            console.log('#');
+          }
+        }, {
+          passive: false
+        })
+      - 整体效果是, 滚动事件发生时, 页面并不会立刻响应滚动, 而是先输出打印, 大概打印到几百时, 才会响应滚动
+    - 有时页面优先对页面做出响应更加重要, 所以我们想要页面首先发生滚动, 然后再执行回调函数. 使用`.passsive`修饰符
+      - ```html
+        <ul @wheel.passive="print10000" style="height: 200px; background-color: orange; overflow: scroll; width: 100px;">
+          <li style="height: 100px;">1</li>
+          <li style="height: 100px;">2</li>
+          <li style="height: 100px;">3</li>
+          <li style="height: 100px;">4</li>
+        </ul>
+      - ```js
+        print10000() {
+          for (let i = 0; i < 10000; i++) {
+            console.log('#');
+          }
+          console.log('loop end.');
+        },
+    - 其实原生 js 写的演示样例里, 添加监视器时会多一个 `{passive: false}` 的参数, 官网是这样解释的
+      - > 根据规范, passive 选项的默认值始终为false. 但是, 这引入了处理某些触摸事件 ( 以及其他 ) 的事件监听器在尝试处理滚动时阻止浏览器的主线程的可能性, 从而导致滚动处理期间性能可能大大降低. \
+      为防止出现此问题, 某些浏览器 ( 特别是 Chrome 和Firefox ) 已将文档级节点 Window, Document 和 Document.body 的 touchstart 和touchmove 事件的 passive 选项的默认值更改为 true. 这可以防止调用事件监听器, 因此在用户滚动时无法阻止页面呈现.
+
 
 
     
