@@ -10,6 +10,7 @@
     - [数据代理](#数据代理)
   - [事件处理(v-on)](#事件处理v-on)
     - [事件修饰符](#事件修饰符)
+    - [按键修饰符](#按键修饰符)
 
 <!-- /TOC -->
 
@@ -575,6 +576,40 @@
     - 其实原生 js 写的演示样例里, 添加监视器时会多一个 `{passive: false}` 的参数, 官网是这样解释的
       - > 根据规范, passive 选项的默认值始终为false. 但是, 这引入了处理某些触摸事件 ( 以及其他 ) 的事件监听器在尝试处理滚动时阻止浏览器的主线程的可能性, 从而导致滚动处理期间性能可能大大降低. \
       为防止出现此问题, 某些浏览器 ( 特别是 Chrome 和Firefox ) 已将文档级节点 Window, Document 和 Document.body 的 touchstart 和touchmove 事件的 passive 选项的默认值更改为 true. 这可以防止调用事件监听器, 因此在用户滚动时无法阻止页面呈现.
+### 按键修饰符
+1. 原生的 `js` `keyboard` 事件类型有三种
+    - `keydown`: 当按键被按下时触发 
+    - `keyup`: 当按键松开时触发
+    - `keypress`: 当按键按下时触发, 不同于 `keydown` 的时, 只有英文, 数字和标点按键按下时猜会触发该事件, 而`Alt`, `Shift`, `Ctrl` 和 `Delete` 这种不产生字符的按键被按下时, 并不触发该事件.
+2. 如果我们只是给 `keyup` 或者 `keydown` 绑定事件, 那么无论按下什么按键都会触发该事件, `Vue` 提供了常用按键的别名来修饰按键事件, 使得只有特定的按键被按下或释放时才会触发按键事件
+    - `.enter`: 
+    - `.tab`: 
+    - `.delete`: (捕获`删除(Delete)`和`退格(Backspace)`键) 
+    - `.esc`: 
+    - `.space`: 
+    - `.up`: 
+    - `.down`: 
+    - `.left`: 
+    - `.right`: 
+    - ```html
+      <input type="text" id="enter" name="username" @keydown.enter="printUser">
+    - ```js
+      printUser(e) {
+        console.log(e.target.value);
+      }
+3. 对于 `Vue` 没有自定义的别名的按键, 比如 `CapsLock` 我们怎么办呢? 使用 `KeyboardEvent.key` 将任意有效的按键名转换为 `kebab-case` 作为修饰符.
+    - 解释一下 `KeyboardEvent.key`: 
+      - `KeyboardEvent` 对象描述了用户与键盘的交互。, 每个事件都描述了用户与一个按键 ( 或一个按键和修饰键的组合 ) 的单个交互;
+      - 如果我们打印这个事件, 可以看到其两个属性
+        - `key`: 按键的 `value`
+        - `keyCode`: 表示按键的数字(`⚠`: MDN 官方标注该属性为过时属性, 建议用 `key` 代替)
+        - ![](../image/Snipaste_2021-11-20_21-50-16.png)
+      - 所以, 我们可以使用 `key` 作为按键修饰符, 比如
+      - ```html
+        <input type="text" id="key" name="username" @keydown.Enter="printUser">
+      - ```html
+        <input type="text" id="capsLock" name="username" @keydown.caps-lock="printUser">
+4. 
 
 
 
