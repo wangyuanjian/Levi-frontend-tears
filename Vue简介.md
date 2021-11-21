@@ -576,6 +576,12 @@
     - 其实原生 js 写的演示样例里, 添加监视器时会多一个 `{passive: false}` 的参数, 官网是这样解释的
       - > 根据规范, passive 选项的默认值始终为false. 但是, 这引入了处理某些触摸事件 ( 以及其他 ) 的事件监听器在尝试处理滚动时阻止浏览器的主线程的可能性, 从而导致滚动处理期间性能可能大大降低. \
       为防止出现此问题, 某些浏览器 ( 特别是 Chrome 和Firefox ) 已将文档级节点 Window, Document 和 Document.body 的 touchstart 和touchmove 事件的 passive 选项的默认值更改为 true. 这可以防止调用事件监听器, 因此在用户滚动时无法阻止页面呈现.
+7. 连续修饰符的使用
+    - 可以将多个修饰符连续使用, 比如下面的例子, 既要阻止 a 的跳转事件, 又要阻止冒泡
+    - ```html
+      <div @click="goodNight1">
+        <a href="" @click.stop.prevent="goodNight1">点我.stop.prevent</a>
+      </div>
 ### 按键修饰符
 1. 原生的 `js` `keyboard` 事件类型有三种
     - `keydown`: 当按键被按下时触发 
@@ -623,7 +629,12 @@
       Vue.config.keyCodes.huiche = 13
     - ```html
       <input type="text" id="huiche" name="username" @keydown.huiche="printUser"><br>
-7. 
+7. 连续按键修饰符的使用
+    - 如果我们想指定同时摁下 `Ctrl` 和 `Y` 才触发按键事件, 就可以使用连续的修饰符
+    - ```html
+       <input type="text" id="ctrly" name="username" @keydown.ctrl.y="printUser"><br>
+    - 你可能要问, 为什么是 `y` 而不是 `Y` 呢? 我验证了一下, 大小写都可以, 无论是使用两个案件修饰符, 还是是哦那个一个案件修饰符, 大小写没有区分. 但是, 按键事件中, 大写就是大写, 小写就是小写
+      - ![](../image/Snipaste_2021-11-21_10-36-06.png)
 
 
 
