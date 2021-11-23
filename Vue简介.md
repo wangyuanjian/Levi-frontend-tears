@@ -641,8 +641,50 @@
     - ```js
        {{ message.split('').reverse().join('') }}
     - 对于任何复杂逻辑, 你都应当使用计算属性.
+    - 计算属性要通过已有的 **`属性`** 计算
 2. 全新的配置项 `computed`
-    - 
+    - ```js
+      new Vue({
+        data: {
+          firstname: '',
+          lastname: ''
+        },
+        computed: {
+          fullname1: {
+            get() {
+              return this.firstname + '-' + this.lastname;
+            },
+            set(value) {
+              console.log('set', value);
+            }
+          }
+        },
+      })
+    - ```html
+      <div id="root">
+        firname: <input type="text" name="firstname" v-model:value="firstname"> <br>
+        lastname: <input type="text" name="lastname" v-model:value="lastname"> <br>
+        fullname1: <h4>{{fullname1}}</h4>
+      </div>
+    - 计算属性最终出现在 vm 上, 直接读取使用即可.
+      - ![](../image/Snipaste_2021-11-23_22-42-43.png)
+    - 如果计算属性要被修改, 就必须写 `setter` 响应修改. 且 `setter` 中要引起计算属性依赖的数据发生变化
+3. `getter` 方法可以接收参数 `vm`
+    - ```js
+      fullname1: {
+        get(a, b) {
+          console.log('getter param', a, b); // vm, undefined
+          console.log('getter this', this);
+          return this.firstname + '-' + this.lastname;
+        },
+        set(value) {
+          console.log('set', value);
+        }
+      }
+    - ![](../image/Snipaste_2021-11-23_22-50-15.png)
+    - 不过, `getter` 方法中的 `this` 就是 `vm`, 所以...这个参数😅尴尬
+4. 简写形式
+
 
 
     
