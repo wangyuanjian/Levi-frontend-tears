@@ -691,6 +691,33 @@
         }
       }
     - 因为计算属性更多只读, 所以使用简写形式, 就相当于 `getter`
+    - 虽然简写看起来很想方法, 但是如果你在模板使用下面的代码, 则会报错
+      - ```html
+        fullname(): <h4>{{fullname()}}</h4>
+      - ![](../image/Snipaste_2021-11-25_21-35-12.png)
+      - 
+5. 计算属性的缓存
+    - 如果我们在 methods 定义新的方法同样可以达到计算属性的效果, 比如
+      - ```js
+        methods: {
+        fullnameMethods() {
+          return this.firstname + '-' + this.lastname;
+        }
+      },
+    - 但是 **`计算属性是基于他们的响应式依赖进行缓存的`**, 只在依赖的数据发生变化时, 计算属性才会重新求值; 否则计算属性会立刻返回之前的计算结果, 而不必再次执行函数.
+      - 我们在计算属性中打印一些数据, 然后在模板中多次调用该属性. 结果只会打印一次哦~😮
+      - ```js
+        fullname() {
+          console.log('@@@@');
+          return this.firstname + '-' + this.lastname;
+        },
+      - ```html
+        fullname: <h4>{{fullname}}</h4>
+        fullname: <h4>{{fullname}}</h4>
+        fullname: <h4>{{fullname}}</h4>
+        fullname: <h4>{{fullname}}</h4>
+        fullname: <h4>{{fullname}}</h4>
+      - ![](../image/Snipaste_2021-11-25_21-41-23.png)
 
 
 
