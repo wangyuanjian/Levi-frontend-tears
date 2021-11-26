@@ -467,7 +467,7 @@
         alert(`good morning, ${name}, it's ${clock}☀`);
       }
     - ![](../image/Snipaste_2021-11-17_22-38-01.png)
-7. 如果事件处理的代码很少, 那么可以直接在函数绑定后面写 `js` 代码
+7. 如果事件处理的代码很少, 那么可以直接在函数绑定后面写 `js` 代码. 🐖注意: 这时的代码中访问数据不需要加 `this`, 因为模板中直接从 `vm` 身上读属性
     - ```html
       <button @click="sum++">点击+1</button>
     - ```js
@@ -477,6 +477,9 @@
           sum: 0
         }
       })
+    - 因为直接从 vm 身上访问数据, 所以下面的语句会报错哦~
+    - ```html
+      <button @click="alert(1)">报错</button>
 ### 事件修饰符
 > 事件修饰符的目的: \
 > 在事件处理程序中调用 `event.preventDefault()` 或 `event.stopPropagation()` 是非常常见的需求。尽管我们可以在方法中轻松实现这点，但更好的方式是：方法只有纯粹的数据逻辑，而不是去处理 DOM 事件细节。\
