@@ -13,6 +13,7 @@
     - [按键修饰符](#按键修饰符)
   - [计算属性(computed)](#计算属性computed)
   - [监视属性(watch)](#监视属性watch)
+    - [计算属性 VS 监视属性](#计算属性-vs-监视属性)
 
 <!-- /TOC -->
 
@@ -842,7 +843,42 @@
       vm.$watch('user.name', function (newValue, oldValue) {
         console.log('user.name changed:', newValue, oldValue);
       });
-
+### 计算属性 VS 监视属性
+1. 以官网的 `fullname` 的例子
+    - 计算属性
+      - ```js
+        var vm = new Vue({
+          el: '#demo',
+          data: {
+            firstName: 'Foo',
+            lastName: 'Bar'
+          },
+          computed: {
+            fullName: function () {
+              return this.firstName + ' ' + this.lastName
+            }
+          }
+        })
+    - 监视属性
+      - ```js
+        var vm = new Vue({
+          el: '#demo',
+          data: {
+            firstName: 'Foo',
+            lastName: 'Bar',
+            fullName: 'Foo Bar'
+          },
+          watch: {
+            firstName: function (val) {
+              this.fullName = val + ' ' + this.lastName
+            },
+            lastName: function (val) {
+              this.fullName = this.firstName + ' ' + val
+            }
+          }
+        })
+    - 从上面的例子看, 依赖的属性越多, 计算属性相对于监视属性的优势就更大, 因为依赖多少个属性, 就要写几个 `watch` 项
+    - 但是, 如果我们修改 `firstName` 后, 想要 1s 之后再使数据发生变化, 此时计算属性就没法达到了, 只能使用监听属性, 因为计算属性是依赖返回值的.
     
 
 
