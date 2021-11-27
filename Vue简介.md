@@ -770,7 +770,58 @@
       },
     - ![](../image/Snipaste_2021-11-27_08-53-47.png)
     - 刚初始化, 所以 `oldValue` 为 `undefined`
-
+    - 有了这个配置项, 我们可以研究一件事, 如果监听一个不存在的属性, `Vue` 会怎么做呢?
+      - ```js
+        watch: {
+          haha: {
+            immediate: true,
+            handler(newValue, oldValue) {
+              console.log('haha changed, ', newValue, oldValue);
+            }
+          }
+        },
+      - ![](../image/Snipaste_2021-11-27_08-58-04.png)
+      - 对于不存在的属性, 新旧值都为 `undefined`
+5. 其他配置项 `deep`(深度监视)
+    - 我们有一个新的数据项, 如果我们想监视 `user` 中的 `age` 怎么办?
+      - ```js
+        data: {
+          isHot: true,
+          user: {
+            name: 'wang',
+            age: 18
+          }
+        },
+      - ```html
+        <h4>年龄为:{{user.age}}</h4>
+        <button @click="user.age++">改变user.age</button>
+      - ```js
+        'user.age': {
+          handler(newValue, oldValue) {
+            console.log('user.age changed, ', newValue, oldValue);
+          }
+        }
+      - 其实定义对象的时候, `key` 也是字符串, 但我们通常都不给 `key` 加字符串, 这个时候就派上用场了.
+    - 如果我想监视 `user` 里 `age` 和 `name` 的变化呢? 其实可以分别监视 `age` 和 `name`, 但是就要写两边.
+      - 下面的写法, 不会生效. 因为老师说, 因为 `Vue` 监视的是地址, 如果我们只`变更`而不是`替换` `user`, 比如 `user` 的 `age` 加 `1`, 那么 `user` 的地址没有改变.
+      - ```js
+        user: {
+          handler(newValue, oldValue) {
+            console.log('user changed, ', newValue, oldValue);
+          }
+        }
+      - 如果想让上面的监视起作用, 就需要 `替换`
+      - ```html
+        <button @click="user = { name: 'wu', age: 19 }">整体替换user</button>
+      - ![](../image/Snipaste_2021-11-27_09-17-42.png)
+    - 如果我们只想写一个监视, 但要监视被监视属性所有内部层级变化, 使用 `deep`
+      - ```js
+        user: {
+          deep: true,
+          handler(newValue, oldValue) {
+            console.log('user changed, ', newValue, oldValue);
+          }
+        }
 
     
 
