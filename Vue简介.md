@@ -12,6 +12,7 @@
     - [事件修饰符](#事件修饰符)
     - [按键修饰符](#按键修饰符)
   - [计算属性(computed)](#计算属性computed)
+  - [监视属性(watch)](#监视属性watch)
 
 <!-- /TOC -->
 
@@ -721,7 +722,54 @@
         fullname: <h4>{{fullname}}</h4>
         fullname: <h4>{{fullname}}</h4>
       - ![](../image/Snipaste_2021-11-25_21-41-23.png)
-
+## 监视属性(watch)
+1. 顾名思义, 该属性用来监听数据的变化. 当需要在数据变化时执行异步或开销较大的操作时, 这个方式很有用. 构造 `Vue` 实例时需要传入全新的配置项 `watch`
+2. 如下案例, 监视 `isHot` 的变换, 页面动态展示天气
+    - ```html
+      <h4>今天天气很{{isHot ? '炎热' : '凉爽'}}</h4>
+      <button @click="isHot = !isHot">改变天气</button>
+    - ```js
+      new Vue({
+        el: '#root',
+        data: {
+          isHot: true
+        },
+        watch: {
+          isHot: {
+            handler(newValue, oldValue) {
+              console.log('isHot changed, ', newValue, oldValue);
+            }
+          }
+        },
+      })
+    - 需要监视哪个属性, 就在 `watch` 中用该属性作为 `key`. `value` 是一个对象, 其中可以写一个函数, 该函数在被监视的属性变化时调用. 这个函数接收两个参数, 分别是被监视属性的`新值`和`旧值`.
+3. 监视计算属性
+    - 因为计算属性也是属性, 所以也可以监视计算属性哦~
+    - ```js
+      computed: {
+        weather() {
+          return this.isHot ? '炎热' : '凉爽';
+        }
+      },
+      watch: {
+        weather: {
+          handler(newValue, oldValue) {
+            console.log('计算属性修改了:', newValue, oldValue);
+          }
+        },
+      },
+    - ![](../image/Snipaste_2021-11-27_08-45-54.png)
+4. 其他配置项 `immediate`
+    - 在上面的监视中, 只有被监视属性被修改了, 才会调用回调, 如果我想在被监视属性初始化时就进行监视, 需要使用`watch` 全新配置项 `immediate`
+    - ```js
+      isHot: {
+        immediate: true,
+        handler(newValue, oldValue) {
+          console.log('isHot changed, ', newValue, oldValue);
+        }
+      },
+    - ![](../image/Snipaste_2021-11-27_08-53-47.png)
+    - 刚初始化, 所以 `oldValue` 为 `undefined`
 
 
     
