@@ -822,6 +822,26 @@
             console.log('user changed, ', newValue, oldValue);
           }
         }
+6. 监视的简写
+    - 如果我们只关心值的修改, 不关心深度监视和初始化监视, 就可以使用简写形式. 
+    - ```js
+      isHot(newValue, oldValue) {
+        console.log('isHot changed, ', newValue, oldValue);
+      },
+7. `$watch`
+    - 除了在创建 `Vue` 实例时配置监视属性, 还可以手动调用 `vm` 方法监视
+    - ```js
+      vm.$watch('user.name', {
+        immediate: true,
+        handler(newValue, oldValue) {
+          console.log('user.name changed:', newValue, oldValue);
+        }
+      });
+    - 简写形式. 🐖注意: 简写时要用普通函数, 不要用箭头函数, 避免函数中 `this` 的改变
+    - ```js
+      vm.$watch('user.name', function (newValue, oldValue) {
+        console.log('user.name changed:', newValue, oldValue);
+      });
 
     
 
