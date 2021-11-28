@@ -271,8 +271,17 @@
       - ![](../image/Snipaste_2021-11-14_21-49-09.png)
       - 可以看到, 重复的属性会覆盖.
 4. `class` 绑定
+    - 字符串语法
+      - > 使用样式的类名不确定, 动态决定
+      - ```html
+        <div class="basic" :class="a">hello</div>
+      - 固定的 `class` 不使用数据绑定, 动态的语法使用数据绑定, 最终 `Vue` 将两者合并. 这样做, 表示 `a` 是一个变量而不是真正的选择器, 将来如果修改选择器, 只需要修改 `a` 而不用手动操作 `DOM`
+      - ![](../image/Snipaste_2021-11-28_09-19-06.png)
+      - 遗憾的我测试了一下, 如果固定的 `class` 和绑定的 `class` 相同, `Vue` 并没有帮忙去重
+      - ![](../image/Snipaste_2021-11-28_09-20-38.png)
     - 对象语法
-      - 传给 class 一个对象, 用以动态切换 class
+      > 适用于绑定的个数确定, 名字确定, 不确定的是某个 `class` 到底用不用
+      - 传给 `class` 一个对象, 用以动态切换 `class`
       - ```html
         <div v-bind:class="{ weight: isWeight, red: isRed }">Bold Font</div>
       - 上面的语法表示, `weight` 这个 `class` 是否存在取决于 `data` 中的 `isWeight` 是否为真值
@@ -287,7 +296,7 @@
       - 在 `data` 中的 `isWeight` 属性为真, 所以最终解析出来的 `div` 有 `weight`  这个 `class`
       - ![](../image/Snipaste_2021-11-14_22-08-35.png)
       - 那这正的 `class` 样式自然写在 `style` 标签或者 `css` 文件中. 注意到, 值为[真truthy](https://developer.mozilla.org/zh-CN/docs/Glossary/Truthy), 而不一定非得是 `true`
-    - 数组语法
+    - 数组语法1
       - 我们可以把一个数组传给 `v-bind:class`, 以应用一个 `class` 列表
       - ```html
         <div v-bind:class="[ redClass, weightClass ]">Font 数组 class</div>
@@ -301,6 +310,15 @@
          })
       - 最终渲染出来就是
       - ![](../image/Snipaste_2021-11-14_22-12-54.png)
+    - 数组语法2
+      - > 适用于绑定样式个数不确定, 名字也不确定
+      - 上面的语法是, 数组中的变量定义在 `data`, 这里的语法是, 数组定义在 `data`
+      - ```html
+        <div :class="arr">world</div>
+      - ```js
+        data: {
+          arr: ['basic', 'happy']
+        }
     - 使用三元表达式动态切换
       - ```html
         <div v-bind:class="[ isError ? errorClass : rightClass]">三元表达式动态切换</div>
