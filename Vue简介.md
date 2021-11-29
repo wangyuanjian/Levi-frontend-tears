@@ -1028,5 +1028,30 @@
         </li>
       </ul>
     - ![](../image/Snipaste_2021-11-29_22-00-24.png)
-4. 
+    - 其中指令中的括号可以不写, 直接`v-for="user,index in userList" `. 但是老师不推荐.
+      - ```html
+        <li v-for="user,index in userList" :key="user.id">
+          {{user.name}} is {{user.age}} year(s) old. --- {{index}}
+        </li>
+    - 可以使用 `of` 替换 `in`, 一般用 `in`
+      - ```html
+        <li v-for="(user,index) of userList" :key="user.id">
+          {{user.name}} is {{user.age}} year(s) old. --- {{index}}
+        </li>
+4. 使用 `v-for` 遍历对象
+    - ```html
+      <li v-for="(value,key) of car" :key="key">
+        {{value}}---{{key}}
+      </li>
+    - ```js
+      data: {
+        car: {
+          name: 'Model Y',
+          price: '30W',
+          color: 'Black'
+        }
+      }
+    - 🐖注意: 先是 `value`, 后是 `key`
+    - ![](../image/Snipaste_2021-11-29_22-40-30.png)
+5. 
 
