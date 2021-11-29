@@ -15,6 +15,7 @@
   - [监视属性(watch)](#监视属性watch)
     - [计算属性 VS 监视属性](#计算属性-vs-监视属性)
   - [条件渲染](#条件渲染)
+  - [列表渲染(v-for)](#列表渲染v-for)
 
 <!-- /TOC -->
 
@@ -975,5 +976,57 @@
           <h4>wang</h4>
         </template>
       - 🐖值得注意: `template` 只能配合 `v-if` 使用, 因为 `v-show` 通过 `display` 控制显示与否, 而 `template` 本身并不存在
-
+## 列表渲染(v-for)
+1. `v-for` 指令基于一个数组渲染一个列表. 这个指令需要使用`item in items` 形式的特殊语法, 其中 `items` 是源数据数组, `item` 是被迭代数组元素的`别名`.
+    - ```html
+      <ul>
+        <li v-for="user in userList">
+          {{user.name}} is {{user.age}} year(s) old.
+        </li>
+      </ul>
+    - ```js
+      data: {
+        userList: [
+          { id: '001', name: 'zhangsan', age: 18 }, 
+          { id: '002', name: 'lisi', age: 19 },
+          { id: '003', name: 'wangwu', age: 20 },
+        ]
+      }
+    - ![](../image/Snipaste_2021-11-29_21-58-41.png)
+    - 在 `v-for` 中, 我们可以使用父级作用域的数据,
+      - ```html
+        <ul>
+          <li v-for="user in userList" :key="user.id">
+            {{greeting}}, {{user.name}} is {{user.age}} year(s) old.
+          </li>
+        </ul>
+      - ```js
+        data: {
+          greeting: 'hello', 
+          userList: [
+            { id: '001', name: 'zhangsan', age: 18 }, 
+            { id: '002', name: 'lisi', age: 19 },
+            { id: '003', name: 'wangwu', age: 20 },
+          ]
+        }
+      - ![](../image/Snipaste_2021-11-29_22-02-17.png)
+2. 少了`key`
+    - 在上面的模板中, 少了关键的特殊 `attribute`: [key](https://cn.vuejs.org/v2/api/#key)
+    - 主要用在 `Vue` 的虚拟 `DOM` 算法，在新旧 `nodes` 对比时辨识 `VNodes`. 最常见的用例是结合 `v-for`
+    - ```html
+      <ul>
+        <li v-for="user in userList" :key="user.id">
+          {{user.name}} is {{user.age}} year(s) old.
+        </li>
+      </ul>
+3. 第二个可选参数 `index`
+    - `index`: 当前项的索引
+    - ```html
+      <ul>
+        <li v-for="(user, index) in userList" :key="user.id">
+          {{user.name}} is {{user.age}} year(s) old. --- {{index}}
+        </li>
+      </ul>
+    - ![](../image/Snipaste_2021-11-29_22-00-24.png)
+4. 
 
