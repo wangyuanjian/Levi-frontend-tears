@@ -16,6 +16,7 @@
     - [计算属性 VS 监视属性](#计算属性-vs-监视属性)
   - [条件渲染](#条件渲染)
   - [列表渲染(v-for)](#列表渲染v-for)
+    - [特殊的 key](#特殊的-key)
 
 <!-- /TOC -->
 
@@ -1040,8 +1041,8 @@
         </li>
 4. 使用 `v-for` 遍历对象
     - ```html
-      <li v-for="(value,key) of car" :key="key">
-        {{value}}---{{key}}
+      <li v-for="(value,key,index) of car" :key="key">
+        {{value}}---{{key}}--{{index}}
       </li>
     - ```js
       data: {
@@ -1052,6 +1053,18 @@
         }
       }
     - 🐖注意: 先是 `value`, 后是 `key`
-    - ![](../image/Snipaste_2021-11-29_22-40-30.png)
-5. 
-
+    - ![](../image/Snipaste_2021-11-30_19-36-51.png)
+5. 使用 `v-for` 遍历字符串
+    - ```html
+      <li v-for="(char,index) of greeting" :key="key">
+        {{char}}---{{index}}
+      </li>
+    - ![](../image/Snipaste_2021-11-30_19-32-56.png)
+6. 使用 `v-for` 遍历指定次数
+    - ```html
+      <li v-for="(number,index) of 5" :key="key">
+        {{number}}---{{index}}
+      </li>
+    - ![](../image/Snipaste_2021-11-30_19-34-14.png)
+### 特殊的 key
+1. 
