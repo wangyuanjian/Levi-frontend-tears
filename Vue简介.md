@@ -1104,7 +1104,41 @@
 4. 不适用 `key` 属性
     - 默认 `key` 就是 `index`. 😀
 ### 数组更新检测
-1. `Vue` 将被侦听的数组的变更方法做了包装, 所以调用这些方法将会触发视图更新. 这些被包裹的方法包括
+1. 列表过滤
+    - 输入字符, 寻找对应姓名的人
+    - ```html
+      <div id="root">
+        <h3>人员列表</h3>
+        <input type="text" name="name" v-model="keyword" placeholder="请输入人员姓名">
+        <ul>
+          <li v-for="user in filteredUserList">
+            {{user.id}} --- {{user.name}} -- {{user.age}}
+          </li>
+        </ul>
+      </div>
+    - ```js
+      data: {
+        keyword: '',
+        userList: [
+          { id: '001', name: 'zhangsan', age: 18 },
+          { id: '002', name: 'lisi', age: 19 },
+          { id: '003', name: 'wangwu', age: 20 },
+        ],
+        filteredUserList: []
+      },
+      watch: {
+        keyword: {
+          immediate: true,
+          handler(newValue, oldValue) {
+            console.log('newValue is ', newValue);
+            this.filteredUserList = this.userList.filter(user => {
+              return user.name.indexOf(newValue) !== -1
+            });
+          }
+        }
+      },
+    - `filter` 方法本身并不改变原数组, 而是返回过滤后的新数组. 
+2. `Vue` 将被侦听的数组的变更方法做了包装, 所以调用这些方法将会触发视图更新. 这些被包裹的方法包括
     - `push()`
     - `pop()`
     - `shift()`
