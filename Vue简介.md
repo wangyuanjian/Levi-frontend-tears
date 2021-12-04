@@ -1130,15 +1130,52 @@
         keyword: {
           immediate: true,
           handler(newValue, oldValue) {
-            console.log('newValue is ', newValue);
             this.filteredUserList = this.userList.filter(user => {
               return user.name.indexOf(newValue) !== -1
             });
           }
         }
       },
-    - `filter` 方法本身并不改变原数组, 而是返回过滤后的新数组. 
-2. `Vue` 将被侦听的数组的变更方法做了包装, 所以调用这些方法将会触发视图更新. 这些被包裹的方法包括
+    - `filter()` 方法本身并不改变原数组, 而是返回过滤后的新数组. 
+2. 数组排序
+    - 还是上面的案例, 但是加上排序方法
+    - ```html
+      <button @click="sortType = 1">升序</button>
+      <button @click="sortType = 2">降序</button>
+      <button @click="sortType = 0">原序</button>
+    - ```js
+      watch: {
+        sortType(newValue) {
+          if (newValue) {
+            this.filteredUserList.sort((user1, user2) => {
+              return this.sortType === 1 ? user1.age - user2.age : user2.age - user1.age;
+            })
+          }
+        }
+      }
+    - `sort()` 改变原数组
+4. 更新时的一个问题
+    - 如果我们更新一个用户信息, 下面这样写是奏效的
+    - ```html
+      <button @click="updateWangWork">更新wang奏效</button>
+      <button @click="updateWangNotWork">更新wang不奏效</button>
+    - ```js
+      methods: {
+        updateWangWork() {
+          this.userList[2].age = 21;
+          this.userList[2].name = 'wangliu';
+        }
+      }
+    - 🐖但是, 下面没有奏效
+    - ```js
+      methods: {
+        updateWangNotWork() {
+          this.userList[2] = { id: '003', name: 'wangliu', age: 21 }
+        } 
+      }
+    - ![](../image/Snipaste_2021-12-04_09-03-13.png)
+    - 此时开发者工具中的数据也没有修改, 但是如果你先点击按钮, 再打开开发者工具中的 `Vue DevTools` 数据就改变了, 却决于点击和打开书顺序
+3. `Vue` 将被侦听的数组的变更方法做了包装, 所以调用这些方法将会触发视图更新. 这些被包裹的方法包括
     - `push()`
     - `pop()`
     - `shift()`
