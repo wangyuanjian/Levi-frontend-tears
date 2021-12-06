@@ -8,6 +8,7 @@
   - [模板语法(v-bind)](#模板语法v-bind)
   - [数据绑定(v-model)](#数据绑定v-model)
     - [数据代理](#数据代理)
+    - [`v-model` 绑定表单](#v-model-绑定表单)
   - [事件处理(v-on)](#事件处理v-on)
     - [事件修饰符](#事件修饰符)
     - [按键修饰符](#按键修饰符)
@@ -426,6 +427,42 @@
       - ![](../image/Snipaste_2021-11-16_20-25-27.png)
       - 💡思考一个问题, `Vue` 为什么要为 `_data` 中的数据作代理? 更加简单的操作数据, 因为代理之后就可以直接在模板中使用 `firstName`, 而不是 `_data.firstName`
     - ![](../image/Snipaste_2021-11-16_20-34-02.png)
+### `v-model` 绑定表单
+1. 文本框
+    - `<input type="text">` 或者 `<input type="password">`
+    - ```html
+      账号:<input type="text" v-model="student.account"><br>
+      密码: <input type="password" v-model="student.password">
+    - ```js
+      data: {
+        student: {
+          account: '',
+          password: '',
+        }
+      },
+2. 单选按钮
+    - `<input type="radio">`
+    - 如果我们只是绑定 `v-model` 而不写 `value`, 那么得到的值就是 `null`.
+      - ```html
+        <input type="radio" v-model="student.unknownSex">未知
+      - ![](../image/Snipaste_2021-12-06_18-54-18.png)
+    - 加上 value 后就可以获取值, 并甚至提供默认点击
+      - ```html
+        <input type="radio" name="sex" v-model="student.sex" value="male" >男 
+        <input type="radio" name="sex" v-model="student.sex" value="female" >女
+      - ```js
+        data: {
+        student: {
+          account: '',
+          password: '',
+          sex: 'male',
+          unknownSex: '',
+          hobby: [],
+        }
+      },
+      - ![](../image/Snipaste_2021-12-06_19-13-16.png)
+
+
 
 ## 事件处理(v-on)
 1. 用 `v-on` 指令监听 `DOM` 事件, 并在触发时运行一些 `JavaScript` 代码
