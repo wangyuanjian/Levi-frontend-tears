@@ -1308,3 +1308,36 @@
       - `sort()`
       - `reverse()`
     - ![](../image/Snipaste_2021-12-06_16-36-06.png)
+    - ```js
+      updateHobby() {
+        console.log('updateHobby---');
+        this.student.hobbies.splice(0, 1, '看电影');
+      }
+    - 如果我们打印一下数组, 其实不像一般数据有 `getter/setter`
+      - ![](../image/Snipaste_2021-12-06_17-45-41.png)
+    - 但是, 如果数组中的数据不是基本数据类型, 而是对象, 那么 Vue 仍然会为每个对象属性增加 `getter/setter`, 这时我们使用 [index].propName` 的形式操作属性是可以生效的
+      - ```js
+        student: {
+          name: 'wang',
+          age: 18,
+          hobbies: ['吃饭', '睡觉', '听音乐'],
+          friends: [
+            { name: 'li', age: 18 },
+            { name: 'wu', age: 18 }
+          ]
+        }
+      - ```js
+        // work
+        updateFirstFriendAge() {
+          this.student.friends[0].age = 20;
+        }
+    - 对于数组的剩下方法, 并不会变更原数组, 只会返回一个新数组. 如果使用非变更方法, 可以用新数组替换旧数组
+      - `filter()`
+      - `concat()`
+      - `slice()`
+3. 因为数组也是对象, 而且所谓的`属性名`是索引, 所以修改的时候也可以这样写
+    - ```js
+      updateHobby() {
+        console.log('updateHobby---');
+        Vue.set(this.student.hobbies, 0, '看电影');
+      }
