@@ -428,18 +428,28 @@
       - 💡思考一个问题, `Vue` 为什么要为 `_data` 中的数据作代理? 更加简单的操作数据, 因为代理之后就可以直接在模板中使用 `firstName`, 而不是 `_data.firstName`
     - ![](../image/Snipaste_2021-11-16_20-34-02.png)
 ### `v-model` 绑定表单
-1. 文本框
-    - `<input type="text">` 或者 `<input type="password">`
-    - ```html
-      账号:<input type="text" v-model="student.account"><br>
-      密码: <input type="password" v-model="student.password">
-    - ```js
-      data: {
-        student: {
-          account: '',
-          password: '',
-        }
-      },
+1. 文本框 
+    - 单行
+      - `<input type="text">` 或者 `<input type="password">`
+      - ```html
+        账号:<input type="text" v-model="student.account"><br>
+        密码: <input type="password" v-model="student.password">
+      - ```js
+        data: {
+          student: {
+            account: '',
+            password: '',
+          }
+        },
+    - 多行
+      - ```html
+        其他: <textarea name="others" v-model="student.others"></textarea>
+      - ```js
+        data: {
+          student: {
+            others: ''
+          }
+        },
 2. 单选按钮
     - `<input type="radio">`
     - 如果我们只是绑定 `v-model` 而不写 `value`, 那么得到的值就是 `null`.
@@ -452,15 +462,90 @@
         <input type="radio" name="sex" v-model="student.sex" value="female" >女
       - ```js
         data: {
-        student: {
-          account: '',
-          password: '',
-          sex: 'male',
-          unknownSex: '',
-          hobby: [],
-        }
-      },
+          student: {
+            account: '',
+            password: '',
+            sex: 'male',
+            unknownSex: '',
+            hobby: [],
+          }
+        },
       - ![](../image/Snipaste_2021-12-06_19-13-16.png)
+3. 复选框
+    - 比如, 需要用户勾选`同意某某某协议`
+      - ```html
+        <input type="checkbox" name="agree" id="agree" v-model="student.agree"> 同意并勾选协议 <br>
+      - ```js
+        data: {
+          student: {
+            agree: ''
+          }
+        }
+      - 虽然我们初始化为字符类型, 但是可以勾选之后为 `boolean`, 更好的处理是初始化为 `false`, 默认不同意该协议
+      - ![](../image/Snipaste_2021-12-06_19-53-33.png)
+    - 多个复选框
+      - 比如, 选择某个用户的爱好
+      - ```html
+        爱好: 
+        <input type="checkbox" name="hobby" v-model="student.hobby" value="eat"> 吃饭
+        <input type="checkbox" name="hobby" v-model="student.hobby" value="movie"> 看电影
+        <input type="checkbox" name="hobby" v-model="student.hobby" value="music"> 听音乐
+      - ```js
+        data: {
+          student: {
+            hobby: [],
+            agree: ''
+          }
+        },
+      - ![](../image/Snipaste_2021-12-06_19-58-52.png)
+      - 🐖注意: 我们将 `hobby` 初始化为`数组`, 这样才能拿到正确的值; 但是, 如果你初始化为字符串, 那不论你怎么选, 都只能得到 `true/false`(表示是否勾选)
+      - ![](../image/Snipaste_2021-12-06_20-01-26.png)
+4. 下拉列表(选择框)
+    - 单选
+      - 将属性绑定到 `<select>` 标签, 初始化字符类型
+      - ```html
+        校区:
+        <select name="school" id="school" v-model="student.school">
+          <option disabled value="">请选择校区</option>
+          <option value="beijing">北京</option>
+          <option value="shanghai">上海</option>
+          <option value="shenzhen">深圳</option>
+        </select>
+      - ```js
+        data: {
+          student: {
+            school: '',
+          }
+        }
+      - ![](../image/Snipaste_2021-12-06_20-10-52.png)
+      - `💡tips`: 将第一个 `<option>` 设置为 `disabled`
+    - 多选
+      - 多选就把数据数值化数组类型
+      - ```html
+        校区(多选)
+        <select name="school2" id="school2" multiple v-model="student.school2">
+          <option disabled value="">请选择校区</option>
+          <option value="beijing">北京</option>
+          <option value="shanghai">上海</option>
+          <option value="shenzhen">深圳</option>
+        </select> <br>
+      - ```js
+        data: {
+          student: {
+             school2: [],
+          }
+        }
+      - ![](../image/Snipaste_2021-12-06_20-21-27.png)
+5. 修饰符
+    - `.number`
+      - 例如, 我们想拿到用户年龄为 `number` 而不是 `string`. 这通常很有用, 因为即使在 `type="number"` 时, `HTML` 输入元素的值也总会返回字符串
+      - ```html
+        年龄: <input type="number" v-model.number="student.age">
+      - ![](../image/Snipaste_2021-12-06_20-38-08.png)
+    - `.trim`
+      - 如果要自动过滤用户输入的首尾空白字符
+      - <input v-model.trim="msg">
+      - ![](../image/Snipaste_2021-12-06_20-45-11.png)
 
 
 
