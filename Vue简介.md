@@ -20,6 +20,7 @@
     - [数组更新检测](#数组更新检测)
     - [穿插数据劫持](#穿插数据劫持)
     - [Vue.set()/vm.$set](#vuesetvmset)
+    - [Vue 如何检测数组更新](#vue-如何检测数组更新)
 
 <!-- /TOC -->
 
@@ -1177,14 +1178,6 @@
       }
     - ![](../image/Snipaste_2021-12-04_09-03-13.png)
     - 此时开发者工具中的数据也没有修改, 但是如果你先点击按钮, 再打开开发者工具中的 `Vue DevTools` 数据就改变了, 却决于点击和打开书顺序
-3. `Vue` 将被侦听的数组的变更方法做了包装, 所以调用这些方法将会触发视图更新. 这些被包裹的方法包括
-    - `push()`
-    - `pop()`
-    - `shift()`
-    - `unshift()`
-    - `splice()`
-    - `sort()`
-    - `reverse()`
 
 ### 穿插数据劫持
 1. 我们可以先写一个自己觉得正确的数据劫持
@@ -1281,4 +1274,37 @@
         }
       - ![](../image/Snipaste_2021-12-05_10-27-54.png)
       - 报错说的很明白, 如果你想这么做, 这能在 `data` 配置项里添加, 运行期间不可以🙅‍🙅‍🙅‍
-
+### Vue 如何检测数组更新
+1. 我们先增加一个学生爱好的属性, 然后点击之后修改第一个爱好
+    - ```html
+      <div id="root">
+        <h4>姓名:{{student.name}}</h4>
+        <h4>年龄:{{student.age}}</h4>
+        <h4>爱好:{{student.hobbies}}</h4>
+        <button @click="updateHobby">修改第一个爱好为"看电影"</button>
+      </div>
+    - ```js
+      data: {
+        student: {
+          name: 'wang',
+          age: 18,
+          hobbies: ['吃饭', '睡觉', '听音乐']
+        }
+      },
+      methods: {
+        updateHobby() {
+          console.log('updateHobby---');
+          this.student.hobbies[0] = '看电影';
+        }
+      }
+    - ![](../image/Snipaste_2021-12-06_16-23-31.png)
+2. 为什么没有生效呢?
+    - Vue 认为, 如果要认定数组发生了修改, 那么就是调用了数组的某些方法. `Vue` 将被侦听的数组的变更方法做了包装, 所以调用这些方法将会触发视图更新. 这些被包裹的方法包括
+      - `push()`
+      - `pop()`
+      - `shift()`
+      - `unshift()`
+      - `splice()`
+      - `sort()`
+      - `reverse()`
+    - ![](../image/Snipaste_2021-12-06_16-36-06.png)
