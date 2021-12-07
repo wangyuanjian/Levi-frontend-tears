@@ -22,6 +22,7 @@
     - [穿插数据劫持](#穿插数据劫持)
     - [Vue.set()/vm.$set](#vuesetvmset)
     - [Vue 如何检测数组更新](#vue-如何检测数组更新)
+    - [过滤器(filter)](#过滤器filter)
 
 <!-- /TOC -->
 
@@ -1463,3 +1464,81 @@
         console.log('updateHobby---');
         Vue.set(this.student.hobbies, 0, '看电影');
       }
+### 过滤器(filter)
+1. 自定义过滤器，可被用于一些常见的文本格式化
+    - 过滤器可以用在两个地方: `双花括号插值` 和 `v-bind 表达式`
+    - 过滤器应该被添加在 `JavaScript` 表达式的尾部, 由“`管道`”符号指示
+    - 🐖本质: `函数`
+2. 新的配置项 `filter`
+    - 我们做一个格式化时间的案例
+    - ```html
+      <div id="root">
+        <h2>显示格式化后的时间戳</h2>
+        <h3>现在是: {{time | timeFormatter}}</h3>
+      </div>
+    - ```js
+      new Vue({
+        el: '#root',
+        data: {
+          time: Date.now()
+        },
+        filters: {
+          timeFormatter(time) {
+            return dayjs(time).format('YYYY-MM-DD HH:mm:ss')
+          }
+        }
+      })
+    - ![](../image/Snipaste_2021-12-07_19-31-42.png)
+3. 传递参数
+    - 过滤器函数总接收表达式的值作为第一个参数. 例如, 修改上述案例, 使之自由定制格式化内容
+    - ```html
+      <div id="root">
+        <h2>显示格式化后的时间戳</h2>
+        <h3>现在是: {{time | timeFormatter}}</h3>
+        <h3>现在是: {{time | timeFormatter('YYYY-MM-DD')}}</h3>
+      </div>
+    - ```js
+      filters: {
+        timeFormatter(time, formatter) {
+          formatter = formatter || 'YYYY-MM-DD HH:mm:ss'
+          return dayjs(time).format(formatter);
+        }
+      }
+4. 多个过滤器串联
+    - 第一个过滤器返回的结果会作为第二个过滤器的参数
+    - ```html
+      <div id="root">
+        <h3>现在是: {{time | timeFormatter('YYYY-MM-DD') | mySlice}}</h3>
+      </div>
+    - ```js
+      filters: {
+        mySlice(str) {
+          return str.substring(0, 4);
+        }
+      }
+5. 全局过滤器
+    - `Vue.filter( id, [definition] )`: 注册或获取全局过滤器
+    - ```html
+        <h3>现在是: {{time | timeFormatter('YYYY-MM-DD') | mySlice | plusYear}}</h3>
+    - ```js
+      Vue.filter('plusYear', function(year) {
+        return parseInt(year) + 1;
+      });
+      new Vue({...})
+    - 🐖注意: 必须在创建 `vm` 之前调用创建全局过滤器方法
+    - 如果只传 `id`, 那么就是获取该过滤器
+      - ![](../image/Snipaste_2021-12-07_19-50-23.png)
+    - 当全局过滤器和局部过滤器重名时，会采用局部过滤器
+6. `v-bind` 使用过滤器
+    - ```html
+      <div :id="id | mySlice"></div>
+    - ```js
+      data: {
+        id: 'box111',
+      },
+      filters: {
+        mySlice(str) {
+          return str.substring(0, 4);
+        }
+      }
+7. 😟 `Vue3` 取消了过滤器
