@@ -27,6 +27,7 @@
     - [v-text](#v-text)
     - [v-html](#v-html)
     - [v-clock](#v-clock)
+    - [v-once](#v-once)
 
 <!-- /TOC -->
 
@@ -1611,7 +1612,7 @@
     - 就会出现下面的效果: 加载过程中, 页面上的模板语法原封不动的展示了出来😅
     - ![](../image/Snipaste_2021-12-11_09-11-24.png)
 2. 这个指令保持在元素上直到关联实例结束编译. 
-    - 和 `CSS` 规则如 `[v-cloak] { display: none }` 一起用时，这个指令可以隐藏未编译的 `Mustache` 标签直到实例准备完毕
+    - 和 `CSS` 规则如 `[v-cloak] { display: none }` 一起用时, 这个指令可以隐藏未编译的 `Mustache` 标签直到实例准备完毕
     - 这个指令没有值
     - ```html
       <div id="root">
@@ -1626,3 +1627,17 @@
         }
       </style>
     - ![](../image/Snipaste_2021-12-11_09-23-11.png)
+### v-once
+1. 只渲染元素和组件一次. 随后的重新渲染, 元素/组件及其所有的子节点将被视为静态内容并跳过. 这可以用于优化更新性能. 
+2. 需求: 展示初始值和后面之后的递增值
+    - ```html
+      <div id="root">
+        <h2 v-once>初始值: {{sum}}</h2>
+        <h2>递增之后: {{sum}}</h2>
+        <button @click="sum++">点我+1</button>
+      </div>
+    - ```js
+      data: {
+        sum: 0
+      }
+    - ![](../image/Snipaste_2021-12-11_09-32-30.png)
