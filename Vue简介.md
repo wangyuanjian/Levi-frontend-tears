@@ -29,6 +29,8 @@
     - [v-clock](#v-clock)
     - [v-once](#v-once)
     - [v-pre](#v-pre)
+  - [自定义指令](#自定义指令)
+    - [函数式](#函数式)
 
 <!-- /TOC -->
 
@@ -1653,3 +1655,48 @@
         <button v-pre a="1"  @click="sum++">点我+1</button>
       </div>
     - ![](../image/Snipaste_2021-12-11_09-42-02.png)
+## 自定义指令
+### 函数式
+1. 一个需求: 借助自定义指令实现数字 10 倍放大.
+    - ```html
+      <div id="root">
+        <h2>原始值是: {{sum}}</h2>
+        <h2>十倍之后是</h2>
+        <h2 v-multiply10="sum"></h2>
+        <button @click="sum++">点我+1</button>
+      </div>
+    - 如果只是这样呈现, 就会报错, 因为找不到指令 `multiply10`
+    - ![](../image/Snipaste_2021-12-11_10-11-33.png)
+3. 使用全新配置项 `directives`
+    - ```js
+      new Vue({
+        el: '#root',
+        data: {
+          sum: 1
+        },
+        directives: {
+          multiply10(element, binding) {
+            console.log(element, binding);
+          }
+        }
+      })
+    - 先来看看这两个参数都是什么意思
+    - ![](../image/Snipaste_2021-12-11_10-13-59.png)
+    - `element`: 指令所绑定的元素,可以直接操作 `DOM`
+    - `binding`: 一个对象, 包含一下属性
+      - `name`: 指令名, 不包括 `v-` 前缀
+      - `value`: 指令的绑定值. 因为 `sum` 的默认值是 `1`, 所以 `value` 就是 `1`. 如果我们绑定的是 `sum+1`, 那 `value` 就是 `2`
+      - `expression`: 字符串形式的指令表达式
+      - `modifiers`: 一个包含修饰符的对象. 如果 `v-multiply10.foo.bar` 中, 修饰符对象为 `{ foo: true, bar: true }`
+    - 🐖注意: 因为我们要操作 `DOM`, 所以模板中使用自定义指令的标签究竟显示什么, 并不依赖函数的返回值
+    - ```js
+      directives: {
+        multiply10(element, binding) {
+          element.innerHTML = binding.value * 10;
+        }
+      }
+    - ![](../image/Snipaste_2021-12-11_10-19-49.png)
+3. 自定义指令何时被调用?
+    - 指令与元素成功绑定时(一上来)
+    - 指令所在的模板被重新解析时. 🐖这里不是指令依赖的数据发生改变时哦!!!
+
