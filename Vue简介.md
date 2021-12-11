@@ -28,6 +28,7 @@
     - [v-html](#v-html)
     - [v-clock](#v-clock)
     - [v-once](#v-once)
+    - [v-pre](#v-pre)
 
 <!-- /TOC -->
 
@@ -1641,3 +1642,14 @@
         sum: 0
       }
     - ![](../image/Snipaste_2021-12-11_09-32-30.png)
+### v-pre
+1. 跳过这个元素和它的子元素的编译过程. 可以用来显示原始 `Mustache` 标签. 跳过大量没有指令的节点会加快编译.
+2. 不需要表达式
+    - ```html
+      <div id="root">
+        <h2 v-pre>这是一个案例</h2>
+        <h2 v-once>初始值: {{sum}}</h2>
+        <h2>递增之后: {{sum}}</h2>
+        <button v-pre a="1"  @click="sum++">点我+1</button>
+      </div>
+    - ![](../image/Snipaste_2021-12-11_09-42-02.png)
