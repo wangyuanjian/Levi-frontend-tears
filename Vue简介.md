@@ -31,6 +31,7 @@
     - [v-pre](#v-pre)
   - [自定义指令](#自定义指令)
     - [函数式](#函数式)
+    - [对象式](#对象式)
 
 <!-- /TOC -->
 
@@ -1697,6 +1698,40 @@
       }
     - ![](../image/Snipaste_2021-12-11_10-19-49.png)
 3. 自定义指令何时被调用?
-    - 指令与元素成功绑定时(一上来)
+    - 指令与元素成功`绑定`时(一上来)
     - 指令所在的模板被重新解析时. 🐖这里不是指令依赖的数据发生改变时哦!!!
+### 对象式
+1. 需求: 定义 `v-fbind` 指令, 类似 `v-bind` 功能, 但可以让其所绑定的 `input` 元素默认获取焦点
+    - ```html
+      <div id="root">
+        <button @click="name += '~'">改变名字哦</button> <br/>
+        <label for="username">姓名: </label>
+        <input type="text" name="username" id="username" v-fbind="name">
+      </div>
+    - ```js
+      directives: {
+        fbind(element, binding) {
+          element.focus();
+          element.value = binding.value;
+        }
+      }
+    - 打开页面, 只绑定了元素, 而没有获取焦点. 手动点下`改变名字哦`的按钮, `input` 才获取了焦点
+    - 但是既然绑定了元素, 说明绑定元素之前的代码一定执行了.
+2. 为什么 `element.focus()` 不生效?
+    - 手动用 `js` 写原生获取焦点
+    - ```html
+      <button id="btn">创建输入框并获取焦点</button>
+    - ```js
+      let btn = document.getElementById('btn');
+      btn.onclick = () => {
+        let input = document.createElement('input');
+        document.body.appendChild(input); // (**)
+        input.focus(); // (*)
+      }
+    - 🐖注意: 必须把 `(*)` 写 `(**)` 之后. 不然就会失效
+3. 那么我们自定义的指令是什么时候调用的呢?
+    - 指令与元素成功`绑定`时(一上来). 当我们写指令时, `input` 仅在内存中创建了和数据 `name` 的绑定. 但是这时页面并没有 `input` 元素, 所以获取焦点失败.
+    - 但是, 当我们点 `改变名字哦` 后, 页面上已经存在 `input` 输入框, 所以这时候 `input` 就获取了焦点
+
+
 
