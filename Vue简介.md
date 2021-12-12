@@ -1732,6 +1732,26 @@
 3. 那么我们自定义的指令是什么时候调用的呢?
     - 指令与元素成功`绑定`时(一上来). 当我们写指令时, `input` 仅在内存中创建了和数据 `name` 的绑定. 但是这时页面并没有 `input` 元素, 所以获取焦点失败.
     - 但是, 当我们点 `改变名字哦` 后, 页面上已经存在 `input` 输入框, 所以这时候 `input` 就获取了焦点
-
+4. 完整配置
+    - 一个指令定义对象可以提供如下几个钩子函数(均可选)
+      - `bind`: 只调用一次, 指令第一次绑定到元素时调用. 在这里可以进行一次性的初始化设置.
+      - `inserted`: 被绑定元素插入父节点时调用.
+      - `update`: 所在组件的 `VNode` 更新时调用, 但是可能发生在其自 `VNode` 更新之前.
+    - ```js
+      directives: {
+        fbind: {
+          bind(element, binding) {
+            element.value = binding.value;
+          },
+          inserted(element, binding) {
+            element.focus();
+          },
+          update(element, binding) {
+            element.value = binding.value;
+            element.focus();
+          }
+        }
+      }
+    - 
 
 
