@@ -1753,5 +1753,48 @@
         }
       }
     - 
+5. 其他注意
+    - 大小写和驼峰
+      - 即便我们在模板中使用大写, `Vue` 也会转为小写
+      - ![](../image/Snipaste_2021-12-13_22-31-13.png)
+      - Vue 推荐在书写多单词组成的指令时, 用 `-` 分开
+      - ```html
+        <h2 v-big-number="sum"></h2>
+      - 在 `js` 中可以使用驼峰, 也可以使用最原始的写法
+      - ```js
+        directives: {
+          bigNumber(element, binding) {
+            console.log('this in bigNumber, ', this);
+            element.innerHTML = binding.value * 10;
+          },
+          'big-number': function(element, binding) {
+            element.innerHTML = binding.value * 10;
+          }
+        }
+      - 
+    - `this` 问题
+      - 钩子函数中的 `this` 都是 `window`
+      - ![](../image/Snipaste_2021-12-13_22-36-11.png)
+6. 全局自定义指令
+    - 函数式
+    - ```js
+      Vue.directive('bigNumber', function (element, binding) {
+        element.innerHTML = binding.value * 10;
+      })
+    - 对象式
+    - ```js
+      Vue.directive('fbind2', {
+        bind(element, binding) {
+          element.value = binding.value;
+        },
+        inserted(element, binding) {
+          element.focus();
+        },
+        update(element, binding) {
+          element.value = binding.value;
+          element.focus();
+        }
+      });
+    
 
 
