@@ -32,6 +32,7 @@
   - [自定义指令](#自定义指令)
     - [函数式](#函数式)
     - [对象式](#对象式)
+  - [生命周期](#生命周期)
 
 <!-- /TOC -->
 
@@ -1796,5 +1797,37 @@
         }
       });
     
-
+## 生命周期
+1. 实现需求: 字体的透明度循环变化
+    - ```html
+      <h2 :style="{opacity}">欢迎学习Vue</h2>
+    - ```js
+      new Vue({
+        el: '#root',
+        data: {
+          opacity: 1
+        },
+        mounted() {
+          this.chanegOpacity()
+        },
+        methods: {
+          chanegOpacity() {
+            setInterval(() => {
+              this.opacity -= 0.01;
+              if (this.opacity <= 0) {
+                this.opacity = 1;
+              }
+            }, 16)
+          }
+        }
+      })
+2. 生命周期函数
+    - 本质: Vue 在关键时刻帮我们调用的一些特殊名称的函数
+    - 生命周期函数中的 `this` 指向的是 `vm` 或组件实例对象
+3. ![](../image/lifecycle.png)
+4. 解析
+    - `beforeCreated()`
+      - **`无法`** 通过 `vm` 访问 `data` 中的数据和 `methods` 中的方法
+    - `created()`
+      - **`可以`** 通过 `vm` 访问 `data` 中的数据和 `methods` 中的方法
 
