@@ -1830,4 +1830,10 @@
       - **`无法`** 通过 `vm` 访问 `data` 中的数据和 `methods` 中的方法
     - `created()`
       - **`可以`** 通过 `vm` 访问 `data` 中的数据和 `methods` 中的方法
-
+    - `beforeMount()`
+      - 页面呈现的是 `未经 Vue 编译` 的 `DOM` 结构. 所有对 `DOM` 的操作, 最终都不奏效 
+5. 其他
+    - `compile el's outerHTML as template`: 这句话的意思涉及到 `outerHTML` 的理解
+      - `outerHTML`: 内容包含描述`元素`及其后代的序列化 `HTML` 片段. 
+      - `outerHTML`: 元素后代的序列化 `HTML` 片段.
+      - 所以, 整个模板是包括外面的 `<div id="root"></div>` 的
