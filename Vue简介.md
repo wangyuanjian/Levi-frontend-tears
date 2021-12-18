@@ -1865,6 +1865,25 @@
         setTimeout(() => {
           vm.$mount(document.getElementById('root'))
         }, 3000);
+    - `Has 'template' option?`: 
+      - 是否有 `template` 选项. 如果有的话, 就将 `template` 选项的内容编译进 `render` 函数
+      - ```js
+        new Vue({
+          el: '#root',
+          template: `
+            <div>
+              <h1>World</h1>
+              <div>{{name}}</div>
+            </div>
+          `,
+          data: {
+            name: 'wang'
+          }
+        })
+      - 最终展示的内容是: ![](../image/Snipaste_2021-12-18_11-09-54.png)
+      - 这里有两点值得🐖注意
+        - `template` 元素中必须只有一个根元素
+        - `template` 的内容将会替换 `el` 指定挂载元素的 `outerHTML`. 图中就是这样 `<div id="root">` 这个元素已经没有了
     - `compile el's outerHTML as template`: 这句话的意思涉及到 `outerHTML` 的理解
       - `outerHTML`: 内容包含描述`元素`及其后代的序列化 `HTML` 片段. 
       - `outerHTML`: 元素后代的序列化 `HTML` 片段.
