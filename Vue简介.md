@@ -1832,8 +1832,41 @@
       - **`可以`** 通过 `vm` 访问 `data` 中的数据和 `methods` 中的方法
     - `beforeMount()`
       - 页面呈现的是 `未经 Vue 编译` 的 `DOM` 结构. 所有对 `DOM` 的操作, 最终都不奏效 
+      - 不奏效的意思就是, 即便此时我们打断点, 修改某个元素的 `innerHTML` 什么的, 最后这些修改都没有用
+    - `mounted()`
+      - 页面中呈现的是 `经过 Vue 编译` 的 `DOM`
+      - 这时对 DOM 的操作均有效(但是操作 DOM 应该尽可能避免)
+      - 至此, 初始化过程结束, 一般在此进行: 开启定时器, 发送网络请求, 订阅消息, 绑定自定义事件等`初始化操作`
 5. 其他
+    - `Has 'el' option?`
+      - 这里判断是否有 `el` 选项. 如果没有, 就会在 `vm.$mount(el)` 被调用时继续往下走. 如果连 `vm.$mount()` 也没有, 这个页面就停下来了.
+      - 看下面的代码, 最终结果只会输出![](../image/Snipaste_2021-12-18_10-52-26.png)
+      - ```js
+        new Vue({
+          // el: '#root',
+          data: {
+            opacity: 1
+          },
+          beforeCreate() {
+            console.log('beforeCreate');
+          },
+          created() {
+            console.log('created');
+          },
+          beforeMount() {
+            console.log('beforeMount');
+          },
+          mounted() {
+            console.log('mounted');
+          },
+        })
+      - 如果我们加上下面的代码, `3s` 之后才会执行 `beforeMount` 和 `mounted` 两个钩子函数
+      - ```js
+        setTimeout(() => {
+          vm.$mount(document.getElementById('root'))
+        }, 3000);
     - `compile el's outerHTML as template`: 这句话的意思涉及到 `outerHTML` 的理解
       - `outerHTML`: 内容包含描述`元素`及其后代的序列化 `HTML` 片段. 
       - `outerHTML`: 元素后代的序列化 `HTML` 片段.
       - 所以, 整个模板是包括外面的 `<div id="root"></div>` 的
+    - `Create vm.$el and replace "el" with it`: 将内存中的虚拟 `DOM` 转为真实 `DOM` 放入页面
