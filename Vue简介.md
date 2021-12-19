@@ -1837,6 +1837,16 @@
       - 页面中呈现的是 `经过 Vue 编译` 的 `DOM`
       - 这时对 DOM 的操作均有效(但是操作 DOM 应该尽可能避免)
       - 至此, 初始化过程结束, 一般在此进行: 开启定时器, 发送网络请求, 订阅消息, 绑定自定义事件等`初始化操作`
+    - `beforeUpdate()`
+      - **`数据是新的, 单页面依然是旧的`**, 即数据和页面尚未保持同步
+      - ```js
+        beforeUpdate() {
+          console.log('n is ', this.n);
+          debugger
+        }
+      - ![](../image/Snipaste_2021-12-19_21-38-44.png)
+    - `updated()`
+      - **`数据是新的, 页面也是新的`**, 即数据页面保持同步
 5. 其他
     - `Has 'el' option?`
       - 这里判断是否有 `el` 选项. 如果没有, 就会在 `vm.$mount(el)` 被调用时继续往下走. 如果连 `vm.$mount()` 也没有, 这个页面就停下来了.
@@ -1882,10 +1892,13 @@
         })
       - 最终展示的内容是: ![](../image/Snipaste_2021-12-18_11-09-54.png)
       - 这里有两点值得🐖注意
-        - `template` 元素中必须只有一个根元素
+        - `template` 元素中必须只有一个根元素. 且不能使用 `<template>` 标签作为根元素
         - `template` 的内容将会替换 `el` 指定挂载元素的 `outerHTML`. 图中就是这样 `<div id="root">` 这个元素已经没有了
     - `compile el's outerHTML as template`: 这句话的意思涉及到 `outerHTML` 的理解
       - `outerHTML`: 内容包含描述`元素`及其后代的序列化 `HTML` 片段. 
       - `outerHTML`: 元素后代的序列化 `HTML` 片段.
       - 所以, 整个模板是包括外面的 `<div id="root"></div>` 的
-    - `Create vm.$el and replace "el" with it`: 将内存中的虚拟 `DOM` 转为真实 `DOM` 放入页面
+    - `Create vm.$el and replace "el" with it`
+      - 将内存中的虚拟 `DOM` 转为真实 `DOM` 放入页面
+    - `Virtual DOM re-render and path`
+      - 根据新数据, 生成新的虚拟的 `DOM`, 随后与旧的虚拟 `DOM` 进行比较, 最终完成页面更新.
