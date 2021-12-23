@@ -102,3 +102,38 @@
         <student></student>
       </div>
     - ![](../image/Snipaste_2021-12-21_21-02-20.png )
+    - 🐖注意: `Vue DevTools` 中的组件名首字母是大写的
+5. 组件命名
+    - 一个英文单词: `全小写`或`首字母大写`
+      - ```js
+        new Vue({
+          el: '#root',
+          components: {
+            Student: student
+          }
+        });
+    - 多个英文单词
+      - `kebab-case`: 全小写, 并用 `-` 连接
+        - ```js
+          new Vue({
+            el: '#root',
+            components: {
+              'my-student': student
+            }
+          });
+        - ```html
+          <my-student></my-student>
+        - 但注意, 这时的开发者工具
+        - ![](../image/Snipaste_2021-12-23_20-56-37.png)
+      - `CamelCase`: 所有单词首字母大写
+        - 🐖注意: 需要脚手架支持
+        - ```js
+          new Vue({
+            el: '#root',
+            // 注册组件
+            components: {
+              MyStudent: student
+            }
+          });
+        - ```html
+          <MyStudnet></MyStudnet>
