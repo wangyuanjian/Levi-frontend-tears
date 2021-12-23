@@ -137,3 +137,34 @@
           });
         - ```html
           <MyStudnet></MyStudnet>
+    - 不要使用 `HTML` 规范中的标签
+      - ```js
+        new Vue({
+          el: '#root',
+          components: {
+            h2: student
+          }
+        });
+      - ![](../image/Snipaste_2021-12-23_21-05-52.png)
+      - 就是使用`<H2>`也不行, `Vue` 自动将其转为原生的 `<h2>`
+    - `name`: 配置项
+      - 目前, DevTools 中的组件名和我们注册组件时使用的名字呼应, 如果我们想要修改 DevTools 中的组件名, 就要使用该配置项
+      - ```js
+        const student = Vue.extend({
+          name: 'wang',
+          template: `
+            <div>
+              <h2>学生姓名: {{studentName}}</h2>
+              <h2>学生年龄: {{18}}</h2>
+            </div>
+          `,
+          data() {
+            return {
+              studentName: 'John',
+              age: 18
+            }
+          }
+        });
+      - ![](../image/Snipaste_2021-12-23_22-05-07.png)
+6. 组件标签
+    - 
