@@ -192,7 +192,7 @@
     - 自闭合: `<MyStudnet/>`
       - 🐖注意: 这种只能在脚手架环境使用. 如果非脚手架情况下使用, 可能会 `bug`. 比如, 我下面使用了三个组件, 但是页面只显示2 两个
       - ![](../image/Snipaste_2021-12-23_22-19-45.png)
-## 组件的嵌套
+### 组件的嵌套
 1. 因为实际开发中, 会有很多的组件, 但这些组件不会全都直接由 `vm` 管理, 不然 `main.js` 就会引入很多文件. 所以我们创建一个一人之下万人之上的 `app` 组件. `vm` 只管理 `app`, 而 `app` 管理其他所有组件.
     - ```html
       <div id="root">
@@ -261,13 +261,20 @@
         }
       })
     - ![](../image/Snipaste_2021-12-25_09-45-36.png)
-
-
-
-
-
-
-
+### VueComponent
+1. 组件究竟是什么?
+    - `VueComponent` 构造函数
+    - ![](../image/Snipaste_2021-12-25_09-53-12.png)
+2. 我们只需要写 `<school>` 或者 `<school></school>`, `Vue` 在解析式会帮我们创建 `school` 组件的实例对象, 即 `Vue` 执行 `new Component(options)`
+3. 每次调用 `Vue.extend()` 返回的都是一个全新的组件
+    - 即便是相同配置内容返回的都是不同的组件
+4. 关于 `this`: 组件配置中, `data`, `methods`, `watch`, `computed` 中 `this` 均为 `VueComponent` 实例对象
+    - ![](../image/Snipaste_2021-12-25_11-58-00.png)
+5. 如何体现 `vm` 管理着众多的组件实例对象 `vc` 呢?
+    - `vm` 身上有 `$children`
+    - ![](../image/Snipaste_2021-12-25_12-10-07.png)
+### 一个重要的内置关系
+1. 
 
 
 
