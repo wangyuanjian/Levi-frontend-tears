@@ -1,3 +1,18 @@
+<!-- TOC -->
+
+- [Vue 组件](#vue-组件)
+  - [初见组件](#初见组件)
+  - [非单文件组件](#非单文件组件)
+    - [非单文件组件](#非单文件组件-1)
+    - [组件的嵌套](#组件的嵌套)
+    - [VueComponent](#vuecomponent)
+    - [一个重要的内置关系](#一个重要的内置关系)
+  - [单文件组件](#单文件组件)
+    - [编写单文件组件](#编写单文件组件)
+    - [引入单文件组件](#引入单文件组件)
+
+<!-- /TOC -->
+
 # Vue 组件
 ## 初见组件
 1. 传统方式编写应用
@@ -265,6 +280,7 @@
 1. 组件究竟是什么?
     - `VueComponent` 构造函数
     - ![](../image/Snipaste_2021-12-25_09-53-12.png)
+    - ![](../image/Snipaste_2021-12-25_12-43-14.png)
 2. 我们只需要写 `<school>` 或者 `<school></school>`, `Vue` 在解析式会帮我们创建 `school` 组件的实例对象, 即 `Vue` 执行 `new Component(options)`
 3. 每次调用 `Vue.extend()` 返回的都是一个全新的组件
     - 即便是相同配置内容返回的都是不同的组件
@@ -274,12 +290,55 @@
     - `vm` 身上有 `$children`
     - ![](../image/Snipaste_2021-12-25_12-10-07.png)
 ### 一个重要的内置关系
+> VueComponet.prototype.\_\_proto__ === Vue.prototype
+1. ![](../image/Snipaste_2021-12-25_12-58-41.png)
+2. ![](../image/Snipaste_2021-12-25_13-19-17.png)
+
+## 单文件组件
+> \<template> 模板 \
+\<script> 脚本 \
+\<style> 样式
+### 编写单文件组件
+1. `<template>`
+    - 在这个标签中写模板, 也必须只有一个根元素
+    - ```html
+      <template>
+        <div>
+          <h2>学校名称: {{schoolName}}</h2>
+          <h2>学校地址: {{address}}</h2>
+          <button @click="showName"></button>
+        </div>
+      </template>
+2. `<script>`
+    - 创建并暴露组件实例对象. 下面采用简写形式, 省略 `Vue.extend(options)`
+    - ```js
+      <script>
+        export default {
+          name: 'Student',
+          data() {
+            return {
+              schoolName: 'MIT',
+              address: 'USA'
+            }
+          },
+          methods: {
+            showName() {
+              console.log(this.schoolName);
+            }
+          },
+        }
+      </script>
+3. `<style>`
+    - 写样式
+    - ```css
+      <style>
+        h2 {
+          background-color: #f60;
+        }
+      </style>
+    - 
+### 引入单文件组件
 1. 
-
-
-
-
-
 
 
 
