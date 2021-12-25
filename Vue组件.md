@@ -192,3 +192,100 @@
     - 自闭合: `<MyStudnet/>`
       - 🐖注意: 这种只能在脚手架环境使用. 如果非脚手架情况下使用, 可能会 `bug`. 比如, 我下面使用了三个组件, 但是页面只显示2 两个
       - ![](../image/Snipaste_2021-12-23_22-19-45.png)
+## 组件的嵌套
+1. 因为实际开发中, 会有很多的组件, 但这些组件不会全都直接由 `vm` 管理, 不然 `main.js` 就会引入很多文件. 所以我们创建一个一人之下万人之上的 `app` 组件. `vm` 只管理 `app`, 而 `app` 管理其他所有组件.
+    - ```html
+      <div id="root">
+        <app></app>
+      </div>
+    - ```js
+      const student = Vue.extend({
+        template: `
+          <div>
+            <h2>学生姓名: {{studentName}}</h2>
+            <h2>学生年龄: {{18}}</h2>
+          </div>
+        `,
+        data() {
+          return {
+            studentName: 'John',
+            age: 18
+          }
+        }
+      });
+      const school = {
+        template: `
+          <div>
+            <h2>学校名称: {{schoolName}}</h2>
+            <h2>学校地址: {{address}}</h2>
+            <hr/>
+            <student></student>
+          </div>
+        `,
+        data() {
+          return {
+            schoolName: 'MIT',
+            address: 'USA',
+          }
+        },
+        components: {
+          student
+        }
+      };
+      const hello = Vue.extend({
+        template: `<h1>{{msg}}</h1>`,
+        data() {
+          return {
+            msg: '欢迎学习 Vue.'
+          }
+        }
+      });
+
+      const app = Vue.extend({
+        template: `
+          <div>
+            <school></school>
+            <hello></hello>
+          </div>
+        `,
+        components: {
+          school,
+          hello,
+        }
+      })
+      
+      new Vue({
+        el: '#root',
+        components: {
+          app
+        }
+      })
+    - ![](../image/Snipaste_2021-12-25_09-45-36.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
