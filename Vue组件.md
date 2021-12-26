@@ -338,9 +338,33 @@
       </style>
     - 
 ### 引入单文件组件
-1. 
+1. 下面我们在创建的 `App.vue` 文件中引入 `Student` 组件
+    - ```js
+      <script>
+        // 脚手架可以不用写后面的 .vue
+        import Student from './Student.vue'
+        export default {
+          components: {
+            Student
+          }
+        }
+      </script>
+    - 在脚手架中, 可以不用写后面的 `.vue`
+2. 下面, 我们需要在创建 `vm` 时, 引用 `App.vue`, 这时, 我们需要创建一个入口文件(`main.js`), 在这个文件中创建 `vm`
+    - ```js
+      import App from './App.vue'
 
-
+      new Vue({
+        el: `#root`,
+        components: {App}
+      })
+3. 有了 vm, 我们还需要一个 `index.html` 来编写模板和引入 `main.js`
+    - ```html
+      <div id="root">
+        <App></App>
+        <script src="../js/vue.js"></script>
+        <script src="./033main.js"></script>
+      </div>
 
 
 
