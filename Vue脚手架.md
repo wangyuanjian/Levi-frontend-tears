@@ -35,10 +35,27 @@
         npm run serve
     - 进入 `cmd` 显示的网址
       - ![](../image/Snipaste_2021-12-26_10-20-01.png)
+4. 项目结构
+    - ![](../image/Snipaste_2021-12-26_10-25-26.png)
+    - `babel.config.js`: 不需要修改
+    - `package.json`: npm 项目都有的文件, 记录项目的一些信息
+    - `package-lock.json`: 包版本文件. 里面记录了各个包和对应依赖的版本, 下载地址等, 方便再次安装到指定版本等.
+    - `readme.md`: 项目说明
+5. `src`
+    - `main.js`: 该文件是整个项目的入口文件 
+    - `assets`: 存放静态资源(图片等)文件夹
+    - `components`: 所有自己写的组件都要放在这个目录
+6. `public`: 打包后的文件
+    - `favicon.ico`: 页签图标
+    - `index.html`: 主页面
+      - ```html
+        <!-- 针对 IE 浏览器的特殊配置, 意在告诉IE浏览器以最高渲染级别渲染页面 -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      - ```html
+        <!-- 开启移动端的理想视口 -->
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-
-
-
+        
 
 
 
