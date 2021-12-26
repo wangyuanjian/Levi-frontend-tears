@@ -365,7 +365,7 @@
         <script src="../js/vue.js"></script>
         <script src="./033main.js"></script>
       </div>
-
+4. 其实写完上面这几步骤, 脚手架的基本文件和作用就呼之欲出了
 
 
 
