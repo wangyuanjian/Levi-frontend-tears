@@ -2,6 +2,7 @@
 
 - [Vue cli 脚手架](#vue-cli-脚手架)
   - [安装与项目分析](#安装与项目分析)
+  - [render 函数](#render-函数)
 
 <!-- /TOC -->
 
@@ -54,9 +55,37 @@
       - ```html
         <!-- 开启移动端的理想视口 -->
         <meta name="viewport" content="width=device-width,initial-scale=1.0">
+### render 函数
+1. 正常情况下, 我们会使用没有 render 的配置项. 如下, 但是会报错
+    - ```js
+      new Vue({
+        // render: h => h(App),
+        template: `
+          <div>
+            <App></App>
+          </div>
+        `
+      }).$mount('#app')
+    - ![](../image/Snipaste_2021-12-27_22-23-18.png)
+    - 报错的内容: 我们使用的 `Vue` 版本是不包含模板编译器的运行时版本. 并且报错信息给我们指明了两条路, 要么将模板放入 `render` 函数提前编译, 要么使用包含编译器的 `Vue` 版本
+2. 如果我们在 `import Vue from 'vue'` 中摁住 `Ctrl` 并点击 `vue`, 就可以直接进入 `vue` 所在
+    - ![](../image/Snipaste_2021-12-27_22-32-39.png)
+    - 在 `package.json` 中, `module` 指明了要进入的 `js` 文件
+    - ![](../image/Snipaste_2021-12-27_22-35-05.png)
+    - 所以我们可以在引入 vue 时指定引入的版本, 从而解决上面的问题, 就是第二个方法
+    - ```js
+      import Vue from 'vue/dist/vue.js'
 
-        
+      Vue.config.productionTip = false
 
+      new Vue({
+        template: `
+          <div>
+            <h1>你好</h1>
+          </div>
+        `
+      }).$mount('#app')
+    - 
 
 
 
