@@ -132,8 +132,12 @@
         render: h => h(App),
       - 🐖注意: 上面使用了 `lambda` 表达式的简写形式
 ### 修改脚手架默认配置
-1. 
-
+1. Vue 将所有重要的配置文件都隐藏了. 输入 `vue inspect > output.js` 就可以将所有配置信息输出到 `output.js`. 输入的内容是一个对象, 所以在 js 文件中会飘红报错, 手动在对象前加 `const a = ` 就行了.
+    - ![](../image/Snipaste_2021-12-28_22-26-00.png)
+    - 从上图我们就知道入口文件究竟是哪个了!
+    - 究竟哪些配置可以修改, [☞看这里](https://cli.vuejs.org/zh/config/)
+2. `vue.config.js`
+    - 
 
 
 
