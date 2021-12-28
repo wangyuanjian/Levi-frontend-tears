@@ -86,7 +86,44 @@
         `
       }).$mount('#app')
     - 
-
+3. `render`
+    - 是一个函数. 而且这个函数必须有返回值, 且接收一个函数作为参数. 参数函数的名字是 `createElement`
+    - 虚拟 `DOM`
+      - `Vue` 通过建立一个虚拟 DOM 来追踪自己要如何改变真实 `DOM`.
+      - `createElement` 返回的不是一个实际的 `DOM` 元素, 更准确的是 `createNodeDescription`, `createNodeDescription` 告诉 `Vue` 页面上需要渲染什么样的节点包括其子节点的描述信息. 我们将这样的节点称为`虚拟节点(virtual node), VNode`, `虚拟 DOM` 是我们对由 `Vue` 组件树建立起来的整个 `VNode` 树的称呼
+4. `createElement`
+    - 这个函数接收三个参数
+      - 一个 `HTML` 标签名或组件选项对象
+      - 一个与模板中 `attribute` 对应的数据对象
+        - 比如, 我们可以指定原生的 `style`, `class`, `id` 这些属性, 也可以指定 `Vue` 中独有的 `key`, `ref` 等
+      - 子级虚拟节点 (`VNodes`)
+        - 就是子节点, 但是说白了, 子节点可以是文本节点, 也可以是由 `createElement` 创建的节点
+    - 下面演示一个简单的例子, 创建一个 `h1` 节点, 设置背景色为 `skyblue`, 设置子元素为文本节点 `Hello, World`
+      - ```js
+        render(createElemet) {
+          let h1Style = {
+            backgroundColor: 'skyblue'
+          }
+          let vNode = createElemet('h1', {style: h1Style}, 'Hello, World');
+          console.log(vNode);
+          return vNode;
+        }
+      - ![](../image/Snipaste_2021-12-28_20-19-12.png)
+      - ![](../image/Snipaste_2021-12-28_20-20-23.png)
+    - 下面再写一个例子, 这个例子使用 `createElemet` 创建子元素. 创建 `ul` 的子元素 `li`, 并且给每个 `li` 增加点击事件
+      - ```js
+        render(createElemet) {
+          let personList = ['zhang', 'li', 'wang'];
+          let vNode = createElemet('ul', {},
+            personList.map(name => createElemet('li', {
+              on: {
+                click: function (event) { console.log(event.target.textContent); }
+              }
+            }, name))
+          );
+          return vNode;
+        }
+      - ![](../image/Snipaste_2021-12-28_20-26-33.png)
 
 
 
