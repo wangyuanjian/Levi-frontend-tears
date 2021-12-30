@@ -4,6 +4,7 @@
   - [安装与项目分析](#安装与项目分析)
   - [render 函数](#render-函数)
   - [修改脚手架默认配置](#修改脚手架默认配置)
+  - [ref 属性](#ref-属性)
 
 <!-- /TOC -->
 
@@ -140,7 +141,35 @@
     - 是一个可选的配置文件， 如果项目的根目录(和 `package.json` 同级) 存在这个文件, 那么它将会被 `@vue/cli-service` 自动加载. 这个文件应该导出一个包含了选项的对象
       - `例1`: 修改入口文件地址
       - ![](../image/Snipaste_2021-12-29_22-46-30.png)
-
+### ref 属性
+1. 被用来给元素或子组件注册引用信息.
+    - 引用信息将会注册在父组件的 `$refs` 对象上. 如果使用在普通 DOM 上, 引用信息就会注册在当期组件上.
+    - 如果在普通的 `DOM` 元素上使用, 引用指向的就是 `DOM` 元素; 如果用在子组件上, 引用就指向`组件实例`
+2. `DOM` 元素上使用
+    - ```html
+      <div>
+        <h2>学校名称: {{schoolName}}</h2>
+        <h2 ref="addressRef">学校地址: {{address}}</h2>
+        <button @click="showName">showName</button>
+        <button @click="showDOM">show DOM</button>
+      </div>
+    - ```js
+      showDOM() {
+        console.log(this.$refs.addressRef);
+      }
+    - ![](../image/Snipaste_2021-12-30_22-32-30.png)
+    - 实际上, `ref` 属性并没有转换为 `HTML` 标准的 `attribute` 显示在页面上哦
+    - ![](../image/Snipaste_2021-12-30_22-37-20.png)
+3. `组件` 上使用
+    - ```html
+      <Student ref="student"></Student>
+      <button @click="showComponentRef">showComponentRef</button>
+    - ```js
+      showComponentRef() {
+        console.log(this.$refs.student);
+      }
+    - ![](../image/Snipaste_2021-12-30_22-35-12.png)
+4. `$refs` 只会在组件渲染完成之后生效, 并且它们不是响应式的. 这仅作为一个用于直接操作子组件的“逃生舱”——你应该避免在`模板`或`计算属性`中访问 `$refs`
 
 
 
