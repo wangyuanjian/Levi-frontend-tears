@@ -5,6 +5,8 @@
   - [render 函数](#render-函数)
   - [修改脚手架默认配置](#修改脚手架默认配置)
   - [ref 属性](#ref-属性)
+- [props 属性](#props-属性)
+  - [简单接收](#简单接收)
 
 <!-- /TOC -->
 
@@ -170,6 +172,90 @@
       }
     - ![](../image/Snipaste_2021-12-30_22-35-12.png)
 4. `$refs` 只会在组件渲染完成之后生效, 并且它们不是响应式的. 这仅作为一个用于直接操作子组件的“逃生舱”——你应该避免在`模板`或`计算属性`中访问 `$refs`
+## props 属性
+1. 需求: 同样使用 Student 组件, 但是展示的姓名和地址. 这里要做到组件的复用, 相同组件结构相同, 但是使用组件时传递的数据不同
+### 简单接收
+1. `props` 为数组
+    - 在使用组件标签时, 加上自定义的 `attribute`
+    - ```html
+      <Student schoolName="TSU" address="beijing" age="100"></Student>
+      <Student schoolName="HKU" address="Hong Kong" age="100"></Student>
+    - 使用全新的配置项 `props` 用来接收传入的数据
+    - ```js
+      {
+        props: ['schoolName', 'address', 'age'],
+        name: 'Student',
+        data() {
+          return {
+            msg: '我是一个尚硅谷学生'
+          }
+        },
+      }
+    - ![](../image/Snipaste_2021-12-31_20-41-34.png)
+2. 传入一个数字
+    - 如果我们在使用传入的 `age` 时将其 `+1`, 其结果并不会变成 `101`, 而是会变成 `1001`, 因为这时传入的 `100` 是一个字符串
+    - 如果想要传入一个数字, 就需要使用 `v-bind` 告诉 `Vue` 传递的是一个 `js` 表达式, 而不是字符串
+    - ```html
+      <Student schoolName="TSU" address="beijing" age="100"></Student>
+      <!-- 正确传递数字 -->
+      <Student schoolName="HKU" address="Hong Kong" :age="100"></Student>
+    - ```html
+      <h2>学校历史: {{age+1}}</h2>
+    - ![](../image/Snipaste_2021-12-31_20-44-46.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
