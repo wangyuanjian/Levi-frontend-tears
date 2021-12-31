@@ -192,20 +192,67 @@
         },
       }
     - ![](../image/Snipaste_2021-12-31_20-41-34.png)
-2. 传入一个数字
+2. 传入一个 `Number` 值
     - 如果我们在使用传入的 `age` 时将其 `+1`, 其结果并不会变成 `101`, 而是会变成 `1001`, 因为这时传入的 `100` 是一个字符串
     - 如果想要传入一个数字, 就需要使用 `v-bind` 告诉 `Vue` 传递的是一个 `js` 表达式, 而不是字符串
     - ```html
       <Student schoolName="TSU" address="beijing" age="100"></Student>
       <!-- 正确传递数字 -->
-      <Student schoolName="HKU" address="Hong Kong" :age="100"></Student>
+      <Student schoolName="HKU" address="Hong Kong" :age="100"></Student>`
     - ```html
       <h2>学校历史: {{age+1}}</h2>
     - ![](../image/Snipaste_2021-12-31_20-44-46.png)
-
-
-
-
+3. 传入一个 `Boolean` 值
+    - 如果 `prop` 没有值, 表示值为 `true`
+    - 如果 `prop` 有值, 仍需要使用 `v-bind` 表示传入的是表达式而不是字符串
+    - ```html
+      <!-- 传递boolean -->
+      <Student schoolName="TSU" inHK></Student>
+      <Student schoolName="HKU" :inHK="false"></Student>
+    - 🐖注意: 如果第一种写法想要生效, 不能使用数组类型的 `props`, 必须指定接收的 `prop` 类型. 否则接收到的数据就是 `""(空串)`
+    - ```js
+      props: {
+        schoolName: String,
+        address: String, 
+        age: Number,
+        inHK: Boolean
+      },
+4. 传入一个 `Array` 值
+    - 只能使用 `v-bind`
+    - ```html
+      <Student schoolName="TSU" inHK :freeOpenDay="['Sat', 'Sun']"></Student>
+    - ```js
+      props: ['schoolName', 'address', 'age', 'inHK', `freeOpenDay`],
+    - ```html
+      <h2>免费参观日: {{freeOpenDay[0]}}</h2>
+5. 传入一个对象
+    - 只能使用 `v-bind`
+    - ```html
+      <Student schoolName="TSU" inHK :leader="{name: 'Peter', age: 19}"></Student>
+    - ```js
+      props: ['schoolName', 'address', 'age', 'inHK', `freeOpenDay`, 'leader']
+    - ```html
+      <h2>校长: {{leader.name}}</h2>
+    - ![](../image/Snipaste_2021-12-31_21-23-53.png)
+6. 传入一个对象所有属性
+    - 只能使用 `v-bind`
+    - 我们提前定义一个对象
+    - ```js
+      data() {
+        return {
+          subjects: {
+            math: 'good',
+            cs: 'best'
+          }
+        }
+      }
+    - ```html
+      <Student schoolName="TSU" inHK :subjects="subjects"></Student>
+    - ```js
+      props: ['schoolName', 'address', 'age', 'inHK', `freeOpenDay`, 'leader', 'subjects'],
+    - ```html
+      <h2>科目: {{Object.keys(subjects)}}</h2>
+    - ![](../image/Snipaste_2021-12-31_21-28-13.png)
 
 
 
