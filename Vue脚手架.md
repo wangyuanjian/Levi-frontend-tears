@@ -8,6 +8,8 @@
 - [props 属性](#props-属性)
   - [简单接收](#简单接收)
   - [对象接收](#对象接收)
+  - [完整接收](#完整接收)
+  - [其他注意点](#其他注意点)
 
 <!-- /TOC -->
 
@@ -235,6 +237,8 @@
     - ```html
       <h2>校长: {{leader.name}}</h2>
     - ![](../image/Snipaste_2021-12-31_21-23-53.png)
+    - 我怀疑下面的源码是导致这样的原因, 但是我不很确定
+    - ![](../image/Snipaste_2022-01-01_11-10-22.png)
 6. 传入一个对象所有属性
     - 只能使用 `v-bind`
     - 我们提前定义一个对象
@@ -301,7 +305,7 @@
       <Student schoolName="TSU" inHK :func1="sayName"></Student>
     - 那真是不好意思😅, 压根没有拿到 `this.msg` 的值
     - ![](../image/Snipaste_2022-01-01_10-28-49.png)
-    - 为什么会这样呢? 我们可以打印一下两种方法中 `this` 的值究竟是什么🤨. 显然第一种写法 `this` 是 子组件实例对象, 而第二种写法 `this` 是组件实例对象.
+    - 为什么会这样呢? 我们可以打印一下两种方法中 `this` 的值究竟是什么🤨. 显然第一种写法 `this` 是子组件实例对象, 而第二种写法 `this` 是父组件实例对象.
     - ![](../image/Snipaste_2022-01-01_10-32-33.png)
 ### 对象接收
 1. `props` 为对象
@@ -315,6 +319,48 @@
         leader: Object,
         subjects: Object
       }
+### 完整接收
+1. 完整接收时, 每个属性都可以写如下的配置项
+    - `type`: 可以时原生构造函数中的一种, `String`, `Number`, `Boolean`, `Array`, `Object`, `Date`, `Function`, `Symbol` 
+    - `default`: 为该 `prop` 指定一个默认值. 如果该 `prop` 没有被传入, 则换做用这个值. 对象或数组的默认值必须从一个工厂函数返回.
+    - `required`: 定义该 `prop` 是否是必填项. 在非生产环境中, 如果这个值为 `truthy` 且该 `prop` 没有被传入的, 则一个控制台警告将会被抛出.
+    - `validator`: 自定义验证函数会将该 `prop` 的值作为唯一的参数代入. 在非生产环境下, 如果该函数返回一个 `falsy` 的值 (也就是验证失败), 一个控制台警告将会被抛出. 
+2. 看看改写后的例子
+    - ```js
+      props: {
+        schoolName: {
+          type: String,
+          required: true
+        },
+        address: {
+          type: String,
+        },
+        age: {
+          type: Number,
+        },
+        inHK: {
+          type: Boolean,
+          default: false
+        },
+        freeOpenDay: {
+          type: Array,
+          validator: function(value) {
+            return value !== null && value.length <= 1
+          }
+        },
+        leader: {
+          type: Object
+        },
+        func1: {
+          type: Function
+        }
+      }
+    - ```html
+      <Student schoolName="TSU" inHK :func1="sayName()" :freeOpenDay="['Sat', 'Sun', 'Mon']"></Student>
+    - ![](../image/Snipaste_2022-01-01_11-23-45.png)
+### 其他注意点
+1. 
+
 
 
 
