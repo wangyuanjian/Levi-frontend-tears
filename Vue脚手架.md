@@ -7,6 +7,7 @@
   - [ref 属性](#ref-属性)
 - [props 属性](#props-属性)
   - [简单接收](#简单接收)
+  - [对象接收](#对象接收)
 
 <!-- /TOC -->
 
@@ -253,7 +254,53 @@
     - ```html
       <h2>科目: {{Object.keys(subjects)}}</h2>
     - ![](../image/Snipaste_2021-12-31_21-28-13.png)
-
+7. 传入一个 `Function` 函数 - `data` 定义
+    - 当然也要用 `v-bind`. 我们要先定义一个在 `data` 函数
+    - ```js
+      data() {
+        return {
+          sayName: function() {
+            alert(this.msg);
+            return "hhh";
+          },
+        };
+      }
+    - ```html
+      <Student schoolName="TSU" inHK :func1="sayName"></Student>
+    - 接收函数
+    - ```html
+      <!-- <h2>科目: {{Object.keys(subjects)}}</h2> -->
+      <h2>执行了一个函数: {{func1()}}</h2>
+    - ```js
+      props: ['schoolName', 'address', 'age', 'inHK', `freeOpenDay`, 'leader', 'subjects', 'func1'],
+    - 🐖注意: 我没有向组件传递 `subjects` 参数, 所以我在组件模板中注掉那一行, 不然就会报错
+    - ![](../image/Snipaste_2022-01-01_09-59-03.png)
+8. 传入一个 `Function` 函数 - `methods` 定义
+    - 如果我们需要在 `methods` 定义一个函数, 那么写法和 `data` 中定义有点点不同
+    - 第一, 定义时必须有返回值
+    - ```js
+      sayName() {
+        return function() {
+          alert(this.msg);
+          return "hhh";
+        };
+      }
+    - 第二, 传参时, 必须显示调用该方法, 即使用函数调用运算符 `()`
+    - ```js
+      <Student schoolName="TSU" inHK :func1="sayName()"></Student>
+    - 如果不写函数调用运算符, 我们可以看看返回的结果是什么...我需要整理一下 // todo
+### 对象接收
+1. `props` 为对象
+    - ```js
+      props: {
+        schoolName: String,
+        address: String, 
+        age: Number,
+        inHK: Boolean,
+        freeOpenDay: Array,
+        leader: Object,
+        subjects: Object
+      }
 
 
 
