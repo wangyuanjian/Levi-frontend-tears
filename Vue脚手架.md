@@ -359,10 +359,20 @@
       <Student schoolName="TSU" inHK :func1="sayName()" :freeOpenDay="['Sat', 'Sun', 'Mon']"></Student>
     - ![](../image/Snipaste_2022-01-01_11-23-45.png)
 ### 其他注意点
-1. 
-
-
-
+1. 如果我们接收一个没有传入的 `prop`, 那么其值将为 `undefined`
+2. 不允许修改传入的 `prop`, 否则报错
+    - ![](../image/Snipaste_2022-01-01_13-20-58.png)- 大意就是, 避免直接修改 `prop` 因为父组件重新渲染的时候更改的值将会被覆盖. 建议我们使用一个基于 `prop` 的计算属性或者 `data`
+    - 所以, 划重点❗❗❗`Vue` 对 `prop` 的处理在 `data` 之前, 所以 `data` 可以依赖 `prop` 的数据, 反之不行❗❗❗
+3. 不能使用 `key`, `ref` 等 `Vue` 特殊属性
+    - 如果要看到下面的报错, 不仅要传递 `prop`, 而且在 `props` 中要接收
+    - ![](../image/Snipaste_2022-01-01_13-38-54.png)
+4. `prop` 的大小写
+    - `HTML` 中的 `attribute` 时大小写不敏感的, 所以浏览器会把所有大写字符解释为小写字符. 如果我们在传递 `prop` 时使用 `kebab-cas`e (短横线分隔命名), 那么接收时就要使用 `camelCase` 驼峰命名.
+    - ```html
+      <Student is-famous='true'></Student>
+    - ```js
+      props: { isFamous: String }
+5. 
 
 
 
