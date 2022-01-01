@@ -288,7 +288,21 @@
     - 第二, 传参时, 必须显示调用该方法, 即使用函数调用运算符 `()`
     - ```js
       <Student schoolName="TSU" inHK :func1="sayName()"></Student>
-    - 如果不写函数调用运算符, 我们可以看看返回的结果是什么...我需要整理一下 // todo
+    - 首先, 这样一定是对的, 看截图
+    - ![](../image/Snipaste_2022-01-01_10-26-46.png)
+    - 但是, 如果你说, `sayName` 本身就是一个方法, 那我完全不需要 `return`, 直接传 `sayName` 进去, 就像下面的写法
+    - ```js
+      sayName() {
+        console.dir(this);
+        alert(this.msg);
+        return "hhh";
+      },
+    - ```html
+      <Student schoolName="TSU" inHK :func1="sayName"></Student>
+    - 那真是不好意思😅, 压根没有拿到 `this.msg` 的值
+    - ![](../image/Snipaste_2022-01-01_10-28-49.png)
+    - 为什么会这样呢? 我们可以打印一下两种方法中 `this` 的值究竟是什么🤨. 显然第一种写法 `this` 是 子组件实例对象, 而第二种写法 `this` 是组件实例对象.
+    - ![](../image/Snipaste_2022-01-01_10-32-33.png)
 ### 对象接收
 1. `props` 为对象
     - ```js
