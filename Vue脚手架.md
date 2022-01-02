@@ -4,12 +4,13 @@
   - [安装与项目分析](#安装与项目分析)
   - [render 函数](#render-函数)
   - [修改脚手架默认配置](#修改脚手架默认配置)
-  - [ref 属性](#ref-属性)
+- [ref 属性](#ref-属性)
 - [props 属性](#props-属性)
   - [简单接收](#简单接收)
   - [对象接收](#对象接收)
   - [完整接收](#完整接收)
   - [其他注意点](#其他注意点)
+- [混入(Mixin)](#混入mixin)
 
 <!-- /TOC -->
 
@@ -146,7 +147,7 @@
     - 是一个可选的配置文件， 如果项目的根目录(和 `package.json` 同级) 存在这个文件, 那么它将会被 `@vue/cli-service` 自动加载. 这个文件应该导出一个包含了选项的对象
       - `例1`: 修改入口文件地址
       - ![](../image/Snipaste_2021-12-29_22-46-30.png)
-### ref 属性
+## ref 属性
 1. 被用来给元素或子组件注册引用信息.
     - 引用信息将会注册在父组件的 `$refs` 对象上. 如果使用在普通 DOM 上, 引用信息就会注册在当期组件上.
     - 如果在普通的 `DOM` 元素上使用, 引用指向的就是 `DOM` 元素; 如果用在子组件上, 引用就指向`组件实例`
@@ -398,10 +399,67 @@
       <button @click="subjects = {a: 1}">修改父组件传入的 Object</button>
     - 为什么下面的不会生效呢? 我的理解是, 因为 prop 本身没有响应式, 但是其属性有响应式 // todo
     - ![](../image/Snipaste_2022-01-02_08-34-28.png)
-
-
-
-
+## 混入(Mixin)
+1. 混入 (`mixin`) 提供了一种非常灵活的方式, 来分发 `Vue` 组件中的可复用功能. 一个混入对象可以包含任意组件选项
+    - 比如两个组件都使用了打印名称这个方法. 为了代码复用, 不希望一个方法出现多次
+    - ![](../image/Snipaste_2022-01-02_09-13-51.png)
+2. 使用混入
+    - 创建 `mixin.js` 并暴露混入对象
+    - ```js
+      export const mixin = {
+        methods: {
+          showAddress() {
+            console.log(this.address);
+          }
+        },
+      }
+    - 分别在需要的组件中引入并配置该对象. 🐖注意, 这里使用了全新的配置项 `mixins`
+    - ```js
+      import {mixin} from '../mixin.js'
+      export default {
+        name: 'Student',
+        data() {
+          return {
+            studentName: 'Wang',
+            address: 'CHINA'
+          }
+        },
+        mixins: [mixin]
+      }
+    - 
+3. 除了可以配置 `methods`, 我们还可以配置 `data`, 生命周期钩子等等. 当在 `mixin` 的配置和组件配置冲突时, 会出现不同的解决策略
+    - `data` 对象在内部会进行递归合并，并在发生冲突时以组件数据优先
+      - ```js
+        import {mixin, mixinData} from '../mixin.js'
+        export default {
+          name: 'Student',
+          data() {
+            return {
+              studentName: 'Wang',
+              address: 'CHINA',
+              x: 2
+            }
+          },
+          mixins: [mixin, mixinData]
+        }
+      - ```js
+        export const mixin = {
+          methods: {
+            showAddress() {
+              console.log(this.address);
+            }
+          },
+        }
+        export const mixinData = {
+          data() {
+            return {
+              x: 1
+            }
+          }
+        }
+      - ![](../image/Snipaste_2022-01-02_09-31-36.png)
+      - 在这个例子中, `mixin.js` 暴露了两个对象哦! 而且最终的结果以组件数据有限
+  
 
 
 
