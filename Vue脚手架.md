@@ -358,6 +358,24 @@
     - ```html
       <Student schoolName="TSU" inHK :func1="sayName()" :freeOpenDay="['Sat', 'Sun', 'Mon']"></Student>
     - ![](../image/Snipaste_2022-01-01_11-23-45.png)
+3. 多个可能的类型.
+    - 如果 `prop` 既可以是 `String`, 也可以是 `Number`, 那么可以用数组指定该 `prop`
+    - ```js
+      schoolName: {
+        type: [String, Number],
+        required: true
+      }
+4. 对象或数组的默认值必须从一个工厂函数获取
+    - ```js
+      subjects: {
+        type: Object,
+        default: function () {
+          return {
+            history: 'good',
+            physics: 'not bad'
+          }
+        }
+      }
 ### 其他注意点
 1. 如果我们接收一个没有传入的 `prop`, 那么其值将为 `undefined`
 2. 不允许修改传入的 `prop`, 否则报错
@@ -367,13 +385,19 @@
     - 如果要看到下面的报错, 不仅要传递 `prop`, 而且在 `props` 中要接收
     - ![](../image/Snipaste_2022-01-01_13-38-54.png)
 4. `prop` 的大小写
-    - `HTML` 中的 `attribute` 时大小写不敏感的, 所以浏览器会把所有大写字符解释为小写字符. 如果我们在传递 `prop` 时使用 `kebab-cas`e (短横线分隔命名), 那么接收时就要使用 `camelCase` 驼峰命名.
+    - `HTML` 中的 `attribute` 时大小写不敏感的, 所以浏览器会把所有大写字符解释为小写字符(这句话的意思并不代表我们的传递数据的 `prop` 也是这样, 我们怎样传也必须怎样接). 如果我们在传递 `prop` 时使用 `kebab-cas`e (短横线分隔命名), 那么接收时就要使用 `camelCase` 驼峰命名.
     - ```html
       <Student is-famous='true'></Student>
     - ```js
       props: { isFamous: String }
-5. 
-
+5. 数组和对象通过引用传入的, 所以对一个数组或对象类型的 prop 来说, 在子组件中改变这个对象或数组本身 **`将会`** 影响父组件的状态哦!!!
+    - ```js
+      <button @click="subjects.math = 'kkk'">修改父组件传入的 Object</button>
+    - 上面的修改是可以的, 如果我们写成下面这样, 则不会生效
+    - ```js
+      <button @click="subjects = {a: 1}">修改父组件传入的 Object</button>
+    - 为什么下面的不会生效呢? 我的理解是, 因为 prop 本身没有响应式, 但是其属性有响应式 // todo
+    - ![](../image/Snipaste_2022-01-02_08-34-28.png)
 
 
 
