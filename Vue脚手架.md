@@ -459,7 +459,18 @@
         }
       - ![](../image/Snipaste_2022-01-02_09-31-36.png)
       - 在这个例子中, `mixin.js` 暴露了两个对象哦! 而且最终的结果以组件数据有限
-  
+    - 同名`钩子函数`将被合并为一个数组, 因此都将被调用. 另外, 混入对象的钩子将在组件自身钩子之前调用.
+      - ![](../image/Snipaste_2022-01-02_17-27-47.png)
+    - 值为对象的选项, 如 `methods`, `components` 和 `directives`, 将被合并为同一个对象. 两个对象键名冲突时, 取`组件对象`的键值对.
+5. 全局混入
+    - 混入也可以全局注册. 一旦使用全局混入, 它将影响`每一个`之后创建的 Vue 实例 (包括第三方组件)
+    - 使用步骤
+      - `import` 混入, 并使用新的 API: `Vue.mixin()`
+      - ```js
+        import {mixin, mixinData} from './mixin'
+        Vue.mixin(mixin);
+        Vue.mixin(mixinData);
+6. 
 
 
 
