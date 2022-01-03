@@ -75,13 +75,53 @@
         border: 1px solid $border_color;
       }
 ### 规则嵌套
-1. 
+1. css 中, 如果我们要写一大串指向页面中同一块的样式时, 往往需要一遍又一遍写同一个 `ID`, 如下
     - ![](../image/Snipaste_2022-01-03_00-33-24.png)
-
-
-
-
-
+    - `sass` 可以让你只写一遍且使样式可读性更高
+    - ```scss
+      #content {
+        article {
+          h1 {
+            color: #333;
+          }
+          p {
+            margin-bottom: 1.4em;
+          }
+        }
+        aside {
+          background-color: #eee;
+        }
+      }
+    - 这样的嵌套关系和 `HTML` 中的嵌套关系很像, 真的~
+    - `sass` 将 `#content` (父级) 这个 `id` 放在 `article` 选择器 (子级) 前边, 若 `article` 还有子选择器, 则重复这一步骤即可展开.
+2. 父选择器的标识符 **`&`**
+    - 大多数情况这种简单的嵌套都没问题, 但是有些场景不行, 比如应用一个类似 `:hover` 的伪类
+      - ```scss
+        #content {
+          aside {
+            background-color: #eee;
+            :hover {
+              color: #f60;
+            }
+          }
+        }
+      - 编译后的结果就是
+      - ```scss
+        #content aside :hover{
+          background-color: #eee;
+        }
+    - 父选择器可以放在任何一个选择器可出现的地方.
+      - 当包含父选择器标识符的嵌套规则被打开时, 它不会像后代选择器那样进行拼接, 而是 `&` 被父选择器直接替换
+      - ```scss
+        #content {
+          aside {
+            background-color: #eee;
+            &:hover {
+              color: #f60;
+            }
+          }
+        }
+      - 
 
 
 
