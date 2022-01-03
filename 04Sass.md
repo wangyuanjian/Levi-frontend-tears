@@ -5,6 +5,7 @@
   - [语法](#语法)
     - [变量](#变量)
     - [规则嵌套](#规则嵌套)
+    - [属性嵌套](#属性嵌套)
 
 <!-- /TOC -->
 
@@ -121,7 +122,133 @@
             }
           }
         }
-      - 
+3. 群组选择器
+    - 嵌套也能很好的处理群组选择器的情况
+    - 比如, 我们需要为 `.container` 中每个元素都设置 `margin`, 一般的 `css` 是这样写的
+      - ```html
+        <div class="container">
+          <h1>h1</h1>
+          <h2>h2</h2>
+          <h3>h3</h3>
+        </div>
+      - ```css
+        .container h1, .container h2, .container h3 {
+          margin-left: 1100px0px
+        }
+      - ```scss
+        .container {
+          h1, h2, h3 {
+            margin-left: 100px;
+          }
+        }
+    - 或者这样, 我们需要为不同容器中的 `a` 元素设置样式
+      - ```html
+        <div class="box1"><a href="#">hhh</a></div>
+        <div class="box2"><a href="#">hhh</a></div>
+      - ```css
+        .box1 a, .box2 a {
+          text-decoration: none;
+        }
+      - ```scss
+        .box1, .box2 {
+          a {
+            text-decoration: none;
+          }
+        }
+      - 🐖注意: 群组选择器的规则嵌套生成的 `css`. 虽然`sass` 让你的样式表看上去很小, 但实际生成的 `css` 却可能非常大, 这会降低网站的速度
+4. 子组合选择器和同层组合选择器
+    - ```scss
+      article {
+        ~ article { border-top: 1px dashed #ccc }
+        > section { background: #eee }
+        dl > {
+          dt { color: #333 }
+          dd { color: #555 }
+        }
+        nav + & { margin-top: 0 }
+      }
+    - ```css
+      article ~ article { border-top: 1px dashed #ccc }
+      article > footer { background: #eee }
+      article dl > dt { color: #333 }
+      article dl > dd { color: #555 }
+      nav + article { margin-top: 0 }
+### 属性嵌套
+1. 除了 `CSS` 选择器, 属性也可以进行嵌套
+    - 比如频繁编写 `border-*` 类型的属性会很麻烦. 可以使用下面的形式
+    - ```scss
+      .box3 {
+        border: {
+          style: solid;
+          width: 1px;
+          color: #ccc;
+        }
+      }
+    - 解析后就是这样
+    - ```css
+      .box3 {
+        border-style: solid;
+        border-width: 1px;
+        border-color: #ccc;
+      }
+    - 嵌套属性的规则是这样的: 把属性名从中划线 `-` 的地方断开, 在根属性后边添加一个`冒号:`, 紧跟一个 `{ }` 块, 把子属性部分写在这个 `{ }` 块中
+2. 属性的缩写形式和例外规则
+    - 比如, 我们已经使用缩写指明 border, 但是想
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
