@@ -241,11 +241,35 @@
       $my-color1: red !default;
     - 所以最后生效的是 `yellow`. 
     - 🐖注意: 这与 `index` 中声明变量和 `import` 文件的顺序没有关系, 即便先 `import` 再声明变量也没差
-
-
-
-
-
+4. 嵌套导入
+    - 与原生 `css` 不同, `sass` 允许 `@import` 命令写在 `css` 规则块内. 在这种导入方式下, 生成对应的 `css` 文件时, 局部文件会被直接插入到 `css` 规则导入它的地方
+    - 一个局部文件 `_04_partial2.scss`
+    - ```scss
+      .hello {
+        color: salmon;
+        font-size: 2em;
+      }
+    - 另一个文件, 导入局部文件
+    - ```scss
+      .box6 {
+        @import './04_partial2';
+      }
+    - 最后结果
+    - ![](../image/Snipaste_2022-01-04_21-56-01.png)
+4. 导入原生 `css` 文件
+    - 以下三种情况会生成原生的 `css@import`, 尽管这回造成浏览器解析 `css` 时的额外下载
+      - 被导入文件的名字以 `.css` 结尾
+      - 被导入文件是一个 `URL` 地址, 由此可以使用谷歌字体 `API` 提供的相应服务
+      - 被导入文件的名字时 `css` 的 `url()` 值
+    - 创建一个 css 文件 `05_css_import.css`
+    - ```css
+      .box7 .world {
+        color: sandybrown;
+        font-size: 1.5em;
+      }
+    - ```scss
+      @import './05_css_import.css';
+    - ![](../image/Snipaste_2022-01-04_22-06-50.png)
 
 
 
