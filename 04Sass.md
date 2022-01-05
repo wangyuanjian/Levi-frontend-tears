@@ -9,6 +9,7 @@
     - [导入 SASS 文件](#导入-sass-文件)
   - [注释](#注释)
     - [mixin 混合](#mixin-混合)
+    - [给混合器传参](#给混合器传参)
 
 <!-- /TOC -->
 
@@ -320,9 +321,24 @@
         @include no-bullets;
       }
     - ![](../image/Snipaste_2022-01-05_22-11-33.png)
-
-
-
+### 给混合器传参
+1. 定义带有参数的混合器
+    - ```scss
+      @mixin box($width, $height, $bgColor) {
+        width: $width;
+        height: $height;
+        background-color: $bgColor;
+      }
+2. 调用带有参数的混合器
+    - ```scss
+      .box9 {
+        @include box(50px, 50px, rgb(92, 177, 67));
+      }
+      .box10 {
+        @include box(100px, 100px, #f60);
+      }
+    - ![](../image/Snipaste_2022-01-05_22-30-31.png)
+    
 
 
 
