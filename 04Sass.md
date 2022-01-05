@@ -8,6 +8,7 @@
     - [属性嵌套](#属性嵌套)
     - [导入 SASS 文件](#导入-sass-文件)
   - [注释](#注释)
+    - [mixin 混合](#mixin-混合)
 
 <!-- /TOC -->
 
@@ -279,9 +280,46 @@
         // 我不会出现
         border: 1px solid $my-color1; /*我会出现*/
       }
-
-
-
+### mixin 混合
+> 我们可以用变量来处理小小的类似样式, 但是如果样式变得复杂且要大段大段重复样式代码, 变量就不能再胜任, 而混合就是实现打断样式重用而来的.
+1. 定义混合 `@mixin`
+    - 使用 `@mixin` 定义混合.
+    - ```dcss
+      @mixin rounded {
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+      }
+2. 使用混合
+    - 通过 `@include` 使用混合器, 将混合中的所有央视提取出来放在 @include 被调用的地方
+    - ```scss
+      .box8 {
+        width: 100px;
+        height: 100px;
+        border: 1px solid salmon;
+        @include rounded;
+      }
+    - 最终样式
+    - ![](../image/Snipaste_2022-01-05_22-00-29.png)
+3. 何时使用混合
+    - 判断一组属性是否应该组合成一个混合器, 一条经验法则就是你能否为这个混合器想出一个好的名字. 如果你能找到一个很好的短名字来描述这些属性修饰的样式, 那么往往能够构造一个合适的混合器
+4. 混合中的 CSS 规则
+    - 混合中不仅可以包含属性, 也可以包含 CSS 规则, 包含选择器和选择器中的属性
+    - ```scss
+      @mixin no-bullets {
+        list-style: none;
+        li {
+          list-style-image: none;
+          list-style-type: none;
+          margin-left: 0px;
+        }
+      }
+    - ```scss
+      ul.plain {
+        color: #444;
+        @include no-bullets;
+      }
+    - ![](../image/Snipaste_2022-01-05_22-11-33.png)
 
 
 
