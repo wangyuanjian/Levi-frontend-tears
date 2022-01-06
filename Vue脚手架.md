@@ -11,6 +11,9 @@
   - [完整接收](#完整接收)
   - [其他注意点](#其他注意点)
 - [混入(Mixin)](#混入mixin)
+- [插件](#插件)
+  - [开发插件](#开发插件)
+  - [使用插件](#使用插件)
 
 <!-- /TOC -->
 
@@ -470,10 +473,51 @@
         import {mixin, mixinData} from './mixin'
         Vue.mixin(mixin);
         Vue.mixin(mixinData);
-6. 
+## 插件
+1. 插件通常为 `Vue` 添加全局功能, 一般有以下功能范围
+    - 添加全局方法或 `property`
+    - 添加全局资源: 指令/过滤器/过渡等
+    - 通过全局混入添加组件
+    - 添加 `Vue` 实例方法, 通过把它们添加到 `Vue.prototype` 上实现
+    - 一个库, 提供自己的 `API`, 同时提供上面提到的一个或多个功能
+### 开发插件
+1. `Vue` 的插件应该暴露一个 `install` 方法, 这个方法的第一个参数是 `Vue` 构造器, 第二个是一个可选的对象
+    - 创建 `plugin.js`
+    - ```js
+      export default {
+        install(Vue, options) {
+          // 1. 添加全局方法 或 property
+          Vue.myGlobalMethod = function() {
 
+          } 
+          // 2. 添加全局资源
+          Vue.directive('my-directive', {
+            bind(el, binding, vnode, oldVnode) {
 
-
+            }
+          })
+          // 3. 注入组件选项
+          Vue.mixin({
+            data() {
+              return {
+                csl: 'hahah'
+              }
+            }
+          })
+          // 4. 添加实例方法
+          Vue.prototype.$myMethod = function (methodOptions) {
+            
+          }
+        }
+      }
+### 使用插件
+1. 通过全局方法 `Vue.use()` 使用插件, 应该在 `new Vue()` 之前完成
+    - ```js
+      import plugin from './plugin'
+      Vue.use(plugin);
+      // Vue.use(plugin, {...})
+2. `Vue` 会自动阻止多次注册相同插件, 即使多次调用也只会注册一次
+3. `Vue` 官方提供的一些插件, 如`vue-router` 在检测到 `Vue` 是可访问的全局变量时会自动调用 `Vue.use()`, 我们应该显示调用 `Vue.use()`
 
 
 
