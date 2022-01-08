@@ -15,6 +15,7 @@
   - [开发插件](#开发插件)
   - [使用插件](#使用插件)
 - [scoped](#scoped)
+- [组件自定义事件](#组件自定义事件)
 
 <!-- /TOC -->
 
@@ -522,8 +523,46 @@
 ## scoped
 1. `<style>` 标签中使用 `scoped` 表示样式仅用于当前 `.vue` 文件, 不会污染其他文件. 如果不加, 样式就会成为全局样式
 2. `<style>` 中另一个属性 `lang` 表示样式的语言, 可以指定 `sass` 或者 `less` 或者 `css`. 不写 `lang` 默认就是 `css`
-
-
+## 组件自定义事件
+1. 子组件点击按钮, 将学生名传递给父组件(`props` 方法)
+    - APP 组件需要定义方法, 并传给子组件
+    - ```js
+      methods: {
+        getStudentName(name) {
+          alert(`APP 组件收到了子组件的学生名: ${name}`)
+        }
+      }
+    - ```html
+      <Student :getStudentName="getStudentName"></Student>
+    - Student 组件要接收并调用该方法
+    - ```js
+      props: ['getStudentName'],
+      name: 'Student',
+      data() {
+        return {
+          schoolName: 'MIT',
+          address: 'USA'
+        }
+      },
+      methods: {
+        sendName() {
+          this.getStudentName(this.schoolName)
+        }
+      },
+    - ```html
+      <button @click="sendName">showName</button>
+    - ![](../image/Snipaste_2022-01-08_09-07-46.png)
+2. 相同的功能(自定义事件)
+    - 使用 `v-on` 指令给组件的实例对象身上绑定名为 `atguigu` 的自定义事件, 该事件被触发时, 自动调用 `getStudentName`
+    - ```html
+      <Student v-on:atguigu="getStudentName"></Student>
+    - 在子组件上, 需要使用 `$emit` 触发自定义事件
+    - ```html
+      <button @click="sendName1" >showName by $emit</button>
+    - ```js
+      sendName1() {
+        this.$emit('atguigu', this.schoolName)
+      }
 
 
 
