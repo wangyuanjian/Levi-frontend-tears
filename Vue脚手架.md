@@ -604,7 +604,37 @@
       beforeDestroy() {
         this.$off();
       }
-
+6. 一个注意点 `this`
+    - 如果我们想给 Student 注册自定义事件, 并在触发事件时将姓名传递给父组件. 可以修改上面的案例
+      - ```js
+        methods: {
+          getStudentName(name) {
+            console.log(this);
+            alert(`APP 组件收到了子组件的学生名: ${name}`)
+            this.studentName = name;
+          }
+        }
+      - ```html
+        <Student :getStudentName="getStudentName" @atguigu="getStudentName"></Student>
+      - 这样写时没有问题的
+    - 但是, 如果使用 `$on` 而且没有在 `methods` 中定义方法, 因为你想说, 反正这个方法只用一次, 不如在传参的时候定义咯, 像下面的写法
+      - ```js
+        mounted() {
+          this.$refs.student.$on('atguigu', function (name) {
+            console.log(this);
+            alert(`APP 组件收到了子组件的学生名: ${name}`)
+            this.studentName = name;
+          })
+        }
+      - ❌失败, 因为这个函数中的 `this` 不再是 `App` 组件实例对象, 而是 `Student` 组件实例对象
+      - 但是如果把函数写成箭头函数就没有这个问题, 因为箭头函数的 `this` 会向外找, 最终和 `mounted` 中的一样
+7. `.native`
+    - 如果我们想给组件绑定原生的 `DOM` 事件, 比如 `click`, 但是下面的写法也会让 `Vue` 认为 `click` 是自定义事件
+    - ```html
+      <Student @click="getStudentName"></Student>
+    - 要这样写
+    - ```html
+      <Student @click.native="getStudentName"></Student>
 
 
 
