@@ -563,6 +563,27 @@
       sendName1() {
         this.$emit('atguigu', this.schoolName)
       }
+    - 🐖注意: 这里我们只传递了一个参数, 实际上可以传多个, 定义 `getStudentName` 的时候可以多定义几个
+    - 🐖注意: 自定义事件只是给绑定的组件实例对象, 比如下面的代码, 第二个组件实例对象就没有 `atguigu` 方法, 因此就无法触发. 
+    - ```html
+      <Student :getStudentName="getStudentName" v-on:atguigu="getStudentName"></Student>
+      <Student :getStudentName="getStudentName"></Student>
+3. `$on()`
+    - 除了在组件标签上绑定, 还可以在调用 `API` 绑定自定义事件哦
+    - ```html
+      <Student ref="student"></Student>
+    - ```js
+      mounted() {
+        this.$refs.student.$on('atguigu', this.getStudentName)
+      }
+4. `$once` `.once`
+    - 如果只希望自定义事件被触发一次, 就可以使用下面的写法
+    - ```js
+      this.$refs.student1.$once('atguigu', this.getStudentName)
+    - 或者
+    - ```html
+      <Student @atguigu.once="getStudentName"></Student>
+5. 
 
 
 
