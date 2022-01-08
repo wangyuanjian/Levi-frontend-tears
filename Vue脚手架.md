@@ -583,7 +583,27 @@
     - 或者
     - ```html
       <Student @atguigu.once="getStudentName"></Student>
-5. 
+5. `$off()`
+    - 解绑组件实例对象身上的自定义事件
+    - ```js
+      unbind() {
+        this.$off('atguigu')
+      }
+    - 如果我们有多个事件呢?
+    - ```js
+      unbind() {
+        this.$off(['atguigu', 'hello'])
+      }
+    - 解绑所有事件
+    - ```js
+      unbind() {
+        this.$off()
+      }
+    - 一般在 `beforeDestory()` 钩子中解绑所有自定义事件
+    - ```js
+      beforeDestroy() {
+        this.$off();
+      }
 
 
 
