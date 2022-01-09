@@ -16,6 +16,7 @@
   - [使用插件](#使用插件)
 - [scoped](#scoped)
 - [组件自定义事件](#组件自定义事件)
+- [全局事件总线](#全局事件总线)
 
 <!-- /TOC -->
 
@@ -635,12 +636,43 @@
     - 要这样写
     - ```html
       <Student @click.native="getStudentName"></Student>
-
-
-
-
-
-
+## 全局事件总线
+1. 这并不是一个 `Vue` 的 `API` 或技术, 只是我们自己用来组件间传值的方式, 是总结出来的经验
+    - ![](../image/Snipaste_2022-01-08_17-11-15.png)
+    - 解析一下道理, 如果 `D` 像给 `A` 传数据, 那么 `A` 在 `X` 上定义自定义事件, 然后 `D` 触发该事件就可以了.
+    - `X` 需要具备哪些条件?
+      - 所有组件都能访问 `X`
+      - `X` 可以调用 `$on`, `$off`, `$emit`
+    - 要满足第一个条件, 很好实现, `Vue.prototype` 是 `vm` 和 `vc` 都可以访问到的
+    - 第二个, 如果要能调用, 必须要知道这些方法都在哪里? 在 `Vue.prototype` 上
+      - ![](../image/Snipaste_2022-01-08_17-45-49.png)
+2. 实现
+    - 我们可以创建使用非单文件组件的方式, 创建一个组件 `d`, 然后将其绑定在 Vue.prototype 上
+    - ```js
+      const Demo = Vue.extend({})
+      Vue.prototype.x = new Demo();
+    - `Vue.extend` 方法返回 `VueComponent`, 一个构造函数, 我们可以通过 `new` 创建组件实例对象
+    - `School` 要想 `Student` 发送组件, 所以 `Student` 需要在 `x` 上注册自定义事件, 然后 `School` 来触发该事件
+      - `Student`
+      - ```js
+        methods: {
+          getSchoolname(name) {
+            console.log(`name from School.vue is ${name}`);
+          }
+        },
+        mounted() {
+          this.x.$on('atguigu', this.getSchoolname);
+        }
+      - School
+      - ```html
+        <button @click="sendName">sendName</button>
+      - ```js
+        methods: {
+          sendName() {
+            this.x.$emit('atguigu', this.schoolName)
+          }
+        },
+3. 优化
 
 
 
