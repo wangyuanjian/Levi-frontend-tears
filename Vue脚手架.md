@@ -689,7 +689,34 @@
         this.x.$off('atguigu');
       }
 ## 消息订阅与发布
-1. 
+1. 是另一种实现全局间组件通信的方法.
+2. 使用步骤
+    - 安装
+      - ```shell
+        npm install pubsub-js
+    - 引入
+      - ```js
+        import pubsub from 'pubsub-js'
+    - 订阅消息(`Student`)
+      - ```js
+        methods: {
+          getSchoolnamePubSub(name) {
+            console.log(`name from School.vue is ${name}`);
+          }
+        },
+        mounted() {
+          this.pubId = pubsub.subscribe('atguigu', this.getSchoolnamePubSub)
+        },
+    - 发布消息(`School`)
+      - ```js
+        sendName() {
+          pubsub.publish('atguigu', this.schoolName)
+        }
+    - 取消订阅
+      - ```js
+        beforeDestroy() {
+          pubsub.unsubscribe(this.pubId)
+        }
 
 
 
