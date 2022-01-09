@@ -17,6 +17,7 @@
 - [scoped](#scoped)
 - [组件自定义事件](#组件自定义事件)
 - [全局事件总线](#全局事件总线)
+- [消息订阅与发布](#消息订阅与发布)
 
 <!-- /TOC -->
 
@@ -672,8 +673,23 @@
             this.x.$emit('atguigu', this.schoolName)
           }
         },
+    - ![](../image/Snipaste_2022-01-09_09-52-41.png)
 3. 优化
-
+    - 不仅 `vc` 可以访问 `$on`, `vm` 也可以访问, 所以没必要单独创建一个组件
+    - ```js
+      new Vue({
+        render: h => h(App),
+        beforeCreate() {
+          Vue.prototype.$bus = this;
+        },
+      }).$mount('#app')
+    - 🐖注意: 我们还需要在 `beforeDestroy` 解绑自定义事件
+    - ```js
+      beforeDestroy() {
+        this.x.$off('atguigu');
+      }
+## 消息订阅与发布
+1. 
 
 
 
