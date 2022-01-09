@@ -18,6 +18,7 @@
 - [组件自定义事件](#组件自定义事件)
 - [全局事件总线](#全局事件总线)
 - [消息订阅与发布](#消息订阅与发布)
+- [`$nextTick`](#nexttick)
 
 <!-- /TOC -->
 
@@ -717,6 +718,54 @@
         beforeDestroy() {
           pubsub.unsubscribe(this.pubId)
         }
+## `$nextTick`
+1. 同样是 Student 组件, 我们想实现一个功能, 即当我们点击编辑按钮, 学校的地址变成输入框展示.
+  - 首先考虑增加一个属性 `isEdit`, 当 `isEdit` 为真时, 显示 `input` 输入框, 当 `input` 为假时, 展示文字. 在 `blur` 函数中我们也改变 `isEdit` 的属性
+  - ```html
+    <div>
+      <h2 v-show="!isEdit">学校地址: {{address}}</h2>
+      <input type="text" v-model="address"  v-show="isEdit" @blur="handleBlur" ref="addressInput">
+      <button @click="editAddress">修改学校地址</button>
+    </div>
+  - ```js
+    data() {
+      return {
+        schoolName: "MIT",
+        address: "USA",
+        isEdit: false
+      };
+    },
+    methods: {
+      editAddress() {
+        this.isEdit = true;
+      },
+      handleBlur() {
+        this.isEdit = false;
+      }
+    }
+  - 这个功能可以实现, 但是一个缺陷是, 当我们点击修改按钮后, 输入框没法自动获取焦点. 如果你觉得很容易, 加上就行了
+  - ```js
+    editAddress() {
+      this.isEdit = true;
+      this.$refs.addressInput.focus();
+    }
+  - 🙅‍不, 这并没有工作.
+2. 为什么没有工作? 因为 `isEdit` 更新完后, 页面还没有更新, `input` 输入框还没有出现在 `DOM` 中, 根本拿不到 `input` 元素
+  - `Vue` 官方推荐使用 `Vue.$nextTick`, 这个方法接收一个函数作为回调, 回调的 `this` 会自动绑定到调用它的实例. 
+  - `Vue.$nextTick` 是在下一次 DOM 更新结束后执行指定的回调. 
+  - ```js
+    editAddress() {
+      this.isEdit = true;
+      this.$nextTick(() => {
+        this.$refs.addressInput.focus();
+      });
+    }
+  - 有些程序员也会写不加时间的 `setTimeout`, 这样也能实现, 但是还是使用官方的吧
+  - ```js
+    setTimeout(() => {
+      this.$refs.addressInput.focus();
+    })
+  - 
 
 
 
