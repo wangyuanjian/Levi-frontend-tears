@@ -783,11 +783,43 @@
     - 自动嗅探目标元素是否应用了 `CSS` 过渡或动画, 如果是, 在恰当的时机添加/删除 `CSS` 类名
     - 如果过渡组件提供了 `JavaScript` 钩子函数, 这些钩子函数将在恰当的时机被调用
     - 如果没有找到 `JavaScript` 钩子并且也没有检测到 `CSS` 过渡/动画, `DOM` 操作 (插入/删除) 在下一帧中立即执行. (注意: 此指浏览器逐帧动画机制)
+3. 过渡的类名
+    - 在进入/离开的过渡中, 会有 `6` 个 `class` 切换
+    - `v-enter`: 定义进入过渡的开始状态.
+    - `v-enter-active`: 定义进入过渡生效时的状态. 这个类可以被用来定义过渡的过程时间, 延迟和曲线函数
+    - `v-enter-to`: 定义过渡的结束状态. 与此同时, `v-enter` 被移除.
+    - `v-leave`: 定义离开过渡的开始状态
+    - `v-leave-active`: 定义离开过渡生效时的状态. 个类可以被用来定义过渡的过程时间, 延迟和曲线函数
+    - `v-leave-to`: 定义离开过渡的结束状态
+    - ![](https://cn.vuejs.org/images/transition.png)
+    - 如果你使用了一个没有名字的 `<transition>`, 那么 `v-` 是这些类的默认前缀. 如果你使用了 `<transition name="hello-world">`, 那么, `v-enter` 会被替换为 `hello-world-enter` 
+4. 一个 `demo`
+    - 点击按钮, 控制元素显示与隐藏
+    - ```html
+      <div>
+        <button @click="toggleShow">显示与隐藏</button>
+        <transition>
+          <h1 v-if="isShow">Hello, World</h1>
+        </transition>
+      </div>
+    - ```css
+      .v-enter-active {
+        animation: atguigu .5s;
+      }
+      .v-leave-active {
+        animation: atguigu .5s reverse;
+      }
 
-
-
-
-
+      @keyframes atguigu {
+        from {
+          transform: translateX(-100%)
+        }
+        to {
+          /* 下面这个写不写都行 */
+          /* transform: translateX(0) */
+        }
+      }
+    - 理解: 当元素进入过程中, `Vue` 会把 `v-enter-active` 这个 `class` 加入到元素上. 然后就会执行从 `translateX(-100%)` 到这个元素原本应该在的位置. 反过来也是, 从原本应该在的位置, 到 `translateX(-100%)`
 
 
 
