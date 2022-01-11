@@ -793,7 +793,7 @@
     - `v-leave-to`: 定义离开过渡的结束状态
     - ![](https://cn.vuejs.org/images/transition.png)
     - 如果你使用了一个没有名字的 `<transition>`, 那么 `v-` 是这些类的默认前缀. 如果你使用了 `<transition name="hello-world">`, 那么, `v-enter` 会被替换为 `hello-world-enter` 
-4. 一个 `demo`
+4. 一个使用`动画`的 `demo`
     - 点击按钮, 控制元素显示与隐藏
     - ```html
       <div>
@@ -820,6 +820,98 @@
         }
       }
     - 理解: 当元素进入过程中, `Vue` 会把 `v-enter-active` 这个 `class` 加入到元素上. 然后就会执行从 `translateX(-100%)` 到这个元素原本应该在的位置. 反过来也是, 从原本应该在的位置, 到 `translateX(-100%)`
+5. `appear`
+    - 第一次加载页面的时候是没有动画的, 如果需要第一次加载页面就有动画, 需要 `appear`
+    - ```html
+      <transition appear>
+        <h1 v-if="isShow">Hello, World</h1>
+      </transition>
+    - 或者
+    - ```html
+      <transition :appear="true">
+        <h1 v-if="isShow">Hello, World</h1>
+      </transition>
+6. 使用`过渡`改写上面的例子
+    - 我们需要精准定义 6 个 class
+    - ```css
+      .v-enter {
+        transform: translateX(-100%);
+      }
+      .v-enter-to {
+
+      }
+      .v-enter-active {
+        transition: transform .5s linear;
+      }
+    - 理解:
+      - 过渡还没开始, 应用 `.v-enter`, 元素在 `translateX(-100%)` 的位置,
+      - 过渡结束, 应用 `.v-enter-to`, 元素在其本来应该出现的位置
+      - 过渡进行时, 应用 `.v-enter-active`, 加上过渡效果
+    - 既然离开和进入是完全相反的效果, 那离开的起点就是进入的终点, 离开的终点就是进入的起点, 我们简写
+    - ```css
+      .v-enter, .v-leave-to {
+        transform: translateX(-100%);
+      }
+      .v-enter-to, .v-enter {
+
+      }
+      .v-enter-active, .v-leave-active {
+        transition: transform .5s linear;
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
