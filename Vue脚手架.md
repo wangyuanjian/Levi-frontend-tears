@@ -21,6 +21,7 @@
 - [`$nextTick`](#nexttick)
 - [过渡与动画](#过渡与动画)
   - [单元素/组件的过渡](#单元素组件的过渡)
+  - [多个元素的过渡](#多个元素的过渡)
 
 <!-- /TOC -->
 
@@ -858,7 +859,38 @@
       .v-enter-active, .v-leave-active {
         transition: transform .5s linear;
       }
-
+### 多个元素的过渡
+1. 多个元素的过渡最常见的情形是, 一个表格和描述这个表格为空的消息
+    - ```html
+      <transition :appear="true">
+        <table v-if="isShow" key="table">
+          <thead>
+            <th>
+              <td>姓名</td>
+              <td>年龄</td>
+            </th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>张三</td>
+              <td>18</td>
+            </tr>
+            <tr>
+              <td>李四</td>
+              <td>19</td>
+            </tr>
+          </tbody>
+        </table>
+        <p v-else key="empty">表格无内容</p>
+      </transition>
+    - 如果在 `<transition>` 中切换元素为相同标签名时, 需要 `key` 设置唯一的值来标记让 `Vue` 区分他们, 否则 `Vue` 为了效率只会替换相同标签内部的内容. 
+      - ```html
+        <transition :appear="true">
+          <p v-if="isShow">Hello</p>
+          <p v-else>World</p>
+        </transition>
+      - 两个过渡的元素都是 `p`, 所以实际过程中并没有动画, `Vue` 只是替换了 `p` 标签的内容
+    - `Vue` 官网推荐给 `<transition>` 组件中的多个元素设置 `key` 是一个更好的实践.
 
 
 
