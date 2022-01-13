@@ -22,6 +22,7 @@
 - [过渡与动画](#过渡与动画)
   - [单元素/组件的过渡](#单元素组件的过渡)
   - [多个元素的过渡](#多个元素的过渡)
+  - [集成第三方动画库(animate.css)](#集成第三方动画库animatecss)
 
 <!-- /TOC -->
 
@@ -891,8 +892,26 @@
         </transition>
       - 两个过渡的元素都是 `p`, 所以实际过程中并没有动画, `Vue` 只是替换了 `p` 标签的内容
     - `Vue` 官网推荐给 `<transition>` 组件中的多个元素设置 `key` 是一个更好的实践.
-
-
+### 集成第三方动画库(animate.css)
+1. 安装
+    - ```shell
+      npm install animate.css
+2. 引入
+    - ```js
+      import 'animate.css'
+3. 使用
+    - ```html
+      <transition appear name="animate__animated animate__bounce" enter-active-class="animate__swing" leave-active-class="animate__backOutUp">
+        <h1 v-if="isShow">Hello, World</h1>
+      </transition>
+    - 我们可以通过 `attribute` 自定义过渡类名
+      - `enter-class`
+      - `enter-active-class`
+      - `enter-to-class`
+      - `leave-class`
+      - `leave-active-class`
+      - `leave-to-class`
+    - 这些优先级高于普通类型, 对于结合第三方库很有用
 
 
 
