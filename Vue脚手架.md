@@ -23,6 +23,8 @@
   - [单元素/组件的过渡](#单元素组件的过渡)
   - [多个元素的过渡](#多个元素的过渡)
   - [集成第三方动画库(animate.css)](#集成第三方动画库animatecss)
+- [配置代理](#配置代理)
+  - [使用 axios](#使用-axios)
 
 <!-- /TOC -->
 
@@ -912,6 +914,27 @@
       - `leave-active-class`
       - `leave-to-class`
     - 这些优先级高于普通类型, 对于结合第三方库很有用
+## 配置代理
+### 使用 axios
+1. 使用 axios
+    - 安装
+    - ```shell
+      npm install axios
+    - 引入
+    - ```js
+      import axios from 'axios'
+    - 使用
+    - ```js
+      axios.get('http://localhost:3000/getUser?name=tom&age=12').then(
+        response => {
+          console.log(response.data);
+        },
+        error => {
+          console.log(error.message);
+        }
+      )
+    - 报错!
+    - ![](../image/Snipaste_2022-01-14_22-05-31.png)
 
 
 
