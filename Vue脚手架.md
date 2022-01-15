@@ -973,6 +973,12 @@
         },
         // ws: true,
         // changeOrigin: true
+      },
+      '/api2': {
+        target: 'http://localhost:5000',
+        pathRewrite: {
+          '^/api': ''
+        },
       }
     }
     - 解释:
@@ -990,8 +996,20 @@
       - `target`: 表示需要被代理到哪里
       - `pathRewrite`: 对象, 用来重写请求. 为什么? 因为我们发的请求是 `http://localhost:8080/api/getUser`, 但是真实服务器上的地址是 `http://localhost:8080/getUser`, 没有 `/api` 前缀. 所以如果我们不改, 就会出现 `404`
         - `'^/api': ''`: 规则, `key` 表示正则表达式, `value` 表示用来替换匹配上的部分
-
-
+      - `ws`: `true`, 用于支持 `webSocket`
+      - `changeOrigin`: `true`, 改变请求头中的 `host` 字段. `host` 表示请求将要发送到的服务器主机名和端口号. 在我们 `demo` 中, 如果为 `true`, 端口就是 `3000`; 如果 `false`, 端口就是 `8080`
+        - 服务端代码中打印 `host` 头
+        - ```js
+          app.get('/getUser', (req, res) => {
+            // 解构赋值获取参数
+            let { name } = req.query;
+            let age = req.query.age;
+            console.log(req.header('host'));
+            res.send(req.query);
+          });
+        - ![](../image/Snipaste_2022-01-15_14-37-09.png) 
+        - 我测试过程中, 如果改了 `changeOrigin` 配置后, 需要多次重启项目, 经常会出现 `404` 错误.
+    - 更多配置参考[👉这里](https://github.com/chimurai/http-proxy-middleware#proxycontext-config)
 
 
 
