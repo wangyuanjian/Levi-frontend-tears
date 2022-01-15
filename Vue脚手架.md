@@ -27,6 +27,8 @@
   - [使用 axios](#使用-axios)
   - [前端解决跨域](#前端解决跨域)
 - [小 tips💡](#小-tips💡)
+- [插槽](#插槽)
+  - [默认插槽](#默认插槽)
 
 <!-- /TOC -->
 
@@ -1016,8 +1018,27 @@
 2. 但是我们只想要 `bootstrap` 样式, 而不像要这个文件. 怎么办? 换另一种方式, 在 `public` 下, 创建 `css` 目录, 然后在 `index.html` 使用 `<style>` 标签引入 
 
 
-
-
+## 插槽
+### 默认插槽
+1. 要实现下面的效果
+    - ![](../image/Snipaste_2022-01-15_17-47-11.png)
+    - 思路: 创建一个组件 `Student`, 然后传值
+2. `Vue` 实现了一套内容分发的 `API`, 将 `<slot>` 元素作为承载分发内容的出口
+    - 首先我们在组件中使用 `<slot></slot>` 表示一个插槽, 其实就是一个坑, 等着别人来填东西. 在这个插槽中可以提供一些默认值, 如果别人不填就展示默认值.
+    - 当组件渲染时, `<slot></slot>` 就会被替换为传递的内容, 可以是任何模板代码, 包括 `HTML`
+    - ```html
+      <div class="box">
+        <h3>{{title}}</h3>
+        <slot>你好啊</slot>
+      </div> 
+    - 我们在使用组件时, 可以使用标签的完整结束方式, 传递数据
+    - ```html
+      <Student title="美食">
+        <img src="https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png" alt="">
+      </Student>
+      <Student title="电影"></Student>
+      <Student title="音乐"></Student>
+    - ![](../image/Snipaste_2022-01-15_18-00-43.png)
 
 
 
