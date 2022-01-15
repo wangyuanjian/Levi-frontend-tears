@@ -30,6 +30,7 @@
 - [插槽](#插槽)
   - [默认插槽](#默认插槽)
   - [具名插槽](#具名插槽)
+  - [作用域插槽](#作用域插槽)
 
 <!-- /TOC -->
 
@@ -1078,7 +1079,7 @@
           <a href="https://www.bilibili.com">肖申克的救赎</a>
           <a href="https://www.bilibili.com">怦然心动</a>
         </template>
-      - 一旦这样写, 就可以使用 `Vue@2.6.0` 引入的新命令 `v-slot`
+      - 一旦这样写, 就可以使用 `Vue@2.6.0` 引入的新命令 `v-slot`(简写形式看`作用域插槽部分`)
       - 该指令的参数是 `插槽名` (可选, 默认值是 `default` )
       - ```html
         <template v-slot:default>
@@ -1089,11 +1090,79 @@
           <a href="https://www.bilibili.com">怦然心动</a>
         </template>
       - 
-
-
-
-
-
+### 作用域插槽
+1. 有时让插槽内容能够访问子组件中才有的数据是很有用的. 比如下面的功能, 数组在组件中, 但是我们使用组件时, 想以不同形式的结构展示数据. 
+    - ![](../image/Snipaste_2022-01-15_20-48-44.png)
+    - 如果我们在 `App.vue` 中使用 `Student` 组件, 那么传值给插槽时, 值只能定义在 `App` 组件中
+    - 如果插槽内容定义在子组件中, 如何能拿到呢?
+2. `Student.vue` 组件
+    - 我们在组件中定义数据
+    - ```js
+      data() {
+        return {
+          songs: ['任性', '风筝', '雨还是不停的落下', '不同'],
+          singer: '孙燕姿'
+        };
+      },
+    - 在定义 `<slot>` 时, 需要给这个标签绑定数据
+    - ```html
+      <div class="box">
+        <h3>{{title}}</h3>
+        <slot :songs="songs" :singer="singer">你好啊</slot>
+      </div>
+3. `App.vue`
+    - 1️⃣首先: 必须使用 `<template>` 
+    - 2️⃣使用 `scope` 或者 `slot-scope` 接收传来的值 (`slot-scope` 是比较新的 `API`)
+    - ```html
+      <Student title="音乐">
+        <template slot="default" slot-scope="paramPassed">
+          <div>
+            <pre>
+              {{paramPassed}}
+            </pre>
+          </div>
+        </template>
+      </Student>
+    - ![](../image/Snipaste_2022-01-15_21-03-24.png)
+    - 🐖注意: 我们传递了两个数据, 第一个是一个数组, 第二个是一个字符串, 所以 `paramPassed` 是一个对象. 所以我们可以使用解构赋值的语法, 拿到传来的对象
+    - ```html
+      <Student title="音乐">
+        <template slot="default" slot-scope="{songs, singer}">
+          <div>
+            <ul>
+              <li v-for="(song, index) in songs" :key="index">{{song}}</li>
+            </ul>
+            <h4>by {{singer}}</h4>
+          </div>
+        </template>
+      </Student>
+    - ![](../image/Snipaste_2022-01-15_21-09-04.png)
+4. `v-slot`
+    - 如果使用新的 `API` `v-slot` 需要这样写
+    - ```html
+      <Student title="音乐">
+        <template v-slot:default="{songs, singer}">
+          <div>
+            <ol>
+              <li v-for="(song, index) in songs" :key="index">{{song}}</li>
+            </ol>
+            <h4>by {{singer}}</h4>
+          </div>
+        </template>
+      </Student>
+    - 和其他指令一样 `v-slot` 也有简写形式 **`#`**
+    - ```html
+      <Student title="音乐">
+        <template #default="{songs, singer}">
+          <div>
+            <h4 v-for="(song, index) in songs" :key="index">{{song}}</h4>
+            <h4>by {{singer}}</h4>
+          </div>
+        </template>
+      </Student>
+    - 如果使用简写形式, 当使用默认插槽时不能省略默认插槽名 `default`, 即下面的写法会报错
+    - ```html
+      <template #="{songs, singer}">
 
 
 
