@@ -29,6 +29,7 @@
 - [小 tips💡](#小-tips💡)
 - [插槽](#插槽)
   - [默认插槽](#默认插槽)
+  - [具名插槽](#具名插槽)
 
 <!-- /TOC -->
 
@@ -1039,7 +1040,55 @@
       <Student title="电影"></Student>
       <Student title="音乐"></Student>
     - ![](../image/Snipaste_2022-01-15_18-00-43.png)
-
+### 具名插槽
+1. 如果我们想在上面的例子下再加入链接, 用于界面跳转
+    - ![](../image/Snipaste_2022-01-15_18-15-36.png)
+2. `name` 属性
+    - 自然, 我们可以写多个 `<slot>`, 但是要给每个 `<slot>` 起名字, 用上 `name` 属性
+    - ```html
+      <div class="box">
+        <h3>{{title}}</h3>
+        <slot>你好啊</slot>
+        <slot name="footer">链接</slot>
+      </div>
+    - 那么在给向插槽中放内容时, 也需要制定究竟放在哪个插槽
+    - ```html
+      <Student title="美食">
+        <img src="https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png" alt="">
+        <a slot="footer" href="https://www.bilibili.com">更多美食</a>
+      </Student>
+    - ![](../image/Snipaste_2022-01-15_18-27-02.png)
+    - 🐖注意1: `<slot></slot>` 这样的写法, 也是有 name 属性的, 不过其默认的名字就是 default, 所以下面的写法和上面的写法是一样的
+      - ```html
+        <Student title="美食">
+          <img slot="default" src="https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png" alt="">
+          <a slot="footer" href="https://www.bilibili.com">更多美食</a>
+        </Student>
+3. `<template>`
+    - 如果一次想要向一个插槽中提供多个内容, 直接的想法是用 div 包裹, 如下.
+      - ```html
+        <div slot="footer">
+          <a href="https://www.bilibili.com">肖申克的救赎</a>
+          <a href="https://www.bilibili.com">怦然心动</a>
+        </div>
+      - 这样写法的弊端就是多引入了一个 div 标签
+    - 可以用 `<template>` 代替
+      - ```html
+        <template slot="footer">
+          <a href="https://www.bilibili.com">肖申克的救赎</a>
+          <a href="https://www.bilibili.com">怦然心动</a>
+        </template>
+      - 一旦这样写, 就可以使用 `Vue@2.6.0` 引入的新命令 `v-slot`
+      - 该指令的参数是 `插槽名` (可选, 默认值是 `default` )
+      - ```html
+        <template v-slot:default>
+          我是哈哈哈
+        </template>
+        <template v-slot:footer>
+          <a href="https://www.bilibili.com">肖申克的救赎</a>
+          <a href="https://www.bilibili.com">怦然心动</a>
+        </template>
+      - 
 
 
 
