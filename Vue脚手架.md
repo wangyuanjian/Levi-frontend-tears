@@ -943,7 +943,8 @@
     - 🐖注意: 这里的代理服务器和浏览器中的端口号相同
 2. 配置代理服务器
     - `vue.config.js`: `devServer.proxy`
-    - 这个属性可以为一个 **`指向服务器 API`** 的字符串, 注意, 这回告诉代理服务器将任何未知请求 (没有匹配到静态文件的请求) 代理到 `http://localhost:3000`
+    - 这个属性可以为一个 **`指向服务器 API`** 的字符串, 注意, 这回告诉代理服务器将任何未知请求 **(没有匹配到静态文件的请求)** 代理到 `http://localhost:3000`
+      - 或者请求的资源 `8080` 代理服务器本身就有, 那么就不会转发请求
     - ```js
       devServer: {
         proxy: 'http://localhost:3000'
@@ -961,7 +962,34 @@
       )
     - 完美拿到数据🆒
     - ![](../image/Snipaste_2022-01-14_22-28-10.png)
-
+3. 配置多个代理
+    - 如果需要配置多个代理, 或者只想某些请求被代理, 就可以使用 proxy 的对象写法
+    - ```js
+      proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        pathRewrite: {
+          '^/api': ''
+        },
+        // ws: true,
+        // changeOrigin: true
+      }
+    }
+    - 解释:
+      - `/api`: 表示以 `/api` 开头的请求代理方式
+        - 所以, 在真实发请求的时候需要改写下面的代码, 在端口号后面加上 `/api`
+        - ```js
+          axios.get('http://localhost:8080/api/getUser?name=tom&age=12').then(
+          response => {
+            console.log(response.data);
+          },
+          error => {
+            console.log(error.message);
+          }
+        )
+      - `target`: 表示需要被代理到哪里
+      - `pathRewrite`: 对象, 用来重写请求. 为什么? 因为我们发的请求是 `http://localhost:8080/api/getUser`, 但是真实服务器上的地址是 `http://localhost:8080/getUser`, 没有 `/api` 前缀. 所以如果我们不改, 就会出现 `404`
+        - `'^/api': ''`: 规则, `key` 表示正则表达式, `value` 表示用来替换匹配上的部分
 
 
 
