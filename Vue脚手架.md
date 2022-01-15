@@ -26,6 +26,7 @@
 - [配置代理](#配置代理)
   - [使用 axios](#使用-axios)
   - [前端解决跨域](#前端解决跨域)
+- [小 tips💡](#小-tips💡)
 
 <!-- /TOC -->
 
@@ -1010,8 +1011,9 @@
         - ![](../image/Snipaste_2022-01-15_14-37-09.png) 
         - 我测试过程中, 如果改了 `changeOrigin` 配置后, 需要多次重启项目, 经常会出现 `404` 错误.
     - 更多配置参考[👉这里](https://github.com/chimurai/http-proxy-middleware#proxycontext-config)
-
-
+## 小 tips💡
+1. 如果我们要引入 `bootstrap` 文件, 一个思路是把 `bootstrap.css` 放在 `src/assets` 下, 然后再需要的页面中 `import`, 但是这种引用方式会报错, 因为 `bootstrap.css` 中引入了同级目录 `font` 下的一个字体文件. 这时因为使用 `import` 引入会很严格, 即便引入的文件中有引用了其他我们目前不需要的东西, 比如字体文件, 这样引入也会报错
+2. 但是我们只想要 `bootstrap` 样式, 而不像要这个文件. 怎么办? 换另一种方式, 在 `public` 下, 创建 `css` 目录, 然后在 `index.html` 使用 `<style>` 标签引入 
 
 
 
