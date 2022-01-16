@@ -32,7 +32,7 @@
   - [具名插槽](#具名插槽)
   - [作用域插槽](#作用域插槽)
 - [Vuex](#vuex)
-  - [简介](#简介)
+  - [简介与安装](#简介与安装)
 
 <!-- /TOC -->
 
@@ -1166,7 +1166,7 @@
     - ```html
       <template #="{songs, singer}">
 ## Vuex
-### 简介
+### 简介与安装
 1. `Vuex` 是一个专为 `Vue.js` 应用程序开发的`状态管理模式`. 它采用集中式存储管理应用的所有组件的状态, 并以相应的规则保证状态以一种可预测的方式发生变化.
     - 为什么不用全局事件总线呢? 看下面的图, 如果我们要在 4 个组件之间实现仅 1 个数据 `x` 的共享, 依赖全局事件总线就至少要 6 次的方法. 共享的数据也越多, 维护起来越复杂
     - ![](../image/Snipaste_2022-01-16_08-16-02.png)
@@ -1177,6 +1177,67 @@
     - 来自不同组件的行为需要变更同一状态
 3. 工作原理
     - ![](https://vuex.vuejs.org/vuex.png)
+4. 搭建环境
+    - 安装
+      - ```shell
+        npm install vuex
+    - 引入和使用
+      - ```js
+        import Vuex from 'vuex';
+        Vue.use(Vuex);
+    - 传入 `store` 配置项
+      - 在 `src` 下创建 `store` 文件夹, 在 `store` 文件夹下创建 `index.js`
+      - ```js
+        import Vuex from 'vuex'
+
+        // 用于响应组件中的动作
+        const actions = {};
+        // 用于操作数据(state)
+        const mutations = {};
+        // 用于存储数据
+        const state = {}
+        // 创建并暴露 store
+        export default new Vuex.Store({
+          actions,
+          mutations,
+          state
+        })
+      - `main.js`
+      - ```js
+        import store from './store'
+        new Vue({
+          render: h => h(App),
+          store,
+          beforeCreate() {
+            Vue.prototype.x = this;
+          },
+        }).$mount('#app')
+      - ❌报错: 必须在创建 store 实例之前调用 `Vue.use(Vuex)`
+      - ![](../image/Snipaste_2022-01-16_21-16-51.png)
+      - 改写 `store/index.js`
+      - ```js
+        import Vuex from 'vuex'
+        import Vue from 'vue'
+
+        Vue.use(Vuex);
+
+        // 用于响应组件中的动作
+        const actions = {};
+        // 用于操作数据(state)
+        const mutations = {};
+        // 用于存储数据
+        const state = {}
+        // 创建并暴露 store
+        export default new Vuex.Store({
+          actions,
+          mutations,
+          state
+        })
+      - 疑问😮为什么在 `main.js` 不可以写成下面的样子呢? 因为 `ES6` 模块化的语法, `import` 语句会提升, 所以下面第二个 `import` 实际上还是在 `use` 之前
+      - ```js
+        import Vuex from 'vuex'
+        Vue.use(Vuex);
+        import store from './store'
 
 
 
