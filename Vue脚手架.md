@@ -33,6 +33,7 @@
   - [作用域插槽](#作用域插槽)
 - [Vuex](#vuex)
   - [简介与安装](#简介与安装)
+  - [求和案例](#求和案例)
 
 <!-- /TOC -->
 
@@ -1238,8 +1239,57 @@
         import Vuex from 'vuex'
         Vue.use(Vuex);
         import store from './store'
-
-
+### 求和案例
+1. 先来演示非 Vuex 版本的
+    - ```html
+      <div>
+        <h2>当前和为{{sum}}</h2>  
+        <select name="select" id="select" v-model.number="n">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </select>
+        <button @click="increment">+</button>
+        <button @click="decrement">-</button>
+        <button @click="incrementOdd">和为奇数才能加</button>
+        <button @click="incrementWait">等等再加</button>
+      </div>
+    - ```js
+      export default {
+        data() {
+          return {
+            sum: 0,
+            n: 1
+          };
+        },
+        methods: {
+          increment () {
+            this.sum += this.n;
+          },
+          decrement () {
+            this.sum -= this.n;
+          },
+          incrementOdd () {
+            if (this.sum % 2 === 0) {
+              alert('和为奇数才能加');
+              return;
+            }
+            this.increment();
+          },
+          incrementWait () {
+            setTimeout(() => {
+              this.increment();
+            }, 1000);
+          }
+        }
+      };
+2. 开始改写
+    - 将 `sum` 放在 `Vuex` 的 `state` 中
+      - ```js
+        const state = {
+          sum: 0
+        };
+    - 
 
 
 
