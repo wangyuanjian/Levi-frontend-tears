@@ -1239,6 +1239,8 @@
         import Vuex from 'vuex'
         Vue.use(Vuex);
         import store from './store'
+    - 来看看 `store` 究竟是什么
+      - ![](../image/Snipaste_2022-01-20_21-57-04.png)
 ### 求和案例
 1. 先来演示非 Vuex 版本的
     - ```html
@@ -1289,7 +1291,38 @@
         const state = {
           sum: 0
         };
-    - 
+    - 在 `actions` 定义 `plus` 方法, 并调用 `mutations` 中的方法
+      - ```js
+        const actions = {
+          plus(context, value) {
+            console.log(context);
+            context.commit('PLUS', value);
+          }
+        };
+      - 方法接收的第一个参数, 是一个与 `store` 实例具有相同方法和属性的 `context` 对象
+      - ![](../image/Snipaste_2022-01-20_22-02-47.png)
+      - 方法接收的其余参数就是调用方法时传过来的
+    - 在 `mutations` 定义 `PLUS` 方法
+      - 开发中约定将 `mutations` 中的方法名写为大写形式
+      - ```js
+        const mutations = {
+          PLUS(state, value) {
+            state.sum += value;
+          }
+        };
+      - 方法会接受 `state` 作为第一个参数
+      - ![](../image/Snipaste_2022-01-20_22-10-37.png)
+      - 方法接收的其余参数就是调用方法时传过来的
+    - 使用 `$store.dispatch` 调用 `plus` 方法
+      - ```js
+        methods: {
+          increment () {
+            this.$store.dispatch('plus', this.n)
+          } 
+        }
+    - 在页面展示时, 同样需要从 $store 中拿数据
+      - ```html
+        <h2>当前和为{{$store.state.sum}}</h2>  
 
 
 
