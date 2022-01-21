@@ -1356,10 +1356,53 @@
 ### `mapState` & `mapGetters`
 1. 目前的代码有一个问题
     - ```html
-      
-
-
-
+      <h2>当前和为{{$store.state.sum}}</h2>  
+      <h2>当前和放大10倍为为{{$store.getters.bigSum}}</h2>
+    - 如果我们在模板字符串中使用很多 `state` 或 `getters` 数据, 这个模板就会特别冗余. 当然我们可以使用计算属性解决, 如下
+    - ```js
+      computed: {
+        mySum() {
+          return this.$store.state.sum;
+        },
+        myBigSum() {
+          return this.$store.getters.bigSum;
+        }
+      },
+    - ```html
+      <!-- 使用计算属性 -->
+      <h2>当前和为{{mySum}}</h2>  
+      <h2>当前和放大10倍为为{{myBigSum}}</h2>  
+    - 计算属性的局限: 只能用于当前组件, 如果某个值需要在很多组件显示, 就会出现问题
+2. `mapState`
+    - `mapState` 辅助函数帮助我们生成计算属性
+    - 要想生成计算属性, 首先我们要给计算属性起个名, 然后指出这个计算属性是依赖哪个变量计算的. 刚好, 这两个就是床给 `mapState` 的值
+    - 要使用 `mapState` 首先需要引入
+    - ```js
+      import { mapState } from 'vuex';
+    - 首先看看这个函数的返回值是什么
+    - ```js
+      mounted() {
+        const x = mapState({ vuexSum: 'sum', vuexSchool: 'school' });
+        console.log(x);
+      },
+    - ![](../image/Snipaste_2022-01-21_22-04-06.png)
+    - 是一个对象, 每一个键值对就是定义计算属性的形式, 所以使用 `ES6` 的 `spread` 语法, 直接把返回值放入 `computed` 即可
+    - ```js
+      computed: {
+        // mySum() {
+        //   return this.$store.state.sum;
+        // },
+        // myBigSum() {
+        //   return this.$store.getters.bigSum;
+        // }
+        ...mapState({ vuexSum: 'sum', vuexSchool: 'school' }),
+      }
+    - 模板中直接使用
+    - ```html
+      <!-- 使用 mapState -->
+      <h2>当前和为{{vuexSum}}</h2>  
+      <h2>当前和放大10倍为为{{vuexSchool}}</h2>  
+3. 
 
 
 
