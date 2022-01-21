@@ -34,6 +34,8 @@
 - [Vuex](#vuex)
   - [简介与安装](#简介与安装)
   - [求和案例](#求和案例)
+  - [getters](#getters)
+  - [`mapState` & `mapGetters`](#mapstate--mapgetters)
 
 <!-- /TOC -->
 
@@ -1323,8 +1325,38 @@
     - 在页面展示时, 同样需要从 $store 中拿数据
       - ```html
         <h2>当前和为{{$store.state.sum}}</h2>  
-
-
+3. 直接调用 `commit`
+    - 如果我们的方法不需要通过 `actions`, 那么也可以直接调用 `mutations`
+    - ```js
+      decrement () {
+        //this.$store.dispatch('minus', this.n);
+        this.$store.commit('minus', this.n);
+      }
+    - 
+### getters
+1. 有时候需要中 `store` 中的 `state` 数据中派生一些状态出来, 例如对列表就行过滤. `Vuex` 中允许在 `store` 中定义 `getter`(可以理解为 `store` 的计算属性), `getter` 返回值会根据它的依赖被缓存, 只有依赖的值发生了变化才会被重新计算.
+2. `getter` 接受 `state` 作为其第一个参数
+    - ```js
+      const getters = {
+        bigSum(state) {
+          return state.sum * 10;
+        }
+      }
+      export default new Vuex.Store({
+        actions,
+        mutations,
+        state,
+        getters
+      })
+3. 使用 `getters`
+    - ```html
+      <h2>当前和放大10倍为为{{$store.getters.bigSum}}</h2> 
+4. 开发者工具
+    - ![](../image/Snipaste_2022-01-21_21-29-56.png)
+### `mapState` & `mapGetters`
+1. 目前的代码有一个问题
+    - ```html
+      
 
 
 
