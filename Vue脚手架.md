@@ -1402,8 +1402,28 @@
       <!-- 使用 mapState -->
       <h2>当前和为{{vuexSum}}</h2>  
       <h2>当前和放大10倍为为{{vuexSchool}}</h2>  
-3. 
-
+    - 如果我们需要的计算属性和其依赖的值是同一个名字, 比如计算属性是 `sum`, 其依赖 `sum`, 那么就可以使用 `mapState` 的数组写法
+    - ```js
+      computed: {
+        // mapState 数组写法
+        ...mapState(['sum', 'school']),
+      },
+    - 模板中直接使用
+    - ```html
+      <!-- 使用 mapState 数组写法 -->
+      <h2>当前和为{{sum}}</h2>  
+      <h2>当前和放大10倍为为{{school}}</h2>  
+3. `mapGetters`
+    - 引入
+    - ```js
+      import { mapGetters } from 'vuex';
+    - 对象写法
+    - ```js
+      ...mapGetters({vuexBigSum: 'bigSum'})
+    - 数组写法
+    - ```js
+      ...mapGetters(['bigSum'])
+4. 
 
 
 
