@@ -36,6 +36,7 @@
   - [求和案例](#求和案例)
   - [getters](#getters)
   - [`mapState` & `mapGetters`](#mapstate--mapgetters)
+  - [`mapActions` & `mapMutations`](#mapactions--mapmutations)
 
 <!-- /TOC -->
 
@@ -1423,7 +1424,31 @@
     - 数组写法
     - ```js
       ...mapGetters(['bigSum'])
-4. 
+### `mapActions` & `mapMutations`
+1. 代码中的问题
+    - 就是同样的内容, 写的太多.
+    - ![](../image/Snipaste_2022-01-23_10-14-42.png)
+2. `mapActions` 
+    - 引入
+      - ```js
+        import { mapActions } from 'vuex';
+    - 照例, 先来看一下这个函数的返回值
+      - ```js
+        mounted() {
+          let x = mapActions({vuexPlus:'plus', vuexMinus:'minus'})
+          console.log(x);
+        },
+      - ![](../image/Snipaste_2022-01-23_10-35-09.png)
+    - 所以, 仍然使用 spread 语法将其放入 methods 中
+      - ```js
+        methods: {
+          ...mapActions({increment: 'plus', decrement: 'minus'}),
+        },
+      - 结果💥
+      - ![](../image/Snipaste_2022-01-23_10-48-19.png)
+    - 为啥🤨
+      - ![](../image/Snipaste_2022-01-23_11-05-20.png)
+      - 来看官网的例子, 因为
 
 
 
