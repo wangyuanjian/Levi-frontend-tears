@@ -36,7 +36,7 @@
   - [求和案例](#求和案例)
   - [getters](#getters)
   - [`mapState` & `mapGetters`](#mapstate--mapgetters)
-  - [`mapActions` & `mapMutations`](#mapactions--mapmutations)
+  - [`mapActions` 👫 `mapMutations`](#mapactions-👫-mapmutations)
 
 <!-- /TOC -->
 
@@ -1424,7 +1424,7 @@
     - 数组写法
     - ```js
       ...mapGetters(['bigSum'])
-### `mapActions` & `mapMutations`
+### `mapActions` 👫 `mapMutations`
 1. 代码中的问题
     - 就是同样的内容, 写的太多.
     - ![](../image/Snipaste_2022-01-23_10-14-42.png)
@@ -1448,8 +1448,25 @@
       - ![](../image/Snipaste_2022-01-23_10-48-19.png)
     - 为啥🤨
       - ![](../image/Snipaste_2022-01-23_11-05-20.png)
-      - 来看官网的例子, 因为
-
+      - 来看官网的例子, 因为 `this.add()` 映射为 `this.$store.dispatch('increment')`, 所以 `this.add()` 的第一个参数也就成为了 `this.$store.dispatch('increment')` 的第一个参数.
+      - 看一下我们在模板中怎么调用的
+        - ```html
+          <button @click="increment">+</button>
+      - 还记得吗, 如果我们这样写, 其实是可以接收到一个默认参数, `$event`, 所以, `0` 和一个事件做加法, 得到的就是图片中展示的结果了. 
+      - 要想避免这样, 只能在模板中调用函数时手动传参
+        - ```html
+          <button @click="increment(n)">+</button>
+2. `mapMutations` 
+    - 引入
+      - ```js
+        import { mapMutations } from 'vuex';
+    - 使用
+      - ```js
+        methods: {
+          ...mapMutations({ DECREMENT: 'MINUS' }),
+        }
+      - ```html
+        <button @click="DECREMENT(n)">- BY Mutation</button>
 
 
 
