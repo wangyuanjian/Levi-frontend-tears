@@ -37,6 +37,7 @@
   - [getters](#getters)
   - [`mapState` & `mapGetters`](#mapstate--mapgetters)
   - [`mapActions` 👫 `mapMutations`](#mapactions-👫-mapmutations)
+  - [模块化编码(Module)](#模块化编码module)
 
 <!-- /TOC -->
 
@@ -1466,8 +1467,98 @@
           ...mapMutations({ DECREMENT: 'MINUS' }),
         }
       - ```html
-        <button @click="DECREMENT(n)">- BY Mutation</button>
+        <button @click="DECREMENT(n)"> - BY Mutation</button>
+### 模块化编码(Module)
+1. 使用单一状态树, 所有的应用状态会集中到一个比较大的对象, 当应用变得非常复杂时, `store` 对象就会很臃肿. `Vuex` 允许我们将 `store` 分割成 `模块(Module)`, 每个模块都有自己的 `state`, `action`, `mutation`, `getter`
+    - ```js
+      const moduleA = {
+        state: () => ({ ... }),
+        mutations: { ... },
+        actions: { ... },
+        getters: { ... }
+      }
 
+      const moduleB = {
+        state: () => ({ ... }),
+        mutations: { ... },
+        actions: { ... }
+      }
+
+      const store = new Vuex.Store({
+        modules: {
+          a: moduleA,
+          b: moduleB
+        }
+      })
+2. 改写代码
+    - 首先将 `store/index.js` 改写为模块化形式
+    - ```js
+      import Vuex from 'vuex'
+      import Vue from 'vue'
+
+      Vue.use(Vuex);
+
+      const countModule = {
+        namespaced: true,
+        state: {
+          sum: 0,
+        },
+        actions: {
+          plus (context, value) {
+            context.commit('PLUS', value);
+          },
+          minus (context, value) {
+            context.commit('MINUS', value);
+          },  
+        },
+        mutations: {
+          PLUS(state, value) {
+            console.log(state);
+            state.sum += value;
+          },
+          MINUS(state, value) {
+            console.log(state);
+            state.sum -= value;
+          }
+        },
+        getters: {
+          bigSum(state) {
+            return state.sum * 10;
+          }
+        },
+      };
+
+      const schoolModule = {
+        namespaced: true,
+        state: {
+          school: 'MIT'
+        },
+        action: {
+          get(context, value) {
+            return context.commit('GET', value);
+          },
+        },
+        mutations: {
+          GET(state, value) {
+            return state.school;
+          }
+        },
+        getters: {
+          bigSchool(state) {
+            return `${state.school} is great!`
+          },
+        },
+      }
+
+      export default new Vuex.Store({
+        modules: {
+          count: countModule,
+          school: schoolModule,
+        }
+      })
+    - 模板中的代码也需要修改, 先看看此时的 `this.$store` 对象有什么变化
+      - ![](../image/Snipaste_2022-01-30_15-43-49.png)
+      - 
 
 
 
