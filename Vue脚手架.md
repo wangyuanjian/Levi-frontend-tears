@@ -1499,7 +1499,6 @@
       Vue.use(Vuex);
 
       const countModule = {
-        namespaced: true,
         state: {
           sum: 0,
         },
@@ -1529,7 +1528,6 @@
       };
 
       const schoolModule = {
-        namespaced: true,
         state: {
           school: 'MIT'
         },
@@ -1556,10 +1554,87 @@
           school: schoolModule,
         }
       })
-    - 模板中的代码也需要修改, 先看看此时的 `this.$store` 对象有什么变化
+    - 模板中的代码也需要修改, 先看看此时的 `this.$store` 对象有什么变化, 变化就是原来直接暴露的变量, 变成了这个变量所在对象
       - ![](../image/Snipaste_2022-01-30_15-43-49.png)
-      - 
-
+      - ```js
+        computed: {
+          ...mapState(['count', 'school']),
+          ...mapGetters(['bigSum']),
+        }
+      - 所以代码中, 需要在在获取 `state` 之前加上这个 `state` 所在的对象
+      - ```html
+        <h2>当前和为{{count.sum}}</h2>  
+        <h2>当前和放大10倍为为{{bigSum}}</h2>  
+        <h2>我再{{school.school}}</h2>  
+3. `namespaced`
+    - 🐖注意: 默认情况下, 模块内部的 `action`, `mutation` 和 `getter` 是注册在 **`全局命名空间`** 的. 所以我们上面改写的代码并不涉及这三个部分
+    - 如果我们希望模块具有更高的封装度和服用性, 可以通过添加 `namespaced: true` 的方式使其成为带有命名空间的模块, 之后, 其所有的 `action`, `mutation` 和 `getter` 都会自动根据模块注册的路径调用命名
+    - 改写代码
+      - ```js
+        const schoolModule = {
+          namespaced: true,
+          state: {
+            school: 'MIT'
+          },
+          action: {
+            get(context, value) {
+              return context.commit('GET', value);
+            },
+          },
+          mutations: {
+            GET(state, value) {
+              return state.school;
+            }
+          },
+          getters: {
+            bigSchool(state) {
+              return `${state.school} is great!`
+            },
+          },
+        }
+        // 创建并暴露 store
+        export default new Vuex.Store({
+          modules: {
+            count: countModule,
+            school: schoolModule,
+          }
+        })
+      - 再看看这次的 `this.$store` 又发生了什么变化? 😅没变化
+        - ![](../image/Snipaste_2022-01-30_17-46-22.png)
+      - 改写代码
+        - 首先改写 `getters` 因为其由全局命名空间转到了局部命名空间
+        - ```js
+          // ...mapGetters(['bigSum']),
+          ...mapGetters({bigSum: 'count/bigSum'}),
+        - 接下来改写 `action` 和 `mutation`, 我们需要传入注册模块的时候使用的模块名
+        - ```js
+          methods: {
+            ...mapMutations('count', { DECREMENT: 'MINUS' }),
+            ...mapActions('count', {increment: 'plus', decrement: 'minus'}),
+            incrementOdd () {
+              if (this.$store.state.sum % 2 === 0) {
+                alert('和为奇数才能加');
+                return;
+              }
+              this.increment();
+            },
+            incrementWait () {
+              setTimeout(() => {
+                this.increment();
+              }, 1000);
+            }
+          }
+        - 有没有发现, 在 `mapState` 和 `mapGetters` 的时候, 在模板语法中写的东西很长, 仿佛又回到了最初解决这个问题的时候的毛病. 其实, 在 `mapState` 和 `mapGetters` 的时候也可以传入注册模块时使用的模块名
+        - ```js
+          computed: {
+            ...mapState('count', ['sum', 'school']),
+            ...mapGetters('count', ['bigSum']),
+          }
+        - 在模板文件中, 也可以简写
+        - ```html
+          <h2>当前和为{{sum}}</h2>  
+          <h2>当前和放大10倍为为{{bigSum}}</h2>  
+          <h2>我再{{school}}</h2> 
 
 
 
