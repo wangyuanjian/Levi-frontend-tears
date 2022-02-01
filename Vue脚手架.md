@@ -1645,7 +1645,7 @@
             },
           }
         -
-4. `rootState`
+4. `rootState` 和 `rootGetters`
     - 当我们将不同的业务分到不同的模块时, 还是有一些业务是全局共享的, 比如登录的用户信息
     - 如果要在带命名空间的模块内访问全局内容, `rootState` 和 `rootGetters` 会作为第三和第四个参数传入 `getter`, 也会通过 `context` 对象的属性传入 `action`
     - 首先加入全局 `state`
@@ -1668,16 +1668,15 @@
         },
       - ```html
         <h2>当前和放大10倍为为{{bigSum}}</h2>
-      - 从下面的图能看出, 其实 `rootState` 中可以访问所有模块中的 state 属性
-        - ![](../image/Snipaste_2022-02-01_15-10-04.png)
+      - 从下面的图能看出, 其实 `rootState` 中可以访问所有模块中的 `state` 属性
+        - ![](../image/Snipaste_2022-02-01_16-04-10.png)
     - 通过 `actions` 的第一个参数 `context` 访问全局共享内容
       - ```js
         plus (context, value) {
           console.log('in plus', context.rootState);
           context.commit('PLUS', value);
         }
-      - ![](../image/Snipaste_2022-02-01_15-37-06.png)
-5. 
+      - ![](../image/Snipaste_2022-02-01_16-04-54.png) 
 
 
 
