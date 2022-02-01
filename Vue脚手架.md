@@ -1635,6 +1635,17 @@
           <h2>当前和为{{sum}}</h2>  
           <h2>当前和放大10倍为为{{bigSum}}</h2>  
           <h2>我再{{school}}</h2> 
+      - 如果我们没有使用 `mapActions` 但同时使用了模块化编码怎么样呢? 
+        - ```html
+          <button @click="incrementByDispatch(n)">+(by dispatch)</button>
+        - ```js
+          methods: {
+            incrementByDispatch() {
+              this.$store.dispatch('count/plus', this.n);
+            },
+          }
+        -
+
 
 
 
