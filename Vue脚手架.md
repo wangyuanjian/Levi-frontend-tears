@@ -40,6 +40,7 @@
   - [模块化编码(Module)](#模块化编码module)
 - [路由(vue-router)](#路由vue-router)
   - [基础](#基础)
+  - [使用路由](#使用路由)
 
 <!-- /TOC -->
 
@@ -1698,7 +1699,45 @@
     - ```js
       import VueRouter from 'vue-router'; 
       Vue.use(VueRouter);
+### 使用路由
+1. 使用
+    - 在 `src` 下创建 `router/index.js`
+      - ```js
+        import VueRouter from 'vue-router';
+        import About from '../components/About';
+        import Home from '../components/Home';
 
+        export default new VueRouter({
+          routes: [
+            {
+              path: '/about',
+              component: About,
+            },
+            {
+              path: '/home',
+              component: Home,
+            },
+          ]
+        });
+      - 从上可以直到, VueRouter 是一个构造函数
+    - 在 `main.js` 下引入, 并在创建 `Vue` 实例时传入全新配置项
+      - ```js
+        import router from './router'
+        const vm = new Vue({
+          render: h => h(App),
+          // store,
+          beforeCreate() {
+            Vue.prototype.x = this;
+          },
+          router,
+        }).$mount('#app')
+    - 成功使用后, 浏览器导航栏会出现 `/#/`
+      - ![](../image/Snipaste_2022-02-02_19-49-41.png) 
+2. 导航生效
+    - 需求: 点击不同按钮, 跳转不同页面
+    - 以前要写页面跳转, 都是用 `a` 标签, 但是在 VueRouter 中需要使用 `<router-link>` 组件来导航, 并传入 `to` 属性指定链接, 最后 `<router-link>` 会被渲染为一个 `a` 标签
+    - ```js
+      
 
 
 
