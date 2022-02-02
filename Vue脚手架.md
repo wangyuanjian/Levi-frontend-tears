@@ -38,6 +38,8 @@
   - [`mapState` & `mapGetters`](#mapstate--mapgetters)
   - [`mapActions` 👫 `mapMutations`](#mapactions-👫-mapmutations)
   - [模块化编码(Module)](#模块化编码module)
+- [路由(vue-router)](#路由vue-router)
+  - [基础](#基础)
 
 <!-- /TOC -->
 
@@ -1676,10 +1678,26 @@
           console.log('in plus', context.rootState);
           context.commit('PLUS', value);
         }
-      - ![](../image/Snipaste_2022-02-01_16-04-54.png) 
-
-
-
+      - ![](../image/Snipaste_2022-02-01_16-04-54.png)
+5. 最后的优化
+    - 既然将 Vuex 中的内容组件化, 那么完全可以将这些内容写在单独的 js 文件中, 然后在 `store/index.js` 中可以引入哦
+## 路由(vue-router)
+### 基础
+1. `vue-router` 是一个插件库, 专门用来实现 `SPA` 应用
+    - `SPA`
+      - 单页 `Web` 应用 `(Single Page Web Application, SPA)`
+      - 整个应用只有一个完整的页面
+      - 点击页面中的导航链接不会刷新页面, 只会做页面的局部更新
+      - 数据需要通过 `AJAX` 请求获取
+2. 路由
+    - 在 `Vue` 中简单理解一个路由就是一组映射关系 (`key-value`), `key` 为路径, `value` 可能是 `function` 或 `component`
+3. 安装
+    - ```shell
+      npm install vue-router
+    - 引入和使用
+    - ```js
+      import VueRouter from 'vue-router'; 
+      Vue.use(VueRouter);
 
 
 
