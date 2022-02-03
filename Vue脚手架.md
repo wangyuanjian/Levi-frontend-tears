@@ -41,6 +41,7 @@
 - [路由(vue-router)](#路由vue-router)
   - [基础](#基础)
   - [使用路由](#使用路由)
+  - [声明式路由](#声明式路由)
 
 <!-- /TOC -->
 
@@ -1733,10 +1734,43 @@
         }).$mount('#app')
     - 成功使用后, 浏览器导航栏会出现 `/#/`
       - ![](../image/Snipaste_2022-02-02_19-49-41.png) 
-2. 导航生效
+### 声明式路由
+1. 导航生效
     - 需求: 点击不同按钮, 跳转不同页面
     - 以前要写页面跳转, 都是用 `a` 标签, 但是在 VueRouter 中需要使用 `<router-link>` 组件来导航, 并传入 `to` 属性指定链接, 最后 `<router-link>` 会被渲染为一个 `a` 标签
-    - ```js
+    - 路由出口
+      - 路由匹配到的组件将渲染在 `<router-view>` 标签内
+    - ```html
+      <div>
+        <router-link to="/home">去Home</router-link>
+        <router-link to="/about">去About</router-link>
+      </div>
+      <!-- 导航区 -->
+      <div>
+        <router-view>默认内容呗</router-view>
+      </div>
+    - ![](../image/Snipaste_2022-02-02_20-13-38.png)
+2. 🐖注意点
+    - `<router-view>` 组件内写的元素不起作用, 并不会作为路由不匹配时的默认展示
+    - 来看一下解析后的路由
+      - ![](../image/Snipaste_2022-02-02_20-14-55.png)
+      - `a` 的 `href` 属性是 `#/home`
+      - 当前生效的路由还会多两个 `class`
+        - `router-link-exact-active`
+        - `router-link-active`
+    - `active-class`
+      - 可以看到上面的路由仅从样式无法区分哪个路由正在生效, 故此, 可以在 `<router-link>` 标签加上 `active-class` 表示激活时使用的 CSS 类名, 默认是 `router-link-active`
+      - 因为 Vue 会自己加上
+      - ```html
+        <router-link active-class="custom-router-link-active" to="/home">去Home</router-link>
+        <router-link active-class="custom-router-link-active" to="/about">去About</router-link>
+      - ```css
+        .custom-router-link-active {
+          border: 3px solid #d20;
+          padding: 3px;
+        }
+      - ![](../image/Snipaste_2022-02-03_09-15-59.png)
+    - 如果直接而在浏览器导航栏中输入 `http://localhost:8080/#/about`, 那么页面对应的路由也会直接生效
       
 
 
