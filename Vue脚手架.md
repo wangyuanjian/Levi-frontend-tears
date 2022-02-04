@@ -45,6 +45,7 @@
   - [嵌套路由](#嵌套路由)
   - [路由传参](#路由传参)
     - [query 方式](#query-方式)
+  - [命名路由](#命名路由)
 
 <!-- /TOC -->
 
@@ -1894,8 +1895,50 @@
           id: msg.id
         }
       }">{{msg.msg}}</router-link>
-
-
+### 命名路由
+1. 在配置路由时, 可以多传递一个参数 `name` 用来标识一个路由
+    - ```js
+      {
+        path: 'message',
+        component: HomeMessage,
+        children: [
+          {
+            name: 'myDetail',
+            path: 'detail',
+            component: Detail,
+          },
+        ]
+      },
+2. 跳转时使用命名路由
+    - ```html
+      <router-link :to="{
+        path: '/home/message/detail',
+        query: {
+          id: msg.id
+        }
+      }">{{msg.msg}}</router-link>
+    - 上面使用 `path` 也可以跳转路由, 但是 `path` 可能会很长不方便书写, 那么我们可以换用 `name`
+    - ```html
+      <router-link :to="{
+        name: 'myDetail',
+        query: {
+          id: msg.id
+        }
+      }">{{msg.msg}}</router-link>
+    - 使用命名路由跳转必须配合 `to` 的对象写法, 不然, 我们来看看使用 `to` 的字符串写法会怎样
+      - 我们改造 `About.vue`, 给 其加上 `myAbout` 的 `name` 属性
+      - ```js
+        {
+          name: 'myAbout',
+          path: '/about',
+          component: About,
+        },
+      - ```html
+        <!-- to 使用 name -->
+        <router-link active-class="custom-router-link-active" to="myAbout">去About</router-link>
+      - 🐖注意: `myAbout` 前面没有 `/`. (🤫其实使用 `path` 写法时前面不加 `/` 也可以跳转成功, 但是还是加上吧)
+      - 页面仍然可以跳转, 但是浏览器导航栏变了. 一般, 简短的路由跳转可以使用 `path`, 而只在复杂的 `path` 时使用 `name` 替换
+      - ![](../image/Snipaste_2022-02-04_11-35-15.png)
 
 
 
