@@ -1771,7 +1771,25 @@
         }
       - ![](../image/Snipaste_2022-02-03_09-15-59.png)
     - 如果直接而在浏览器导航栏中输入 `http://localhost:8080/#/about`, 那么页面对应的路由也会直接生效
-      
+    - 路由组件和一般组件
+      - 路由组件: 靠路由渲染出来的组件, 并没有固定写在模板语法中, 比如, `<Home/>` 和 `<About/>` 组件
+      - 在开发中, 可以将一般组件和路由组件放在不同的文件夹, 比如路由组件放在 `pages` 下, 一般组件放在 `components` 组件
+    - 切换组件时组件被销毁
+      - ```js
+        mounted () {
+          console.log('Home 组件创建了');
+        },
+        beforeDestroy () {
+          console.log('Home 组件销毁了');
+        }  
+      - ![](../image/Snipaste_2022-02-04_09-15-18.png)
+3. `$route` 和 `$router`
+    - 每个组件都有自己的 `$route`, 但是整个应用只有一个 `$router`
+    - ![](../image/Snipaste_2022-02-04_09-24-20.png)
+    - ![](../image/Snipaste_2022-02-04_09-25-11.png)
+    - 并且有一个关系
+      - ```js
+        this.$router.currentRoute === this.$route // true
 
 
 
