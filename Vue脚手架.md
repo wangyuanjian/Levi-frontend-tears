@@ -44,6 +44,7 @@
   - [声明式路由](#声明式路由)
   - [嵌套路由](#嵌套路由)
   - [路由传参](#路由传参)
+    - [query 方式](#query-方式)
 
 <!-- /TOC -->
 
@@ -1836,9 +1837,63 @@
     - ![](../image/Snipaste_2022-02-04_09-58-59.png)
     - 注意蓝色箭头, 多级路由时, 生效的不仅是最深的一级, 每级都会生效 
 ### 路由传参
-1. 
-
-
+#### query 方式
+1. 需求: 点击不同消息, 传递对应的参数给 `Detail.vue`
+2. 配置新路由
+    - ```js
+      {
+        path: '/home',
+        component: Home,
+        children: [
+          {
+            path: 'news',
+            component: HomeNews
+          },
+          {
+            path: 'message',
+            component: HomeMessage,
+            children: [
+              {
+                path: 'detail',
+                component: Detail,
+              },
+            ]
+          },
+        ]
+      },
+3. 修改 `HomeMessage.vue`
+    - ```html
+      <div>
+        <ul>
+          <li v-for="(msg) in msgList" :key="msg.id">
+            <router-link :to="`/home/message/detail?id=${msg.id}`">{{msg.msg}}</router-link>
+          </li>
+        </ul>
+        <router-view></router-view>
+      </div>
+4. 创建 `Detail.vue`
+    - ```html
+      <div>
+        <h3>我是Detail.vue, 传来的参数是: {{$route.query.id}}</h3>
+      </div>
+    - ```js
+      mounted () {
+        console.log(`$route in detail.vue`, this.$route.query);
+      }
+    - 再次回到 `$route`, 其中的 `query` `property` 帮助我们获取路由的参数
+      - ![](../image/Snipaste_2022-02-04_10-53-39.png)
+    - 整个页面
+      - ![](../image/Snipaste_2022-02-04_10-54-30.png)
+      - 有一个小问题, 因为使用 `v-for` 生成路由导航, 它们的 `to` 都是一样的, 只不过后面的 `query` 部分不同, 导致点哪一个, 都会生效
+5. `to` 的对象写法
+    - 如果在跳转路由时要携带很多参数, `to` 的字符串写法就很复杂, 改造🚗
+    - ```html
+      <router-link :to="{
+        path: '/home/message/detail',
+        query: {
+          id: msg.id
+        }
+      }">{{msg.msg}}</router-link>
 
 
 
