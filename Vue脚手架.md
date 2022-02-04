@@ -42,6 +42,8 @@
   - [基础](#基础)
   - [使用路由](#使用路由)
   - [声明式路由](#声明式路由)
+  - [嵌套路由](#嵌套路由)
+  - [路由传参](#路由传参)
 
 <!-- /TOC -->
 
@@ -1790,9 +1792,51 @@
     - 并且有一个关系
       - ```js
         this.$router.currentRoute === this.$route // true
-
-
-
+### 嵌套路由
+1. 需求: 当前路由下, 还可以选择更多路由
+2. 创建子页面 `HomeMessage` 和 `HomeNews`
+3. `children` 嵌套子路由
+    - ```js
+      {
+        path: '/home',
+        component: Home,
+        children: [
+          {
+            path: 'news',
+            component: HomeNews
+          },
+          {
+            path: 'message',
+            component: HomeMessage
+          },
+        ]
+      },
+    - 🐖注意: 子路由的 `path` 不要写 `/news`, 前面不要写 `/`
+4. 修改 `Home.vue` 
+    - ```html
+      <div>
+        Home.vue
+        <div>
+          <nav>
+            <ul>
+              <li>
+                <router-link to="/home/news">read news</router-link>
+              </li>
+              <li>
+                <router-link to="/home/message">read message</router-link>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <hr>
+        <router-view></router-view>
+      </div>
+    - 🐖注意: 二级导航路由时, `to` 要写完整的路由 `/home/news` 而不能只写 `/news`
+5. 效果
+    - ![](../image/Snipaste_2022-02-04_09-58-59.png)
+    - 注意蓝色箭头, 多级路由时, 生效的不仅是最深的一级, 每级都会生效 
+### 路由传参
+1. 
 
 
 
