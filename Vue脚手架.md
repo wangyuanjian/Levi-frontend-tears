@@ -52,7 +52,13 @@
   - [编程式路由导航](#编程式路由导航)
   - [缓存路由组件](#缓存路由组件)
   - [两个新的生命周期钩子 `activated` 和 `deactivated`](#两个新的生命周期钩子-activated-和-deactivated)
-  - [全局前置-路由守卫](#全局前置-路由守卫)
+  - [导航路由守卫](#导航路由守卫)
+    - [全局前置守卫](#全局前置守卫)
+    - [全局解析守卫](#全局解析守卫)
+    - [全局后置守卫](#全局后置守卫)
+    - [路由独享的守卫](#路由独享的守卫)
+    - [组件内的守卫](#组件内的守卫)
+    - [完整的导航解析流程](#完整的导航解析流程)
 
 <!-- /TOC -->
 
@@ -2170,6 +2176,8 @@
       - 其执行顺序在 `mounted` 之后
       - ![](../image/Snipaste_2022-02-05_17-27-52.png)
     - `deactivated`: 被 `keep-alive` 缓存的组件`失活`时调用
+      - 其执行顺序在 `beforeDestory` 之前
+      - ![](../image/Snipaste_2022-02-05_18-34-50.png)
     - 有三个声明周期钩子没有出现在官方文档的生命周期图中, 上面是其中两个, 还有一个是 `$nextTick`
 2. 案例
     - 之前写一个东西控制启不停显示和隐藏
@@ -2214,8 +2222,70 @@
           console.log("news is deactivated");
           clearInterval(this.timer);
         }
-### 全局前置-路由守卫
-1. 
+### 导航路由守卫
+> 导航: 表示路由正在发生改变 \
+> `vue-router` 提供的导航守卫主要用来通过跳转或取消的方式守卫导航, 有多种机会植入路由导航过程: 全局的, 单个路由独享的 或者是组件级的. \
+> `params` 或 `query` 的改变并不会触发进入或离开导航守卫
+#### 全局前置守卫
+1. `route人.beforeEach`
+    - 使用该方法注册全局的前置守卫. 在路由跳转完成前执行. 当一个导航触发时, 全局前置守卫按照创建顺序调用. 
+    - 守卫是异步解析, 此时导航在所有守卫 `resolve` 之前一直处于 `等待中`
+    - 每个守卫接收三个参数
+      - `to`: 即将进入的目标路由
+        - ![](../image/Snipaste_2022-02-05_18-26-45.png)
+      - `from`: 正要离开的路由. 同 `to` 属于相同对象
+      - `next: Function`: 一定要调中这个方法 `resolve`, 执行效果依赖 `next` 发放调用参数
+    - `router/index.js`
+      - ```js
+        router.beforeEach((to, from, next) => {
+          console.log('我是守卫1');
+          if (to.path === '/home/about') {
+            alert('无权限访问');
+          } else {
+            next();
+          }
+        });
+
+        router.beforeEach((to, from, next) => {
+          console.log('我是守卫2');
+          next();
+        });
+      - 执行的顺序
+        - ![](../image/Snipaste_2022-02-05_18-37-25.png)
+        - 而且, 只要有一个全局前置守卫没有 `resolve`, 导航就不会通过
+    - 返回值
+      - `2.5.0+` 版本, 该方法返回一个移除已注册守卫/钩子的函数. 大概意思就是调用这个返回值函数, 那么其对应的前置导航守卫将会失效.
+      - ```js
+        const whoAmI = router.beforeEach((to, from, next) => {
+          console.log('我是守卫2');
+          // next();
+        });
+        console.log(`whoAmI is `, whoAmI);
+        whoAmI();
+      - ![](../image/Snipaste_2022-02-05_18-45-59.png)
+      - 上面代码中, 第二个导航守卫的 `next()` 已经被注释, 而且调用了其返回值, 所以即便没有 `next()` 路由仍然不受改导航守卫的影响, 因为该导航守卫已经被移除
+2. `next()`
+    - `next()`: 进行下一个钩子(理解为如果注册了多个导航守卫, 那么执行下一个导航守卫), 如果所有的钩子都执行完, 那么导航的状态就是 `confirmed(已确认)`.
+    - `next(false)`: 中断当前导航. 如果浏览器的 `URL` 改变(用户手动输入或者浏览器后退), 那么 `URL` 会重置为 `from` 路由对应的地址. 页面就是点了没效果
+    - `next('/')` 或 `next({ path: '/' })`: 跳转到一个不同的地址. 可以向 `next` 传递任意位置的对象
+      - ```js
+        next('/home/message');
+    - `next(error)`: 如果传入 `next` 的参数是一个 `Error` 实例, 那么导航将会被种植并且该错误会被传递给 `router.onError()` 注册过的回调
+      - ```js
+        router.beforeEach((to, from, next) => {
+          console.log('我是守卫1');
+          if (to.path === '/myAbout') {
+            next(new Error('hahaha'));
+          } else {
+            next();
+          }
+        });
+      - ![](../image/Snipaste_2022-02-05_18-56-43.png)
+#### 全局解析守卫
+#### 全局后置守卫
+#### 路由独享的守卫
+#### 组件内的守卫
+#### 完整的导航解析流程
 
 
 
