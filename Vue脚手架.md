@@ -50,6 +50,7 @@
   - [路由 Props](#路由-props)
   - [<router-link>](#router-link)
   - [编程式路由导航](#编程式路由导航)
+  - [缓存路由组件](#缓存路由组件)
 
 <!-- /TOC -->
 
@@ -2135,9 +2136,31 @@
       }
     - `this.$router.go()`
       - 接收参数, 如果是 `0`, 就刷新当前页面; 如果正整数, 就前进几个路由; 如果负整数, 就后退几个路由; 
-
-
-
+### 缓存路由组件
+1. 需求: 在新闻页的每条新闻后面加上输入框.
+    - 因为切换 `News` 和 `Message` 组件, `News` 会被销毁, 所以输入的内容会被清空,
+2. 修改 `Home.vue`
+    - 使用 [`<keep-alive>`](https://cn.vuejs.org/v2/api/#keep-alive)
+    - 是一个抽象组件: 它自身不会渲染一个 `DOM` 元素, 也不会出现在组件的父组件链中.
+    - 当组件在 `<keep-alive>` 内被切换, 它的 `activated` 和 `deactivated` 这两个生命周期钩子函数将会被对应执行.
+    - ```html
+      <keep-alive include="HomeNews">
+        <router-view></router-view>
+      </keep-alive>
+3. 属性
+    - `include`: 字符串或正则表达式. 只有名称匹配的组件会被缓存.
+      - 其值为组件的 `name` 属性
+      - ```js
+        export default {
+          name: 'HomeNews'
+        }
+      - 所以, 如果要缓存多个, 可以写
+      - ```html
+        <keep-alive include="HomeNews,HomeMessage">
+          <router-view></router-view>
+        </keep-alive>
+    - `exclude`: 字符串或正则表达式. 任何名称匹配的组件都不会被缓存. 
+    - `max`: 数字. 最多可以缓存多少组件实例
 
 
 
