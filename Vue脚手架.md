@@ -51,6 +51,8 @@
   - [<router-link>](#router-link)
   - [编程式路由导航](#编程式路由导航)
   - [缓存路由组件](#缓存路由组件)
+  - [两个新的生命周期钩子 `activated` 和 `deactivated`](#两个新的生命周期钩子-activated-和-deactivated)
+  - [全局前置-路由守卫](#全局前置-路由守卫)
 
 <!-- /TOC -->
 
@@ -2161,9 +2163,59 @@
         </keep-alive>
     - `exclude`: 字符串或正则表达式. 任何名称匹配的组件都不会被缓存. 
     - `max`: 数字. 最多可以缓存多少组件实例
-
-
-
+### 两个新的生命周期钩子 `activated` 和 `deactivated`
+> [参考👉](https://cn.vuejs.org/v2/api/#activated)
+1. 了解
+    - `activated`: 被 `keep-alive` 缓存的组件`激活`时调用
+      - 其执行顺序在 `mounted` 之后
+      - ![](../image/Snipaste_2022-02-05_17-27-52.png)
+    - `deactivated`: 被 `keep-alive` 缓存的组件`失活`时调用
+    - 有三个声明周期钩子没有出现在官方文档的生命周期图中, 上面是其中两个, 还有一个是 `$nextTick`
+2. 案例
+    - 之前写一个东西控制启不停显示和隐藏
+    - `HomeNews.vue`
+      - ```html
+        <ul>
+          <li :style="{ opacity }">欢迎学习 Vue</li>
+          <li>news 1 <input type="text"></li>
+          <li>news 2 <input type="text"></li>
+          <li>news 3 <input type="text"></li>
+        </ul>
+      - ```js
+        data () {
+          return {
+            opacity: 1
+          }
+        },
+        mounted() {
+          console.log('news is created');
+          this.timer = setInterval(() => {
+            console.log('@');
+            this.opacity -= 0.01;
+            if (this.opacity < 0) {
+              this.opacity = 1;
+            }
+          }, 16);
+        },
+    - 之前的写法是在 `beforeDestory` 钩子中销毁定时器, 但是由于 `HomeNews` 组件被缓存, 并不会调用 `beforeDestory` 钩子, 所以即便该组件处于 `deactivated` 状态, 定时器仍在运行, 造成浪费🙅‍
+    - 所以, 改写代码, 将定时器逻辑改变位置
+      - ```js
+        activated() {
+          console.log("news is activated");
+          this.timer = setInterval(() => {
+            console.log("@");
+            this.opacity -= 0.01;
+            if (this.opacity < 0) {
+              this.opacity = 1;
+            }
+          }, 16);
+        },
+        deactivated() {
+          console.log("news is deactivated");
+          clearInterval(this.timer);
+        }
+### 全局前置-路由守卫
+1. 
 
 
 
