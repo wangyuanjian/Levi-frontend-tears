@@ -59,6 +59,7 @@
     - [组件内的守卫](#组件内的守卫)
     - [全局解析守卫](#全局解析守卫)
     - [完整的导航解析流程](#完整的导航解析流程)
+  - [HTML5 History 模式](#html5-history-模式)
 
 <!-- /TOC -->
 
@@ -2321,9 +2322,29 @@
 #### 全局解析守卫
 1.
 #### 完整的导航解析流程
-
-
-
+1. 完整的导航解析流程
+    - 导航被触发;
+    - 在失活的组件里调用 `beforeRouteLeave` 守卫;
+    - 调用全局的 `beforeEach` 守卫;
+    - 在重用的组件里调用 `beforeRouteUpdate` 守卫 `(2.2+)`;
+    - 在路由配置里调用 `beforeEnter`;
+    - 解析异步路由组件;
+    - 在被激活的组件里调用 `beforeRouteEnter`;
+    - 调用全局的 `beforeResolve` 守卫 `(2.5+)`;
+    - 导航被确认;
+    - 调用全局的 `afterEach` 钩子;
+    - 触发 `DOM` 更新;
+    - 调用 `beforeRouteEnter` 守卫中传给 `next` 的回调函数，创建好的组件实例会作为回调函数的参数传入;
+### HTML5 History 模式
+1. `vue-router` 默认使用 `hash` 模式, 使用 `URL` 的 `hash` 模拟一个完整的 `URL`, 当 `URL` 改变时页面不会发生重新加载
+    - `hash` 模式很丑, 可以开启路由的 `history` 模式
+2. 使用 `mode` 配置开启 `history` 模式
+    - ```js
+      const router = new VueRouter({
+        mode: 'history',
+        routes: [...]
+      })
+    - 使用 `history` 模式时, `URL` 就像正常的 `url`, 比如 `http://localhost/user/wang`, 但是这种模式需要后端配合, 比如用户刷新当前页面就会直接向浏览器发送 `/user/wang` 的 `GET` 请求, 这时会报错 `404`.
 
 
 
