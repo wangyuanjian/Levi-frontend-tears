@@ -48,6 +48,8 @@
     - [params 方式](#params-方式)
   - [命名路由](#命名路由)
   - [路由 Props](#路由-props)
+  - [<router-link>](#router-link)
+  - [编程式路由导航](#编程式路由导航)
 
 <!-- /TOC -->
 
@@ -2077,8 +2079,62 @@
         <h3>props function 写法</h3>
         <h3>query by props 传来的 id 是: {{id}}</h3>
     - ![](../image/Snipaste_2022-02-05_10-04-18.png)
-
-
+### <router-link>
+1. `replace`
+    - 设置 `replace` 属性的话, 当点击时, 会调用 `router.replace()` 而不是 `router.push()`,于是导航后不会留下 `history` 记录.
+### 编程式路由导航
+1. 有时声明式路由导航并不能满足所有路由需求, 比如登陆成功后自动跳转, 路由控制需要放在登录成功的回调函数里
+2. 使用 `$router.push` 和 `$router.replace` 可以进行路由控制
+    - 在 `HomeMessage.vue`
+      - ```html
+        <router-link :to="{
+          path: '/home/message/detail',
+          query: {
+            id: msg.id
+          }
+        }">{{msg.msg}}</router-link>
+        <button @click="pushShow(msg)">push跳转</button>
+        <button @click="replaceShow(msg)">replace跳转</button>
+      - ```js
+        methods: {
+          pushShow(msg) {
+            this.$router.push({
+              path: '/home/message/detail',
+              query: {
+                id: msg.id
+              }
+            })
+          },
+          replaceShow(msg) {
+            this.$router.replace({
+              path: '/home/message/detail',
+              query: {
+                id: msg.id
+              }
+            })
+          },
+        }
+      - 可以看出编程时路由导航和声明式路由导航的 `API` 设计一致性
+3. 控制页面前进, 后退, 刷新
+    - ```html
+      <h3>Vue-router</h3>
+      <button @click="forward">前进</button>
+      <button @click="back">后退</button>
+      <button @click="go">go刷新</button>
+    - ```js
+      methods: {
+        forward() {
+          this.$router.forward();
+        },
+        back() {
+          this.$router.back();
+        },
+        go() {
+          this.$router.go(0);
+        },
+      }
+    - `this.$router.go()`
+      - 接收参数, 如果是 `0`, 就刷新当前页面; 如果正整数, 就前进几个路由; 如果负整数, 就后退几个路由; 
 
 
 
