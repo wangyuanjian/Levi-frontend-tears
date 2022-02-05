@@ -59,6 +59,7 @@
     - [组件内的守卫](#组件内的守卫)
     - [全局解析守卫](#全局解析守卫)
     - [完整的导航解析流程](#完整的导航解析流程)
+  - [路由元信息](#路由元信息)
   - [HTML5 History 模式](#html5-history-模式)
 
 <!-- /TOC -->
@@ -2335,6 +2336,47 @@
     - 调用全局的 `afterEach` 钩子;
     - 触发 `DOM` 更新;
     - 调用 `beforeRouteEnter` 守卫中传给 `next` 的回调函数，创建好的组件实例会作为回调函数的参数传入;
+### 路由元信息
+1. 定义路由的时候可以配置 `meta` 字段. 其值是一个对象, 可以添加一些我们需要的自定义的属性
+    - ```js
+      {
+        path: 'news',
+        component: HomeNews,
+        beforeEnter(to, from, next) {
+          // 这里的逻辑和全局前置路由守卫一样
+          console.log('路由独享守卫--beforeEnter');
+          next();
+        },
+        meta: {
+          requireAuth: true,
+          title: '新闻',
+        },
+      },
+2. 看看之前写代码的弊端
+    - `1️⃣`: 全局后置路由守卫中将所有页面的 `title` 都设置为 `haha`, 这是不合适的, 每个页面应该有自己的 `title`
+      - 改写代码
+      - ```js
+        router.afterEach((to, from) => {
+          console.log('全局后置路由守卫 -- afterEach');
+          // document.title = 'haha';
+          document.title = to.meta.title || '首页'
+        });
+      - 解释为什么要加 `|| '首页'`🤨因为我们没法给 `/` 加上 `meta` 属性. 只能这样做. 而且这样做在刷新页面时有抖动, 所以完美的解决方案是修改 `package.json` 中的 `name` 属性, 因为 `public/index.html` 下的 `title` 就是从 `package.json` 中读取的
+        - ```html
+          <title><%= htmlWebpackPlugin.options.title %></title> 
+    - `2️⃣`: 如果很多组件页面都需要访问控制, 不可能在在全局前置守卫中写很多个 `to.path === '/xx/xx'` 这样, 也不可能在很多个路由独享守卫中写相同的逻辑
+3. 解决第二个问题
+    - 在 `routes` 中配置的每个路由对象都是一个 `路由记录`, 路由记录是可以记录的, 比如 `/home/message` 将会匹配到父路由记录 (`/home`) 和 本身路由记录 (`/message`)
+    - 一个路由匹配到的所有路有记录都会暴露为 `$route.matched` 数组, 所以检查这个数组就行, 而不需要一级一级一个一个判断
+    - ```js
+      router.beforeEach((to, from, next) => {
+        console.log('全局前置路由守卫 -- beforeEach');
+        if (to.matched.some((record) => record.meta.requireAuth)) {
+          next(new Error('hahaha'));
+        } else {
+          next();
+        }
+      });
 ### HTML5 History 模式
 1. `vue-router` 默认使用 `hash` 模式, 使用 `URL` 的 `hash` 模拟一个完整的 `URL`, 当 `URL` 改变时页面不会发生重新加载
     - `hash` 模式很丑, 可以开启路由的 `history` 模式
