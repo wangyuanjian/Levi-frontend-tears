@@ -2289,6 +2289,16 @@
       });
     - 可以在后置路由守卫中设置 `tab` 页的 `title`, 如果在前置路由守卫中设置, 会因为是否需要鉴权而进行复杂判断从而将设置 `title` 的语句放在不同位置, 不如后置来的干脆
 #### 路由独享的守卫
+1. 可以在配置路由时直接定义 `beforeEnter` 守卫
+    - ```js
+      {
+        path: 'news',
+        component: HomeNews,
+        beforeEnter(to, from, next) {
+          // 这里的逻辑和全局前置路由守卫一样
+        },
+      },
+2. 只有 `beforeEnter`, ❗**没有** `afterEnter`
 #### 组件内的守卫
 #### 全局解析守卫
 1.
