@@ -47,6 +47,7 @@
     - [query 方式](#query-方式)
     - [params 方式](#params-方式)
   - [命名路由](#命名路由)
+  - [路由 Props](#路由-props)
 
 <!-- /TOC -->
 
@@ -1924,6 +1925,7 @@
             title: msg.msg,
           }
         }">{{msg.msg}}</router-link>
+      - 🐖❗如果使用 `params` 传参, 只能使用 `name`, 不能使用 `path`
 3. 接收参数
     - 首先打印 `this.$route`
     - ![](../image/Snipaste_2022-02-04_20-46-15.png)
@@ -1981,9 +1983,100 @@
       - 🐖注意: `myAbout` 前面没有 `/`. (🤫其实使用 `path` 写法时前面不加 `/` 也可以跳转成功, 但是还是加上吧)
       - 页面仍然可以跳转, 但是浏览器导航栏变了. 一般, 简短的路由跳转可以使用 `path`, 而只在复杂的 `path` 时使用 `name` 替换
       - ![](../image/Snipaste_2022-02-04_11-35-15.png)
+### 路由 Props
+1. 如果在路由中传递很多参数, 那么路由组件的模板语法中会写很多的 `$route.query` 或 `$route.params`, 这样很不优雅. 所以改用 `Props` 用来传递参数并简化模板语法
+    - 使用 `Props` 需要在定义路由时加上 `props` 配置项
+2. `props` 第一种写法: 对象写法
+    - 直接将属性和值写进对象
+    - ```js
+      {
+        path: 'message',
+        component: HomeMessage,
+        children: [
+          {
+            name: 'myDetail',
+            path: 'detail/:id/:title',
+            component: Detail,
+            // props 的第一种写法
+            props: {
+              a: 1, 
+              b: 'hello',
+            },
+          },
+        ]
+      },
+    - 在 `Detail.vue` 中使用 `props` 接收
+      - ```js
+        props: ['a', 'b'],
+      - ```html
+        <span>Props: a->{{a}}, b->{{b}}</span>
+    - ![](../image/Snipaste_2022-02-05_09-31-50.png)
+    - 这种写法比较局限, 因为传过去的内容都是固定写好的
+2. `props` 第二种写法: `boolean` 写法
+    - 如果 `boolean` 值为真, 会把该路由组件收到的所有 `params` 参数, 以 `props` 的形式接收
+    - ```js
+      {
+        path: 'message',
+        component: HomeMessage,
+        children: [
+          {
+            name: 'myDetail',
+            path: 'detail/:id/:title',
+            component: Detail,
+            // props 的第一种写法
+            // props: {
+            //   a: 1, 
+            //   b: 'hello',
+            // },
 
-
-
+            // props 的第二种写法
+            props: true,
+          },
+        ]
+      },
+    - 在 `Detail.vue` 中使用 `props` 接收
+      - ```js
+        props: ['id', 'title'],
+      - ```html
+        <h3>props boolean 写法</h3>
+        <h3>params by props 传来的 id 是: {{id}}</h3>
+        <h3>params by props 传来的 title 是: {{title}}</h3>
+    - ![](../image/Snipaste_2022-02-05_09-40-23.png)
+3. `props` 第二种写法: `函数` 写法
+    - 函数接收 `$route` 为参数, 依靠返回对象来给路由组件传值
+    - 注意, 如果要接收 `query` 参数, 记得 `path` 中不能写路径变量
+    - ```js
+      {
+        path: 'message',
+        component: HomeMessage,
+        children: [
+          {
+            name: 'myDetail',
+            path: 'detail',
+            component: Detail,
+            props: (route) => {
+              return {
+                id: route.query.id,
+              }
+            }
+          },
+        ]
+      },
+    - 这次使用 `query` 传参. `HomeMessage.vue`
+      - ```html
+        <router-link :to="{
+          path: '/home/message/detail',
+          query: {
+            id: msg.id
+          }
+        }">{{msg.msg}}</router-link>
+    - `Detail.vue`
+      - ```js
+        props: ['id'],
+      - ```html
+        <h3>props function 写法</h3>
+        <h3>query by props 传来的 id 是: {{id}}</h3>
+    - ![](../image/Snipaste_2022-02-05_10-04-18.png)
 
 
 
