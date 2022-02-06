@@ -2311,10 +2311,22 @@
         console.log('组件内守卫--beforeRouteEnter');
       }
 2. `beforeRouteUpdate`
+    - 在当前路由改变, 但是该组件被复用时调用.
+    -  对于一个带有动态参数的路径, `/home/message/detail/:id`, 在 `/home/message/detail/001` 和 `/home/message/detail/002` 之间跳转时, 由于会渲染相同的 `Detail.vue` 组件, 因此组件实例会被复用, 此时会调用 `beforeRouteUpdate` 钩子, 可访问组件实例 `this`
+    - ```js
+      beforeRouteUpdate (to, from, next) {
+        console.log('组件内路由 - beforeRouteUpdate');
+        next();
+      }
+    - ![](../image/Snipaste_2022-02-06_08-36-38.png)
 3. `beforeRouteLeave`
     - 导航离开该组件的对应路由时调用
     - 可以访问组件实例 `this`
     - ```js
+      beforeRouteLeave (to, from, next) {
+        console.log('组件内守卫--beforeRouteLeave');
+        next();
+      }
 4. 先看一下顺序
     - 我在 `HomeNews.vue` 中加入了所有的导航, 包括全局前置, 全局后置, 路由独享守卫, 组件内路由守卫, 并且全部放行
     - 点击顺序, `home` -> `news` -> `about`. 可以看到都是先进行路由守卫, 守卫通过后才会创建组件执行生命周期钩子. 而且全局的最先执行, 然后是路由独享守卫, 最后组件内路由守卫
