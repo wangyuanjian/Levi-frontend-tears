@@ -11,6 +11,10 @@
   - [mixin 混合](#mixin-混合)
     - [给混合器传参](#给混合器传参)
   - [继承器](#继承器)
+    - [何时使用继承](#何时使用继承)
+    - [继承的高级用法](#继承的高级用法)
+    - [继承的工作细节](#继承的工作细节)
+    - [使用继承的最佳实践](#使用继承的最佳实践)
 
 <!-- /TOC -->
 
@@ -371,7 +375,41 @@
           )
         }
 ## 继承器
-
+1. 使用 `sass` 时, 最后一个减少重复的主要特性就是选择器继承, 即一个选择器可以继承为另一个选择器定义的所有样式, 通过 `@extend` 语法实现
+    - ```html
+      <div class="error">
+        <span>hahaha</span>
+      </div>
+      <div class="seriousError">
+        <span>hahaha :(</span>
+      </div>
+    - ```scss
+      .error {
+        color: #c10;
+      }
+      .seriousError {
+        @extend .error;
+        font-size: 1.5em;
+      }
+    - ![](../image/Snipaste_2022-02-06_11-48-38.png)
+2. 继承不仅会继承父类自身所有样式, 连与父类有关的组合选择器样式也会被子类以组合选择器的形式继承
+    - ```html
+      <h1>正常H1</h1>
+      <h1 class="error">H1, Error</h1>
+      <h1 class="seriousError">H1, Error</h1>
+    - ```scss
+      h1.error {
+        color: #c10;
+      }
+      h1.error:hover {
+        opacity: 0.5;
+      }
+    - 来看一下生成的样式, 不论是`并集选择器`, 还是`伪类选择器`, 都会被继承哦😀~
+    - ![](../image/Snipaste_2022-02-06_12-00-28.png)
+### 何时使用继承
+### 继承的高级用法
+### 继承的工作细节
+### 使用继承的最佳实践
 
 
 
