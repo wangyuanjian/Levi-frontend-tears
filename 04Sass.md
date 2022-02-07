@@ -5,7 +5,7 @@
   - [语法](#语法)
     - [变量](#变量)
     - [规则嵌套](#规则嵌套)
-    - [属性嵌套](#属性嵌套)
+    - [属性嵌套(Nested Properties)](#属性嵌套nested-properties)
     - [导入 SASS 文件](#导入-sass-文件)
   - [注释](#注释)
   - [mixin 混合](#mixin-混合)
@@ -85,7 +85,7 @@
         border: 1px solid $border_color;
       }
 ### 规则嵌套
-1. css 中, 如果我们要写一大串指向页面中同一块的样式时, 往往需要一遍又一遍写同一个 `ID`, 如下
+1. `CSS` 中, 如果我们要写一大串指向页面中同一块的样式时, 往往需要一遍又一遍写同一个 `ID`, 如下
     - ![](../image/Snipaste_2022-01-03_00-33-24.png)
     - `sass` 可以让你只写一遍且使样式可读性更高
     - ```scss
@@ -104,6 +104,23 @@
       }
     - 这样的嵌套关系和 `HTML` 中的嵌套关系很像, 真的~
     - `sass` 将 `#content` (父级) 这个 `id` 放在 `article` 选择器 (子级) 前边, 若 `article` 还有子选择器, 则重复这一步骤即可展开.
+    - 🐖注意: 下面的嵌套展开之后. 我想说的就是, 展开之后🙅‍不是🙅‍`#main p, div`, 而是 `#main p, #main div`
+      - ```html
+        <div id="main">
+          <p><span>span_in_p</span></p>
+          <div><span>span_in_div</span></div>
+        </div>
+      - ```scss 
+        #main {
+          width: 97%;
+          p, div {
+            color: red;
+            span {
+              font-size: 2em;
+            }
+          }
+        }
+      - ![](../image/Snipaste_2022-02-07_21-34-16.png)
 2. 父选择器的标识符 **`&`**
     - 大多数情况这种简单的嵌套都没问题, 但是有些场景不行, 比如应用一个类似 `:hover` 的伪类
       - ```scss
@@ -131,6 +148,24 @@
             }
           }
         }
+      - 最终生成的结果是
+      - ```scss
+        #content aside:hover {
+          color: #f60;
+        }
+    - `&` 必须作为选择器的第一个字符, 其后可以跟随后缀生成符合的选择器
+      - ```html
+        <div class="post">
+          <div class="post-header">header</div>
+        </div>
+      - ```scss
+        .post {
+          &-header {
+            color: #d30;
+          }
+        }
+      - ![](../image/Snipaste_2022-02-07_21-53-55.png)
+      - 当父选择器含有不合适的后缀时, `sass` 将会报错
 3. 群组选择器
     - 嵌套也能很好的处理群组选择器的情况
     - 比如, 我们需要为 `.container` 中每个元素都设置 `margin`, 一般的 `css` 是这样写的
@@ -140,6 +175,7 @@
           <h2>h2</h2>
           <h3>h3</h3>
         </div>
+      - 用 `CSS` 写复杂
       - ```css
         .container h1, .container h2, .container h3 {
           margin-left: 1100px0px
@@ -182,9 +218,10 @@
       article dl > dt { color: #333 }
       article dl > dd { color: #555 }
       nav + article { margin-top: 0 }
-### 属性嵌套
+### 属性嵌套(Nested Properties)
 1. 除了 `CSS` 选择器, 属性也可以进行嵌套
-    - 比如频繁编写 `border-*` 类型的属性会很麻烦. 可以使用下面的形式
+    - 有些 `CSS` 属性遵循相同的命名空间 (`namespace`)，比如 `font-family`, `font-size`, `font-weight` 都以 `font` 作为属性的命名空间
+    - 频繁编写 `border-*` 类型的属性会很麻烦. 可以使用下面的形式
     - ```scss
       .box3 {
         border: {
@@ -202,6 +239,7 @@
       }
     - 嵌套属性的规则是这样的: 把属性名从中划线 `-` 的地方断开, 在根属性后边添加一个`冒号:`, 紧跟一个 `{ }` 块, 把子属性部分写在这个 `{ }` 块中
 2. 属性的缩写形式和例外规则
+    - 命名空间也可以包含自己的属性值
     - 比如, 我们已经使用缩写形式 `border`, 但是想指定左边框宽度, 就可以这样写
     - ```scss
       .box4 {
