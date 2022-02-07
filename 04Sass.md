@@ -435,8 +435,38 @@
 3. 如果一个选择器序列 `#main .seriousError2` 继承另一个选择器 `.error`, 那么只有完全匹配 `#main .seriousError2` 这个选择器的元素才会继承 `.error` 的样式
 4. 像 `#main .error` 这样的选择器是不能被继承的, 因为从 `#main .error` 中继承的样式一般情况下会跟直接从 `.error` 中继承的样式基本一致, 细微的区别往往使人迷惑
 ### 继承的工作细节
+1. 跟`变量`和`混合器`不同, 继承并不是仅仅用 `CSS` 样式替换 `@extend` 处的代码这么简单
+2. `@extend` 背后最基本的思想是
+    - 如果 `.seriousError @extend .error`, 那么样式表中任何一处的 `.error` 都用 `.seriousError .error` 这一组选择器进行替换
+    - 用面向对象方式理解, 就是父类出现的地方都可以用子类代替这种, 比如 `.error` 是红色背景, `.seriousError` 是红色背景加感叹号, 那么后者更强烈的表达是可以用在之前较温和的表达上.
+3. 两个要点
+    - 和`混合器`相比, 继承生成的 `CSS` 代码相对较少, 因为继承仅仅是重复选择器, 而不会重复属性
+    - 继承遵从 `CSS` 层叠的规则. 对同一属性的修改, 即权重更高的选择器胜出, 如果权重相同, 定义在后边的规则胜出
 ### 使用继承的最佳实践
-
+1. 继承只会在生成 `CSS` 是复制选择器, 而不会复制大段的 `CSS` 属性. 如果不小心, 可能会让生成的 `CSS` 包含大量的选择器复制.
+    - `⚠` 最好不在 `CSS` 规则中使用后代选择器 (比如 `.foo .bar`) 继承 `CSS` 规则.
+    - ```scss 
+      .bip .baz { a: b; }
+      .foo .bar { @extend .baz }
+    - 这个例子, `sass` 必须保证应用到 `.baz` 的样式同时也要应用到 `.foo .bar`, 可能存在三种情况
+      - ```html
+        <!-- 继承情况可能迅速复杂 -->
+        <div class="foo">
+          <div class="bip">
+            <div class="bar">...</div>
+          </div>
+        </div>
+      - ```html
+        <div class="bip">
+          <div class="foo">
+            <div class="bar">...</div>
+          </div>
+        </div>
+      - ```html
+        <div class="foo bip">
+          <div class="bar">...</div>
+        </div>
+    - 理解🤔: 上面究竟是什么意思? 回到 `@extend` 的基本思想, 用在这里就是凡是 `.baz` 出现的地方都可以用 `.foo .baz` 替代, 所以, 替代之后就是 `.bip .foo .baz`, 那么对于 `.bip .foo .baz` 这个选择器, 就要做排列组合了, 所以文档中才说选择器的个数可能爆炸性增加.
 
 
 
