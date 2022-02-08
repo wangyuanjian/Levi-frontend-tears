@@ -8,6 +8,9 @@
     - [属性嵌套(Nested Properties)](#属性嵌套nested-properties)
     - [导入 SASS 文件](#导入-sass-文件)
   - [注释](#注释)
+  - [`SassScript`](#sassscript)
+    - [变量 `$`](#变量-)
+    - [数据类型](#数据类型)
   - [mixin 混合](#mixin-混合)
     - [给混合器传参](#给混合器传参)
   - [继承器](#继承器)
@@ -324,6 +327,50 @@
         // 我不会出现
         border: 1px solid $my-color1; /*我会出现*/
       }
+3. 将 `!` 作为多行注释的第一个字符表示在压缩输出模式下保留这条注释并输出到 `CSS` 文件中, 通常用于添加版权信息.
+    - 插值语句 (`interpolation`) 也可写进多行注释中输出变量值
+    - ```scss
+      $hello: world;
+      /*! 我说 #{$hello}*/
+    - `npm run build` 之后, 打开 `dist/css/index.xxxxxx.css`, 搜索注释内容, 就能看到
+    - ![](../image/Snipaste_2022-02-08_21-56-43.png)
+## `SassScript`
+### 变量 `$`
+1. 变量以 `$` 开头, 赋值方法与 `CSS` 属性写法一样
+    - ```scss 
+      $width: 5em;
+2. 变量作用域
+    - 变量支持块级作用域, 嵌套规则内定义的变量只能在嵌套规则内使用 (局部变量), 不在嵌套规则内定义的变量则可在任何地方使用 (全局变量). 将局部变量转换为全局变量可以添加 `!global` 声明
+    - ```html
+      <div class="box13">
+        111
+      </div>
+      <div class="box14">
+        222
+      </div>
+    - ```scss
+      .box13 {
+        $boxWidth: 3em !global;
+        border: 1px solid #222;
+        width: $boxWidth;
+      }
+
+      .box14 {
+        width: $boxWidth;
+        border: 1px solid #222;
+      }
+    - ![](../image/Snipaste_2022-02-08_22-05-48.png)
+### 数据类型
+1. 支持 `6` 种主要的数据类型
+    - `数字`: `1`, `13px` 
+    - `字符串`: 有引号和无引号, `'foo'`, `bar` 
+    - `颜色`: `blue`, `#eee`, `rgba(0, 0, 0)`
+    - `boolean`: `true`, `false`
+    - `空值`: `null` 
+    - `数组`: 用空格或逗号分隔, `2px 3px`, `PingFang, Arial`
+    - `maps`: 相当于 `JS` 的 `Object` , `(key1: value2, key2: value2)`
+    - 📕也支持其他 `CSS` 属性值, 或 `!important` 声明, 但一律视为无引号字符串
+2. 
 ## mixin 混合
 > 我们可以用变量来处理小小的类似样式, 但是如果样式变得复杂且要大段大段重复样式代码, 变量就不能再胜任, 而混合就是实现打断样式重用而来的.
 1. 定义混合 `@mixin`
