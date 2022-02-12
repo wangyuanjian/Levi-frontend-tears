@@ -428,6 +428,27 @@
         }
       - ![](../image/Snipaste_2022-02-12_15-20-34.png)
       - 看到了把, 这里的 `16px/32px` 其实是 `font-size: 16px` 和 `line-height: 32px` 的简写
+    - `/` 作为算数表达式
+      - ```html
+        <div class="box17">hahah</div>
+      - ```scss
+        .box17 {
+          $myWidth2: 100px;
+          width: $myWidth2 / 2; // variable
+          height: (100px / 2); // parentheses
+          border: 5px - 4px / 2px solid red;
+        }
+      - ![](../image/Snipaste_2022-02-12_15-30-02.png)
+    - 如果又要使用变量, 又确保 `/` 不作为除法运算符而是分隔符, 需要使用 `#{}`
+      - ```html
+        <div class="box18">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero nisi quasi dolorum sapiente omnis laborum, tempora alias aspernatur consequatur dolores quo veritatis! Excepturi natus fugit itaque vel aliquam sunt dolores!</div>
+      - ```scss
+        .box18 {
+          $fontSize: 16px;
+          $lineHeight: 3;
+          font: #{$fontSize} / #{$lineHeight} helvatica;
+        }
+      - ![](../image/Snipaste_2022-02-12_15-33-48.png)
 ## mixin 混合
 > 我们可以用变量来处理小小的类似样式, 但是如果样式变得复杂且要大段大段重复样式代码, 变量就不能再胜任, 而混合就是实现打断样式重用而来的.
 1. 定义混合 `@mixin`
