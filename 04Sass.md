@@ -449,6 +449,38 @@
           font: #{$fontSize} / #{$lineHeight} helvatica;
         }
       - ![](../image/Snipaste_2022-02-12_15-33-48.png)
+    - 警告
+      - `Using / for division outside of calc() is deprecated and will be removed in Dart Sass 2.0.0.`
+3. 颜色运算
+    - ❗❗❗ [`sass`中已经不可以用 `+` 计算颜色了](https://github.com/sass/sass/issues/2543) ❗❗❗
+4. 字符串运算
+    - `+` 可用于连接字符串.
+      - 如果有引号字符串 ( 位于 `+` 左侧 ) 连接无引号字符串, 运算结果是有引号的;
+      - 相反, 无引号字符串 ( 位于 + 左侧 ) 连接有引号字符串, 运算结果则没有引号.
+      - ```html
+        <div class="box20"></div>
+      - ```scss
+        .box20 {
+          cursor: p + 'ointer';
+          &::before {
+            content: 'hello, ' + world;
+          }
+        }
+      - ![](.../image/Snipaste_2022-02-12_17-25-55.png)
+    - 在有引号的文本字符串中使用 `#{}` 可以添加动态的值. 空的值被视为插入了空的字符串
+      - ```html
+        <div class="box21"></div>
+      - ```scss
+        .box21 {
+          $withQuote: 'hello';
+          $withoutQuote: world;
+          $emptyString: null;
+          &::before {
+            content: 'I said #{$withQuote}, #{$withoutQuote} #{0 + 1} minute #{$emptyString} ago';
+          }
+        }
+      - ![](../image/Snipaste_2022-02-12_17-34-50.png)
+
 ## mixin 混合
 > 我们可以用变量来处理小小的类似样式, 但是如果样式变得复杂且要大段大段重复样式代码, 变量就不能再胜任, 而混合就是实现打断样式重用而来的.
 1. 定义混合 `@mixin`
