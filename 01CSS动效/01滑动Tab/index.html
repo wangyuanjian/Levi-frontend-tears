@@ -36,8 +36,6 @@
         firstFlag = false;
       }
       label.addEventListener('click', (e) => {
-        console.dir(e.target);
-        console.log('glider"s offsetParent is ', glider.offsetParent)
         glider.style.width = e.target.offsetWidth + 'px';
         glider.style.left = e.target.offsetLeft + 'px';
       });
