@@ -1,0 +1,50 @@
+:root {
+  --radius: 20px;
+  --bgColor: #fff;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+.container {
+  height: 100vh;
+  background-color: var(--bgColor);
+  transition: background-color .2s linear;
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.switch {
+  width: calc( var(--radius) * 2.2 ); 
+  height: calc( var(--radius) );
+  background-color: rgb(96, 211, 96);
+  border-radius: 9999px;
+  position: relative;
+  padding: 2px;
+  transition: background-color .2s linear;
+}
+
+input[type="checkbox"] {
+  display: none;
+}
+input[type="checkbox"]:checked + label .switch {
+  background-color: #D10;
+}
+input[type="checkbox"]:checked + label .switch .button {
+  left: calc( var(--radius) * 2.2 - var(--radius) + 2px );
+}
+
+.button {
+  height: var(--radius);
+  width: var(--radius);
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  transition: all .2s ease-in-out;
+  position: absolute;
+  left: 2px;
+  top: 2px;
+}

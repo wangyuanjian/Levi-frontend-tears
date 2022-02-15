@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Switch</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../css/font-awesome.css">
+</head>
+<body>
+  <div class="container flex">
+    <input type="checkbox" title="this input" name="input" id="input-switch">
+    <label for="input-switch">
+      <div class="switch">
+        <div class="button"></div>
+      </div>
+    </label>
+  </div>
+  <script>
+    document.getElementById('input-switch').addEventListener('click', (e) => {
+      if (e.target.checked) {
+        document.body.style.setProperty('--bgColor', 'rgb(17, 24, 39)');
+      } else {
+        document.body.style.setProperty('--bgColor', '#fff');
+      }
+    })
+  </script>
+</body>
+</html>
