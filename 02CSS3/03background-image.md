@@ -31,4 +31,27 @@
         }
       - ![](../../image/Snipaste_2022-02-27_22-00-57.png)
   - `image()`: 这个函数类似`url()`函数, 但是多了一些额外的功能, 比如可以指定图片的方向, 只展示图片的部分等. 😟但是这个函数目前所有浏览器都不支持
-  - 
+  - 由 `cross-fade()` 函数定义的两张或者多张图像的混合
+    - ```html
+      <div class="box box4"></div>
+      <div class="box box5"></div>
+    - 📕注意在 `Chrome` 等 浏览器要加 `-wekbit-` 前缀. 下面语法的意思是第一张图片 `25%` 的透明度, 第二章图片 `75%` 的透明度
+    - ```css
+      .box4 {
+        background-image: -webkit-cross-fade(
+          linear-gradient(red, orange),
+          linear-gradient(green, blue),
+          75%
+        );
+        background-image: cross-fade(
+          linear-gradient(red, orange),
+          linear-gradient(green, blue),
+          70%
+        );
+      }
+      .box5 {
+        background-image: linear-gradient(green, blue);
+      }
+    - 为了对比效果, 下面的是不加任何渐变混合的图像, 可以看到混合图像中蓝色变得更加紫色, 绿色变得有点暗, 看起来很脏
+    - ![](../../image/Snipaste_2022-02-28_22-31-49.png)
+  - `image-set()`: 
