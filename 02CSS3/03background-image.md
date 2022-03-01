@@ -52,6 +52,38 @@
       .box5 {
         background-image: linear-gradient(green, blue);
       }
-    - 为了对比效果, 下面的是不加任何渐变混合的图像, 可以看到混合图像中蓝色变得更加紫色, 绿色变得有点暗, 看起来很脏
+    - 为了对比效果, 下面的图是不加任何渐变混合的图像, 可以看到上面的混合图像中蓝色变得更加紫色, 绿色变得有点暗, 看起来很脏
     - ![](../../image/Snipaste_2022-02-28_22-31-49.png)
   - `image-set()`: 
+    - 让浏览器从一组图像中选择最适合当前设备屏幕的图片, 主要为了高分辨率屏幕
+## 规则
+1. 在绘制图像时, 图像一层叠一层, 先指定的图像会在之后指定的图像上面绘制
+    - ```html
+      <div class="box box6"></div>
+      <div class="box box7"></div>
+    - ```css
+      .box6 {
+        background-image: linear-gradient(green, blue),
+                        url(../../float/coffee-whole.png);
+      }
+      .box7 {
+        background-image: url(../../float/coffee-whole.png),
+                        linear-gradient(green, blue);
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+    - ![](../../image/Snipaste_2022-03-01_20-15-09.png)
+2. 元素的 `border` 在 `background-image` 之上绘制, 但是 `background-color` 在图像下绘制, 具体如何控制盒子和边框的关系需要使用 `background-clip` 和 `background-origin`
+    - `MDN` 建议仍然指定 `background-color` 属性, 如果图像无法被加载(比如网络断开)那么就会展示背景色
+    - ```html
+      <div class="box box8"></div>
+    - ```css
+      .box8 {
+        border: 5px solid red;
+        background-color: rebeccapurple;
+        background-image: url(../../float/coffee-whole.png);
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+    - ![](../../image/Snipaste_2022-03-01_21-09-26.png)
+3. 如果指定的图像因为不存在等原因而无法绘制, 浏览器会此情况等同于其值为 `none`
