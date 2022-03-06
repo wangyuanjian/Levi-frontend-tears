@@ -90,23 +90,23 @@
       - ![](../../image/Snipaste_2022-03-05_11-08-48.png)
       - 上图中, 不论容器的宽高为多少, 最终渲染出来的图像(单个)的宽高比都是`1:2`
     - 如果图片只有一个维度的内在大小, 且没有内在比例, 那么渲染时有大小的按照大小渲染, 没有大小的按照容器对应的大小渲染
-      - ```svg
-        width="100px" viewBox="0 0 1024 1024" preserveAspectRatio="none"
+      - [可以参考 MDN 官网的这张渐变 svg](https://developer.mozilla.org/en-US/docs/Web/CSS/Scaling_of_SVG_backgrounds#one_specified_dimension_and_proportionless)
       - `svg` 图片只有宽度, 没有比例
       - ```html
         <div class="box box15"></div>
         <div class="box box16"></div>
       - ```css
         .box15 {
-          background-image: url(../../float/erweima_one-dimension_no_proportion.svg);
+          background-image: url(../../float/https://media.prod.mdn.mozit.cloud/attachments/2012/07/09/3468/af73bea307a10ffe2559df42fad199e3/100px-wide-no-height-or-ratio.svg);
         }
         .box16 {
           background-image: url(../../float/erweima_one-dimension_no_proportion.svg);
           width: 180px;
           height: 350px;
         }
-      - ![](../../image/Snipaste_2022-03-05_11-34-12.png) 
-      - 😔结果我怎么尝试都无法实现官网说的效果.
+      - ![](../../image/Snipaste_2022-03-06_11-04-59.png) 
+      - 😔结果我怎么尝试都无法实现官网说的效果. 还是上面的链接, 往下翻一翻, 可以看到[官网演示的效果](https://developer.mozilla.org/en-US/docs/Web/CSS/Scaling_of_SVG_backgrounds#scaling_examples)
+      - ![](../../image/Snipaste_2022-03-06_11-06-34.png)
 2. 如果`background-size`只有一个值是`auto`另一个值非`auto`
     - 如果图片有内在比例, 那么将被拉伸到指定的大小. 没有长度的宽或高将根据指定的大小和内在比例计算
       - ```html
