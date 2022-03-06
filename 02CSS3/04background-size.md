@@ -110,8 +110,48 @@
 2. 如果`background-size`只有一个值是`auto`另一个值非`auto`
     - 如果图片有内在比例, 那么将被拉伸到指定的大小. 没有长度的宽或高将根据指定的大小和内在比例计算
       - ```html
+        <div class="box box17"></div>
+        <div class="box box18"></div>
       - ```css
-      - ![](../../image/)
+        .box17 {
+          background-image: url(../../float/coffee-whole.png);
+          background-size: 200px auto;
+        }
+        .box18 {
+          background-image: url(../../float/coffee-whole.png);
+          background-size: auto 200px;
+        }
+      - ![](../../image/Snipaste_2022-03-06_21-25-18.png)
+      - `png` 有内在比例, 所以第一张图, 宽度被拉伸到`200px`, 高度变成 `200px * 232 / 310 = 149.67px`(原图为`310 * 232`). 第二章图片同理
+    - 如果图片没有内在比例, 将被拉伸到指定的大小. 分两种情况. `1️⃣`如果图片只有一个内在大小, 那么没有内在大小的一边将按照内在比例计算. `2️⃣`如果没有内在大小, 就根据容器背景大小计算.
+      - 情况`2️⃣`相对容易理解, `渐变`背景就是这样情况, 没有内在大小也没有内在比例, 容器是多大就缩放填充多大
+      - 情况`1️⃣`不好意思, 我再次尝试失败😔, 不过 `MDN` 中有几句话大意是`缺少内在比例或内在大小的比例图作为背景尚未在所有浏览器得到支持, 所以要小心`
+      - ![](../../image/Snipaste_2022-03-06_21-52-53.png) 
+### `<length>` 或者 `<percentage>`
+1. 首先`<length>`, 图片强制拉伸或缩小至指定宽或指定高的大小. 这个值不能为负
+2. `<percentage>`, 图片强制拉伸或缩小至容器定位区域的百分比大小. 但是容器定位区域由 `background-origin` 决定, 默认为 `padding box`. 但如果背景的 `background-attachment` 为 `fixed`, 那么定位区域将为整个浏览器视窗大小. 同样不允许赋值.
+    - ```html
+      <div class="box box20"></div>
+      <div class="box box21"></div>
+      <div class="box box22"></div>
+    - ```css
+      .box20 {
+        background-image: url(../../float/coffee-whole.png);
+        background-size: 100px 200px;
+      }
+      .box21 {
+        background-image: url(../../float/coffee-whole.png);
+        background-size: 100% 100%;
+        padding: 40px;
+      }
+      .box22 {
+        background-image: url(../../float/coffee-whole.png);
+        background-size: 100% 100%;
+        background-origin: content-box;
+        padding: 40px;
+      }
+    - ![](../../image/Snipaste_2022-03-06_22-14-53.png)
+    - ![](../../image/Snipaste_2022-03-06_22-16-24.png)
 ## 规则
 1. 如果有空间没有被背景图片覆盖, 那么将被 `background-color` 填满, 背景颜色会显示在背景图片后面
 ## 参考资料
