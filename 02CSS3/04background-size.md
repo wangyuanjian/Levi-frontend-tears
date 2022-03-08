@@ -159,7 +159,3 @@
 2. [MDN 文档](https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-size)
 3. [MDN 文档](https://whereswalden.com/files/mozilla/background-size/more-examples.html)
 4. 本文中出现的 `svg` 图标和对应的 `svg` 代码, 均来自阿里巴巴`iconfont`图标库, 仅作学习使用, 侵删, 表示感谢
-
-  - ```html
-      - ```css
-      - ![](../../image/) 
