@@ -104,7 +104,27 @@
     - 如下, 默认的 `background-size` 是 `auto auto`, 而且 `png` 属于有内在大小和内在维度的图片, 所以就以 `png` 本身的大小来渲染, 即 `background-size` 在水平和垂直方向均为 `67px`, 这和盒子的大小小童, 所以两个百分比双双失效. 
     - ![](../../image/Snipaste_2022-03-09_22-25-56.png)
 ## 和 `background-origin` 的关系
-1. 
-- ```html
+1. 这个属性设置了背景究竟是从盒模型的哪部分开始的, 从边框`border-box`? 从`padding-box`? 还是从内容`content-box`
+    - ```html
+      <div class="box box9">你好<br>世界</div>
+      <div class="box box10">你好<br>世界</div>
+      <div class="box box11">你好<br>世界</div>
     - ```css
-    - ![](../../image/)  
+      .box {
+        border: 15px dashed #111;
+        padding: 1rem;
+        background-position: left top;
+        font-size: 2em;
+        text-align: center;
+      }
+      .box9 {
+        background-origin: border-box;
+      }
+      .box10 {
+        background-origin: padding-box;
+      }
+      .box11 {
+        background-origin: content-box;
+      }
+    - ![](../../image/Snipaste_2022-03-13_08-59-21.png)  
+    - 是可以看出来的, 相同的 `left top` 但是盒模型的定位不同了
