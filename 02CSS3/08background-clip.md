@@ -52,11 +52,33 @@
     - 📕注意点`1️⃣`, 如果想要 `background-clip: text` 生效, 注意将 `color` 属性设置为 `transparent` 或者带有 `alpha` 通道的颜色, 不然纯黑的文字颜色就挡死背景了😅
     - 📕注意点`2️⃣`: 当 `background-clip` 值为 `border-box` 时, 注意 `background-repeat` 不能是 `no-repeat`, 参考下面的对比
       - 左边的是 `repeat`, 右边的是 `no-repeat`. 来解释一下为什么 `no-repeat` 会这样展示?
-      - 因为盒子的宽度是 `200px`, 左右 `padding` 分别为 `16px`, `border` 宽度为 `15px`, 加起来 `200 + 16*2 + 15*2 = 262px`, 大于图像宽度 `245px`,
-      - 所以根据 `background-position` 的默认值 `left top` 和 `background-origin` 的默认值 `padding-box` , 就自然左上角和 `padding` 的边界对齐 
+      - 根据 `background-position` 的默认值 `left top` 和 `background-origin` 的默认值 `padding-box` , 就自然左上角和 `padding` 的边界对齐 
       - ![](../../image/Snipaste_2022-03-15_20-29-37.png)
 4. 在移动端 `iOS 14` 版本才部分支持 `background-clip` 属性, 所以要加上 `-webkit-background-clip` 私有属性.
+5. 既然说是 `clip(裁剪)`, 必然表明背景图片已经到了某个地方才能裁剪, 比如图片本身已经在 `border` 下面, 才能设置 `background-clip: border-box` 看到效果
+    - 
 ## 规则
 1. 📕因为`root element`(即`<html>`)
+## 应用
+1. 苹果官网由很多这样的例子, 来看最新发布的 [iPad Air 5](https://www.apple.com/ipad-air/) 的产品介绍页
+    - ![](../../image/Snipaste_2022-03-16_21-52-59.png)
+    - ```html
+      <div class="air5">
+        Light. Bright.<br>
+        Full of might.
+      </div>
+    - ```css
+      .air5 {
+        width: 300px;
+        height: 100px;
+        font-size: 2rem;
+        font-weight: bold;
+        color: transparent;
+        padding: 10px;
+        -webkit-background-clip: text;
+        background-clip: text;
+        background-image: linear-gradient(90deg, #dc79ff, #256bfa);
+      }
+    - ![](../../image/Snipaste_2022-03-16_21-56-50.png)
 ## 注
 1. 图片来自 [unsplash](https://unsplash.com/), 仅作个人学习使用, 感谢
