@@ -20,9 +20,31 @@
         background: url(../../float/coffee-part.png) no-repeat;
       }
     - ![](../../image/background-attachment-scroll.gif)
-1. `fixed`
+2. `local`
+    - 背景相对元素的内容是固定的. 如果一个元素有滚动机制, 那么背景会随着元素内容的滚动而滚动, 并且背景的绘制区域和背景定位区域是相对整个滚动区域而不是相对于`border`
+    - ```html
+      <div class="box box1">
+        遊戲整合...
+      </div>
+    - ```css
+      .box1 {
+        background-attachment: local;
+      }
+    - ![](../../image/background-attachment-local.gif)
+    - 不同于`scroll`, 当内容滚动不可见时, 内容下的背景图像同样滚动不可见了
+3. `fixed`
     - 表示背景相对于视口`viewpoint`是固定的. 即使一个元素拥有滚动机制, 背景也不会随着元素滚动.
-      
+    - 和 `background-clip: text` 不兼容
+    - ```html
+      <div class="box box2">
+        遊戲整...
+      </div>
+    - ```css
+      .box2 {
+        background-attachment: fixed;
+      }
+    - ![](../../image/background-attachment-fixed.gif)
+    - 图片相对于固定在了`viewpoint`的`left top`位置, 只有元素出现在背景图片上面, 才能在元素内容下出现背景图; 否则, 不论怎么滚动元素内容都看不到背景图.
 - ```html
 - ```css
-- [](../../image/)
+- ![](../../image/)
