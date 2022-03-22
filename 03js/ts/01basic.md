@@ -8,6 +8,10 @@
     - [安装 `TypeScript`](#安装-typescript)
   - [基础](#基础)
     - [原始数据类型](#原始数据类型)
+    - [任意值(Any)](#任意值any)
+    - [类型推断](#类型推断)
+    - [联合类型(`Union Types`)](#联合类型union-types)
+    - [接口(`interface`)](#接口interface)
   - [参考](#参考)
 
 <!-- /TOC -->
@@ -87,7 +91,90 @@
         let x1: void = '1'; // Type 'string' is not assignable to type 'void'
         let x2: void = undefined;
         let x3: void = null;
-6. 
+6. `null` 和 `undefined`
+    - 在 `TypeScript` 中, 使用 `null` 和 `undefined` 定义两个原始数据类型
+    - 和 `void` 的区别是, `null` 和 `undefined` 是所有类型的子类型, 而 `void` 类型的变量不能赋值给其他类型
+      - ```typescript
+        a = 2;
+        let x4: undefined = undefined;
+        let x5: null = null;
+        a = x4;
+### 任意值(Any)
+> 表示允许赋值为任意类型
+1. 如果是普通类型, 在赋值过程中是不允许改变类型的. 但如果是 `any` 则被允许赋值为任意类型.
+    - ```typescript
+      let day: any = 7;
+      day = 'Sunday';
+2. 在 `any` 上访问任何属性或调用任何方法都是可以的. 
+    - ```typescript
+      day.getName();
+      day.name;
+3. 如果变量在声明的时候未指定其类型, 会被识别为 `any`
+    - ```typescript
+      let x6;
+      x6 = '1';
+      x6 = 1;
+    - 📕注意, 不同于`let x6 = 1;`, 因为声明而且赋值就会有默认类型推断.
+### 类型推断
+1. 如果没有明确的指定类型, 那么 `TypeScript` 会依照类型推论 (`Type Inference`) 的规则推断出一个类型
+    - ```typescript
+      let x7 = 1;
+      x7 = '1'; // Type 'string' is not assignable to type 'number'
+### 联合类型(`Union Types`)
+> 表示取值可以为多种类型中的一种
+1. 联合类型使用 `|` 分隔每个类型
+    - ```typescript
+      let x8: string | number;
+      x8 = 'eight';
+      x8 = 8;
+    - 上面的代码表示, 变量 `x8` 的类型只能是 `string` 或者 `number`, 不能是其他类型.
+2. 当 `TypeScript` 不确定一个联合类型的变量到底是哪种类型时, 只能**访问联合类型中所有类型的公共属性或方法**.
+    - ```typescript
+      function getLength(param: string | number): string {
+        return param.toString();
+      }
+3. 联合类型变量在被赋值时, 会根据类型推论的规则推断出一个类型.
+    - ```typescript
+      x8 = 8;
+      console.log('x8"s length is ', x8.length);
+      // Property 'length' does not exist on type 'number'
+    - 即便其被赋值为某种联合类型中的某种类型, 但该变量仍然是联合类型
+### 接口(`interface`)
+> 使用接口 ( `Interfaces`) 来定义对象的类型
+1. 什么是接口
+    - 接口时对行为的抽象, 具体的行动需要类 (`class`) 实现 (`implement`)
+    - `TypeScript` 中的接口是一个非常灵活的概念, 可以对类的一部分行为进行抽象, 也可用于对对象的形状进行描述.
+2. 定义接口
+    - ```typescript
+      interface Person {
+        name: string;
+        age: number;
+      }
+    - 接口一般首字母大写.
+    - 定义的变量属性不能比接口多也不能比接口少
+    - ```typescript
+      let tom: Person = {
+        name: 'tom',
+        age: 12,
+      }
+3. 可选属性
+    - 定义接口时, 使用 `?` 表示该属性时可选的. 可选属性的含义是该属性可以不存在, 但这时仍然不允许添加未定义的属性
+    - ```typescript
+      interface Person {
+        name: string;
+        age: number;
+        color?: string;
+      }
+4. `Index Signatures`
+    - 有时我们并不能提前知道一个类型的所有属性, 但是却这道这些属性值的 `shape`, 这种情况下, 可以使用 `index signature` 描述可能的值
+    - ```typescript
+      interface StringArray {
+        [index: number]: string;
+      }
+
+      const myArray: StringArray = undefined;
+      const firstItem: string = myArray[0];
+    - 上面代码的意思是, 当尝试使用 `number` 类型的数据来索引 `StringArray` 类型的数据时, 会返回 `string`
 ## 参考
 1. [TypeScript 入门教程](http://ts.xcatliu.com/basics/primitive-data-types.html)
 
