@@ -167,14 +167,60 @@
       }
 4. `Index Signatures`
     - 有时我们并不能提前知道一个类型的所有属性, 但是却这道这些属性值的 `shape`, 这种情况下, 可以使用 `index signature` 描述可能的值
-    - ```typescript
-      interface StringArray {
-        [index: number]: string;
-      }
+      - ```typescript
+        interface StringArray {
+          [index: number]: string;
+        }
 
-      const myArray: StringArray = undefined;
-      const firstItem: string = myArray[0];
-    - 上面代码的意思是, 当尝试使用 `number` 类型的数据来索引 `StringArray` 类型的数据时, 会返回 `string`
+        const myArray: StringArray = undefined;
+        const firstItem: string = myArray[0];
+      - 上面代码的意思是, 当尝试使用 `number` 类型的数据来索引 `StringArray` 类型的数据时, 会返回 `string`
+    - `index signature` 类型必须是 `string` 或者 `number`
+    - `string` 类型的 `index signature` 强制要求所有属性必须匹配其返回类型.🤨
+      - 这是因为 `string` 类型的索引既可以通过 `obj.propName` 调用, 也可以通过 `obj['propName']` 调用.
+      - ```typescript
+        interface NumberDictionary {
+          [index: string]: number;
+          name: string;
+          // Property 'name' of type 'string' is not assignable to 'string' index type 'number'
+        }
+      - 所以下面的例子, 我们可以通过 `bd['name']` 的形式访问 `name` 属性, 也可以通过 `bd['hello']` 的形式访问 `index signature`. 如果这时的 `name` 属性值非 `number`, 就会导致 `obj['propName']` 返回两种类型的值, 从而无法决定究竟返回哪一种
+      - 对比下面的例子. 就不会报错, 因为 `index signature` 是 `number index`, 通过 `bd[0]` 访问的话, `0` 是数字; 这和 `bd['name']` 明显区分开, 就不会存在两种返回类型了😀
+      - ```typescript
+        interface NumberDictionary1 {
+          [index: number]: string;
+          name: number;
+        }
+5. 只读属性
+    - 只读属性只能首次给对象赋值时赋值, 之后的赋值都不可以
+      - 如果给只读属性赋值, 那么在类型检查期间就会报错.
+      - ```typescript
+        interface ReadonlyPerson {
+          readonly id: number;
+        }
+
+        let person1: ReadonlyPerson = {
+          id: 111
+        }
+        person1.id = 222;
+        // Cannot assign to 'id' because it is a read-only property.
+    - `readonly` 并不意味着一个值是的内部是不可改的, 只意味着这个值本身是不可改的
+      - ```
+        interface ReadonlyPerson {
+          readonly id: number;
+          readonly friend: Person;
+        }
+
+        let person1: ReadonlyPerson = {
+          id: 111,
+          friend: {
+            name: 'tom',
+            age: 12,
+          }
+        }
+        person1.friend.age = 13; // ok
+        person1.friend = {...} // 报错
+
 ## 参考
 1. [TypeScript 入门教程](http://ts.xcatliu.com/basics/primitive-data-types.html)
 
