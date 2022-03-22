@@ -12,6 +12,8 @@
     - [类型推断](#类型推断)
     - [联合类型(`Union Types`)](#联合类型union-types)
     - [接口(`interface`)](#接口interface)
+    - [数组的类型](#数组的类型)
+    - [函数的类型](#函数的类型)
   - [参考](#参考)
 
 <!-- /TOC -->
@@ -205,7 +207,7 @@
         person1.id = 222;
         // Cannot assign to 'id' because it is a read-only property.
     - `readonly` 并不意味着一个值是的内部是不可改的, 只意味着这个值本身是不可改的
-      - ```
+      - ```typescript
         interface ReadonlyPerson {
           readonly id: number;
           readonly friend: Person;
@@ -220,7 +222,51 @@
         }
         person1.friend.age = 13; // ok
         person1.friend = {...} // 报错
-
+### 数组的类型
+1. `「类型 + 方括号」`表示法
+    - ```typescript
+      let fibonacci: number[] = [1, 1, 2, 3, 5];
+    - 数组的项中不允许出现其他的类型
+2. 数组的一些方法的参数也会根据数组在定义时约定的类型进行限制
+    - ```typescript
+      fibonacci.push('1'); // Argument of type 'string' is not assignable to parameter of type 'number'
+3. 使用泛型表述数组
+    - ```typescript
+      let fibonacci2: Array<number> = [1, 1, 2, 3];
+4. 使用接口表示数组
+    - ```typescript
+      interface NumberArray {
+        [index: number]: number;
+      }
+      let na: NumberArray = [1, 1, 2, 3, 5];
+    - 这种方式比前两种更复杂, 不过常用这种法师表示类数组
+5. `any` 在数组中的应用
+    - 用 `any` 表示数组中允许出现任意类型
+    - ```typescript
+      let list: any[] = ['apple', 999, { color: 'red' }];
+### 函数的类型
+1. 函数声明
+    - 一个函数有输入和输出, 要在 `TypeScript` 中对其约束, 需要把输入和输出都考虑
+    - ```typescript
+      function sum(x: number, y: number): number {
+        return x + y;
+      }
+    - 调用函数时, 输入多余的参数或者少输参数都是不可以的
+    - ```typescript
+      sum(1, 2, 3); // Expected 2 arguments, but got 3
+      sum(1); // Expected 2 arguments, but got 1
+2. 函数表达式
+    - 如果定义类型, 表示该变量是函数? `=>`, 不同于 `ES6` 中的箭头表达式, `=>` 在 `TypeScript` 用来表示函数的定义, 其左边是用括号括起来的输入类型, 右边是输出类型
+    - ```typescript
+      let mySum: (a: number, b: number) => number = sum;
+3. 用接口定义函数的形状
+    - 
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
 ## 参考
 1. [TypeScript 入门教程](http://ts.xcatliu.com/basics/primitive-data-types.html)
 
