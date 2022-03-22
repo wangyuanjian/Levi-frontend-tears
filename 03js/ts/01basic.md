@@ -1,9 +1,22 @@
 # `typescript`
+
+<!-- TOC -->
+
+- [`typescript`](#typescript)
+  - [简介](#简介)
+    - [TypeScript 的特性](#typescript-的特性)
+    - [安装 `TypeScript`](#安装-typescript)
+  - [基础](#基础)
+    - [原始数据类型](#原始数据类型)
+  - [参考](#参考)
+
+<!-- /TOC -->
+
 ## 简介
 1. 什么是 `typescript`
     - > Typed JavaScript at Any Scale 
     - 添加了类型系统的 `JavaScript`, 适用于任何规模的项目
-### TypeScript 的特性§
+### TypeScript 的特性
 1. 类型系统
     - 从 `TypeScript` 的名字就可以看出来,「类型」是其最核心的特性.
     - 我们知道, `JavaScript` 是一门非常灵活的编程语言
@@ -27,4 +40,56 @@
     - `TypeScript` 的另一个重要的特性就是坚持与 `ECMAScript` 标准同步发展. 
     - `ECMAScript` 是 `JavaScript` 核心语法的标准, 自 `2015` 年起, 每年都会发布一个新版本, 包含一些新的语法
 ### 安装 `TypeScript`
-1. 
+1. 使用 `npm`
+    - ```shell
+      npm install -g typescript
+    - 以上命令会在全局环境下安装 `tsc` 命令, 安装完成之后, 我们就可以在任何地方执行 `tsc` 命令了
+2. 编译一个 `TypeScript` 文件
+    - ```shell
+      tsc hello.ts
+    - 我们约定使用 `TypeScript` 编写的文件以 `.ts` 为后缀, 用 `TypeScript` 编写 `React` 时，以 `.tsx` 为后缀. 
+    - 📕即便编译报错, 仍能生成对应的 `JavaScript` 文件
+## 基础
+### 原始数据类型
+1. JavaScript 的类型分为两种: `原始数据类型` 和 `对象类型`
+    - 原始数据类型包括: `布尔值`, `数字`, `字符串`, `null`, `undefined`, `Symbol`, `BigInt`
+2. `布尔值`
+    - 布尔值是最基础的数据类型, 在 `TypeScript` 中, 使用 `boolean` 定义布尔值类型: 
+      - ```typescript
+        let isDone: boolean = false;
+    - 📕 注意, 使用构造函数 `Boolean` 创造的对象不是布尔值, 而是一个 `Boolean` 对象.
+      - ```typescript
+        let newBoolean: Boolean = new Boolean(true);
+    - 直接调用 `Boolean` 哈数也可以返回一个 `boolean` 类型的值
+      - ```typescript
+        let newBoolean1: boolean = Boolean(0);
+3. `数值`
+    - 使用 `number` 定义数值类型
+      - ```typescript
+        let num1: number = 1; // 1
+        let num2: number = 0xf; // 15
+        let num3: number = 0b0010; // 2
+        let num4: number = NaN; // NaN
+        let num5: number = Infinity; // Infinity
+4. `字符串`
+    - 使用 `string` 定义字符串类型
+      - ```typescript
+        let str1: string = 'hello'; // 'hello'
+        let world: string = `hello, ${str1}`; // 'hello, hello'
+5. `空值(void)`
+    - `JavaScript` 中没有空值的概念, 在 `TypeScript` 中可以使用 `void` 表示函数没有任何返回值
+      - ```typescript
+        function sayHello(): void {
+          console.log('hello');
+        }
+    - 声明一个 `void` 类型的变量没有任何用, 只能将 `undefined` 或 `null` 值赋给它
+      - ```typescript
+        let x1: void = '1'; // Type 'string' is not assignable to type 'void'
+        let x2: void = undefined;
+        let x3: void = null;
+6. 
+## 参考
+1. [TypeScript 入门教程](http://ts.xcatliu.com/basics/primitive-data-types.html)
+
+
+- ```typescript
