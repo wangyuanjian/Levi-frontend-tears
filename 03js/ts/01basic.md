@@ -14,6 +14,7 @@
     - [接口(`interface`)](#接口interface)
     - [数组的类型](#数组的类型)
     - [函数的类型](#函数的类型)
+    - [类型断言](#类型断言)
   - [参考](#参考)
 
 <!-- /TOC -->
@@ -316,12 +317,86 @@
       }
 
       fx(); // Expected 1 arguments, but got 0
+### 类型断言
+> 可以用来手动指定一个值的类型.
+1. 语法
+    - ```js
+      值 as 类型
+      // 或
+      <类型>值
+2. 用途
+    - 将一个联合类型断言为其中一个类型
+      - ```typescript
+        interface Cat {
+          name: string;
+          run(): void;
+        }
+        interface Fish {
+          name: string;
+          swim(): void;
+        }
+        function isFish(animal: Cat | Fish): boolean {
+          if (typeof (animal as Fish).swim === 'function') {
+            return true;
+          }
+          return false;
+        }
+    - 将一个父类断言为子类
+      - ```typescript
+        class MyError {
+          code: number = -1;
+        }
+        class HttpError extends MyError {
+          code: number = 0;
+        }
+        function isHttpError(error: MyError): boolean {
+          if ((error as HttpError).code === 0) {
+            return true;
+          }
+          return false;
+        }
+      - 上面的例子使用 `instanceof` 判断似乎更加合理, 但是如果 `HttpError` 是 `interface` 而不是 `class`, 就没法用 `instanceof`
+    - 将任何一个类型断言为 `any`
+      - 当我们引用一个在此类型上不存在的属性或方法时, 就会报错, 但有时我们就需要访问一个不存在的属性, 比如
+      - ```typescript
+        window.foo = 1;
+      - 我们可以使用 `as any` 临时将 `window` 断言为 `any` 类型, 因为在 `any` 类型的变量上, 访问任何属性都是允许的.
+      - ```typescript
+        (window as any).foo = 1;
+      - `⚠`将一个变量断言为 `any` 可以说是解决 `TypeScript` 中类型问题的最后一个手段. 它极有可能掩盖了真正的类型错误, 所以如果不是非常确定, 就不要使用 `as any`
+    - 将 `any` 断言为一个具体的类型
+      - 在日常的开发中, 我们不可避免的需要处理 `any` 类型的变量, 它们可能是由于第三方库未能定义好自己的类型, 也有可能是历史遗留的或其他人编写的烂代码, 还可能是受到 `TypeScript` 类型系统的限制而无法精确定义类型的场景
+      - 下面的例子讲函数值断言为特定类型
+      - ```typescript
+        function getCacheData(key: string): any {
+          return (window as any).cache(key);
+        }
+        const tom1: Cat = getCacheData('tom') as Cat;
+3. 断言的限制
+    - 
+4. 双重断言
+    - 既然任何类型都可以断言为 `any`, 而且 `any` 又可以断言为任何类型, 那么任何类型都可以断言为任何类型的操作就是`双重断言`
+    - 双重断言是可以的, 但是极不推荐. 除非迫不得已, 千万别用双重断言, 因为极有可能出错
     - ```typescript
+      function testCat(cat: Cat) {
+        return (cat as any as Fish);
+      }
+5. 类型断言 `vs` 类型转换
+    - 类型断言只会影响 `TypeScript` 编译时的类型, 类型断言语句在编译结果中会被删除.
     - ```typescript
+      function toBoolean(sth: any): boolean {
+        return sth as boolean;
+      }
+    - 上面的代码会被编译为
     - ```typescript
+      function toBoolean(sth) {
+        return sth;
+      }
+    - 断言不是类型转换, 因为它不会真正影响变量的类型. 如果想要使用类型转换, 可以直接迪奥用类型转换
     - ```typescript
-    - ```typescript
-    - ```typescript
+      function toBoolean1(sth: any): boolean {
+        return Boolean(sth);
+      }
     - ```typescript
 ## 参考
 1. [TypeScript 入门教程](http://ts.xcatliu.com/basics/primitive-data-types.html)
