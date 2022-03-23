@@ -260,7 +260,63 @@
     - ```typescript
       let mySum: (a: number, b: number) => number = sum;
 3. 用接口定义函数的形状
-    - 
+    - 使用接口定义函数
+    - ```typescript
+      interface SearchFunc {
+        (source: string, subString: string): boolean;
+      }
+
+      let mySearch: SearchFunc;
+      mySearch = function (source: string, subString: string): boolean {
+        return source.indexOf(subString) !== -1;
+      }
+4. 可选参数
+    - 使用 `?` 表示可选参数, 📕可选参数必须在必选参数的后面!!
+    - ```typescript
+      function buildName(firstName: string, lastName?: string): string {
+        if (lastName) {
+          return `${firstName} ${lastName}`;
+        }
+        return `${firstName}`;
+      }
+5. 参数默认值
+    - `ES6` 中可以给参数增加默认值, `TypeScript` 会将添加了默认值的参数识别为可选参数, 此时, 就不受可选参数必须放在必选参数后面的限制了
+    - ```typescript
+      function buildName1(lastName: string = 'wong', firstName: string): string {
+        if (lastName) {
+          return `${firstName} ${lastName}`;
+        }
+        return `${firstName}`;
+      }
+      // 注意
+      const result: string = buildName1(undefined, 'Levi'); // Levi wong
+      buildName1('Wong', 'Levi'); // Levi Wong
+6. 剩余参数
+    - 在 `TypeScript` 中, 可以用数组类型定义 `rest` 参数. 📕注意 `rest` 参数必须是最后一个参数.
+    - ```typescript
+      function push1(from: any[], ...items: any[]): void {
+        items.forEach((item) => {
+          from.push(item);
+        });
+      }
+      const from: any[] = [1, 2, 3];
+      push1(from, 4, 5, 6)
+7. 重载
+    - 为了实现重载, 需要先两个或者更多的函数声明, 后面接着函数实现.
+    - ```typescript
+      function reverse(x: number): number;
+      function reverse(x: string): string;
+      function reverse(x: number | string): number | string {
+        return 1;
+      }
+    - 看下面的例子. 函数实现是不能直接调用的!!!
+    - ```typescript
+      function fx(x: string): void;
+      function fx(): void {
+      }
+
+      fx(); // Expected 1 arguments, but got 0
+    - ```typescript
     - ```typescript
     - ```typescript
     - ```typescript
