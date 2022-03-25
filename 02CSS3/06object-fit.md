@@ -1,10 +1,11 @@
 # `object-fit`
-> 指定可替换元素(如`<img>`)的内容如何适应其所在容器
+> 指定可替换元素(如`<img>`)的内容如何适应其由 `width` 和 `height` 设置的盒子大小
 ## 语法
 1. `object-fit` 可以是下面几个关键字之一. 下文将`可替换元素` 称为 `对象(object)`
 ### 关键字
 1. `contain`
-    - 可替换元素的内容将被缩放, 在填充元素 `content box` 时保持元素的宽高比. 整个
+    - 可替换元素的内容将被缩放, 在填充元素 `content box` 时保持元素的宽高比. 但是, 要保证图片完整显示出来. 类型 `background-size: contain`
+    - 星星的图片大小为 `67*67`, 咖啡的图片大小为 `257*123`, 代码中将设置可替换元素的大小为 `150*150`, 并加上上下左右均为 `20px` 的 `padding`.
     - ```html
       <div class="container">
         <img 
@@ -28,12 +29,61 @@
       .contain {
         object-fit: contain;
       }
+    - 下图, 星星的图片小于其宽高盒的大小, 所以放大; 咖啡的图片在保持其宽高比和完整显示的条件下, 整个图片被缩小至宽度为 `150` 的大小显示了.
     - ![](../../image/Snipaste_2022-03-25_17-29-49.png)
-
+2. `cover`
+    - 可替换元素在`填满`整个 `content box` 的同时保留原始宽高比, 类似 `background-size: cover`. 如果对象的宽高比和其盒子的宽高比不成比例, 那么对象将会被`裁切`.
+    - ```html
+      <img 
+        class="box cover" 
+        src="../../float/star.png" 
+        alt=""
+      >
+      <img 
+        class="box cover" 
+        src="../../float/coffee-part.png" 
+        alt=""
+      >
+    - ```css
+      .box {
+        width: 150px;
+        height: 150px;
+        padding: 20px;
+        outline: 1px solid black;
+      }
+      .cover {
+        object-fit: cover;
+      }
+    - 下图, 星星图片大小小于其宽高盒, 所以被放大显示, 因为和宽高盒的宽高比相同; 咖啡图片比例与宽高盒不同, 高度缩放为和宽高盒相同, 这个图片被裁切.
+    - ![](../../image/Snipaste_2022-03-25_19-21-13.png)
 7. 可以通过使用 `object-position` 属性来切换被替换元素的内容对象在元素框内的对齐方式
 ## 其他
 1. 📕`IE` 浏览器不支持此属性😟
-
+2. 使用 `object-fit: cover` 的效果. 实现 `hover` 元素时, 图片放大; 否则, 展示原来的样子
+    - ```html
+      <div class="box2">
+        <img 
+          class="box1 cover" 
+          src="../../float/coffee-part.png" 
+          alt=""
+        >
+      </div>
+    - ```css
+      .box2 {
+        width: 150px;
+        height: 150px;
+        outline: 1px solid black;
+        overflow: hidden;
+      }
+      .box1 {
+        width: 100%;
+        height: 100%;
+        transition: transform .5s;
+      }
+      .box1:hover {
+        transform: scale(1.2);
+      }
+    - ![](../../image/object-fit-cover-demo.gif)
 - ```html
 - ```css
 - ![](../../image/)
