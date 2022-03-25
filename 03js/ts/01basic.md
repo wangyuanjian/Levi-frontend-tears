@@ -15,6 +15,7 @@
     - [数组的类型](#数组的类型)
     - [函数的类型](#函数的类型)
     - [类型断言](#类型断言)
+    - [声明文件](#声明文件)
   - [参考](#参考)
 
 <!-- /TOC -->
@@ -372,7 +373,7 @@
           return (window as any).cache(key);
         }
         const tom1: Cat = getCacheData('tom') as Cat;
-3. 断言的限制
+3. 断言的限制 (🙅‍ TODO)
     - 
 4. 双重断言
     - 既然任何类型都可以断言为 `any`, 而且 `any` 又可以断言为任何类型, 那么任何类型都可以断言为任何类型的操作就是`双重断言`
@@ -397,6 +398,36 @@
       function toBoolean1(sth: any): boolean {
         return Boolean(sth);
       }
+6. 类型断言 vs 类型声明 (🙅‍ TODO)
+    - 
+7. 类型断言 vs 泛型 (🙅‍ TODO)
+    - 
+### 声明文件
+1. 当使用第三方库时, 需要引用其声明文件才能获取对应的代码补全和接口提示等功能.
+2. 声明语句
+    - 加入我们要使用第三方库 `jQuery`, 常见方式就是在 `HTML` 中通过 `<script>` 标签引入 `jQuery`, 然后就可以使用全局变量 `$` 或 `jQuery` 了
+    - ```typescript
+      jQuery('#foo');
+    - 但是编辑器并不知道 `$` 或 `jQuery` 是什么, 这时就需要使用 `declare var` 来定义其类型
+    - ```typescript
+      declare var jQuery: (selector: string) => any;
+    - 上面的 `declare var` 并没有真正定义一个变量, 而是定义了全局变量 `jQuery` 的类型, 仅仅用于编译时检查, 在编译结果中会被删除. 
+    - 除了 `declare var` 之外还有很多种声明语句
+2. 声明文件
+    - 通常将声明语句都放在一个单独的文件中, 这就是`声明文件`, 必须以 `.d.ts` 为后缀.
+    - 第三方声明文件
+      - `jQuery` 的声明文件社区已经帮忙定义好了, 可以直接下载使用. 但更推荐的时使用 `@types` 统一管理第三方库的声明文件
+      - 使用 `@types` 的方式很简单, 直接 `npm` 安装对应的模块即可
+      - ```shell
+        npm install @types/jquery --save-dev
+3. 书写声明文件
+    - 
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
     - ```typescript
 ## 参考
 1. [TypeScript 入门教程](http://ts.xcatliu.com/basics/primitive-data-types.html)
