@@ -45,6 +45,39 @@
       }
     - ![](../../image/background-attachment-fixed.gif)
     - 图片相对于固定在了`viewpoint`的`left top`位置, 只有元素出现在背景图片上面, 才能在元素内容下出现背景图; 否则, 不论怎么滚动元素内容都看不到背景图.
-- ```html
-- ```css
-- ![](../../image/)
+## 案例
+1. 我们可以用这个属性实现丝滑的 `PPT` 翻页效果
+    - ```html
+      <body>
+        <div class="box">123</div>
+        <div class="box">456</div>
+        <div class="box">789</div>
+      </body>
+    - ```css
+      html, body {
+        padding: 0;
+        margin: 0;
+      }
+      .box {
+        height: 100vh;
+        width: 100%;
+        background-attachment: fixed;
+        font-size: 5rem;
+        background-size: cover;
+        color: #fff;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+      .box:nth-of-type(1) {
+        background-image: url(../../float/model.jpg);
+      }
+      .box:nth-of-type(2) {
+        color: #111;
+        background-image: url(../../float/love.jpg);
+      }
+      .box:nth-of-type(3) {
+        background-image: url(../../float/fish.jpg);
+      }
+    - ![](../../image/background-attachment-ppt-slide.gif)
+2. 更多的例子可以参考 [css-tricks](https://css-tricks.com/use-cases-fixed-backgrounds-css/#top-of-site) 的这篇文章
