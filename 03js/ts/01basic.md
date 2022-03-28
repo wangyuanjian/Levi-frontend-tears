@@ -16,6 +16,7 @@
     - [函数的类型](#函数的类型)
     - [类型断言](#类型断言)
     - [声明文件](#声明文件)
+    - [书写声明文件](#书写声明文件)
   - [参考](#参考)
 
 <!-- /TOC -->
@@ -420,9 +421,34 @@
       - 使用 `@types` 的方式很简单, 直接 `npm` 安装对应的模块即可
       - ```shell
         npm install @types/jquery --save-dev
-3. 书写声明文件
-    - 
-    - ```typescript
+### 书写声明文件
+1. 当第三方库没有提供声明文件时, 需要自己写声明文件. 不同场景下, 声明文件的内容盒使用方式会有区别.
+2. 一个第三方库的使用场景主要有一下集中
+    - `全局变量`: 通过 `<script>` 标签引入第三方库, 注入全局变量;
+    - `npm包`: 通过 `import foo from 'foo'`, 符合 `ES6` 语法规范; 
+    - `UMD包`: 既可以通过 `<script>` 引入, 又可以通过 `import` 引入;
+    - `直接扩展全局变量`: 通过 `<script>` 标签引入后, 改变一个全局变量的结构; 
+    - `在 npm 包或 UMD 库中扩展全局变量`: 引入 `npm` 包或 `UMD` 库后, 改变一个全局变量的结构; 
+    - `模块插件`: 通过 `<script>` 或 `import` 引入后, 改变另一个模块的结构;
+3. 全局变量
+    - 使用全局变量的声明文件是, 如果是以 `npm install` 安装的, 不需要任何配置. 如果是将声明文件直接存放于当前项目, 建议放在对应的源码目录下, 如果没有生效, 可以检查 `tsconfig.json` 中的 `files`, `include` 和 `exclude` 配置
+    - 全局变量的声明文件主要有一下几种语法
+      - `declare var`: 声明全局变量
+      - `declare function`: 声明全局方法
+      - `declare class`: 声明全局类
+      - `declare enum`: 声明全局枚举
+      - `declare namespace`: 声明(含有子属性的)全局对象
+      - `interface 和 type`: 声明全局类型
+    - `declare var`
+      - 
+      - ```typescript
+        declare var jQuery: (selector: string) => any;
+        jQuery('#foo');
+      - ```typescript
+      - ```typescript
+      - ```typescript
+      - ```typescript
+      - ```typescript
     - ```typescript
     - ```typescript
     - ```typescript
