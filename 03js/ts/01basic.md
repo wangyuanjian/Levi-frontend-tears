@@ -728,9 +728,27 @@
       setCoordinate(coord1); // 2
       setCoordinate(coord2); // 3
 4. 带有 `rest` 参数的元组
-    - 
+    - 元组可以有 `rest` 参数, 但参数必须是数组或元组类型
     - ```typescript
+      type StringNumberBooleans = [string, number, ...boolean[]];
+      type StringBooleansNumber1 = [string, ...boolean[], number];
+      type BooleansStringNumber = [...boolean[], string, number];
+
+      const hello: StringNumberBooleans = ['hello', 1];
+      const beautiful: StringNumberBooleans = ['beautiful', 1, true];
+      const world: StringNumberBooleans = ['world', 1, true, false, true];
+    - 上面代码第二个元组, 描述了元组的第一个元素为 `string` 类型, 然后是任意个数的 `boolean` 类型, 最后的元素为 `number` 类型
+    - 带有可选参数和 `rest` 参数的元组在下面的场景非常有用, 即使用元组和函数的参数列表对应
     - ```typescript
+      function readButtonInput(...args: [string, number, ...boolean[]]): void {
+        const [name, version, ...input] = args;
+      }
+    - 上面的代码基本上等同于下面的代码
+    - ```typescript
+      function readButtonInput1(name: string, version: number, ...input: boolean[]): void {
+
+      }
+    - 这很方便, 其实我们可以将所有参数定义为一个新的 `interface`, 但是使用元组省去了定义变量的步骤
 5. 只读元组
     - 使用 `readonly` 表示元组只读. 下面的例子, 整个替换元素是可以的, 但是没办法通过索引赋值.
     - ```typescript
@@ -740,9 +758,9 @@
         // Cannot assign to '0' because it is a read-only property.
       }
       setInfo(['hello', 2]);
-    - ```typescript
-    - ```typescript
 ### 枚举
+    - ```typescript
+    - ```typescript
 ### 类
 ### 类与接口
 ### 泛型
