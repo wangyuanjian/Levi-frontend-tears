@@ -440,15 +440,72 @@
       - `declare namespace`: 声明(含有子属性的)全局对象
       - `interface 和 type`: 声明全局类型
     - `declare var`
-      - 
+      - 就是一个全局变量的类型, 类似的有 `declare let` 和 `declare const`, 因为全局变量是禁止修改的常量, 所以大部分情况应该使用 `const` 而不是 `var`
+      - 📕声明语句中只能定义类型, 切勿在声明语句中定义具体的实现.
       - ```typescript
         declare var jQuery: (selector: string) => any;
         jQuery('#foo');
+    - `declare function`
+      - 定义全局函数的类型. 因为 `jQuery` 是函数类型, 所以也可以定义为函数类型.
+      - 📕注意语法!
+      - ```typescript
+        declare function jQuery(selector: string): any;
+        jQuery('#Foo');
+      - 支持函数重载.
+      - ```typescript
+        declare function jQuery(selector: string): any;
+        declare function jQuery(domReadyCallback: () => any): any;
+    - `declare class`
+      - 定义全局变量类的类型
+      - ```typescript
+        declare class Animal {
+          name: string;
+          sayHi(): string;
+          constructor(name);
+        }
+        let cat = new Animal('meow');
+    - `declare enum`
+      - 定义全局枚举类, 这样定义的枚举类也成为`外部枚举(Ambient Enums)`
+      - ```typescript
+        declare enum Directions {
+          UP,
+          RIGHT,
+          DOWN,
+          LEFT
+        }
+        let directions = [Directions.UP, Directions.DOWN];
+    - `declare namespace`
+      - `namespace` 是 `ts` 早期为了解决模块化而创造的关键字, 中文为 `命名空间`.
+        - 早期还没有 `ES6` 的时候, `ts` 提供了一种模块化解决方案, 使用 `module` 关键字便是内部模块, 但由于后来 `ES6` 也有了 `module` 关键字, 所以 `ts` 使用了 `namespace` 代替 `module`
+        - 📕现在已经不建议使用 `namespace`, `namespace` 被淘汰了. 但是在声明文件中, `declare namespace` 还是比较常用, 用来表示全局变量是一个对象, 包含许多子属性.
+        - 📕注意在 `namespace` 中声明类型不再需要 `declare`
+      - ```typescript
+        declare namespace jQuery1 {
+          function ajax(url: string, settings?: any): void;
+          const name: string;
+          class Event {
+
+          }
+          enum EventType {
+
+          }
+          // Statements are not allowed in ambient contexts.ts(1036)
+          // age: number;
+        }
+      - 如果对象拥有深层层级, 则需要使用嵌套的 `namespace` 来声明深层的属性的类型.
+      - ```typescript
+        declare namespace jQuery1 {
+          namespace fn {
+            function extend(object: any): void;
+          }
+        }
       - ```typescript
       - ```typescript
       - ```typescript
-      - ```typescript
-      - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
     - ```typescript
     - ```typescript
     - ```typescript
