@@ -19,8 +19,7 @@
     - [书写声明文件](#书写声明文件)
     - [内置对象](#内置对象)
   - [进阶](#进阶)
-    - [类型别名](#类型别名)
-    - [字符串字面量](#字符串字面量)
+    - [type](#type)
     - [元组](#元组)
     - [枚举](#枚举)
     - [类](#类)
@@ -672,9 +671,9 @@
     - ```shell
       npm install @types/node --save-dev
 ## 进阶
-### 类型别名
-1. 用来给一个类型起个新名字
-    - 类型别名常用于联合类型
+### type
+1. 类型别名
+    - 用来给一个类型起个新名字. 类型别名常用于联合类型
     - ``` typescript
       type Name = string;
       type NameResolver = () => string;
@@ -685,15 +684,64 @@
         }
         return n();
       }
+2. 字面量
+    - 约束取值只能是某几个值中的一个. 当然不只是字符串字面量, 还可能使其他类型字面量
     - ```typescript
-    - ```typescript
-    - ```typescript
-    - ```typescript
-    - ```typescript
-    - ```typescript
-    - ```typescript
-### 字符串字面量
+      type EventNames = 'click' | 'scroll' | 'mousemove';
+      function handleEvent(element: Element, event: EventNames): void {
+        // ...
+      }
 ### 元组
+1. 元组是另一种类型的数组, 因为元组已经明确一共有多少个元素, 并且元组每个位置的元素类型也已经确定了.
+    - 下面的代码就定义了一个元组, 这个元组只有 `2` 个元素, 索引为 `0` 的元素必须是 `string` 类型, 索引为 `1` 的元素必须是 `number` 类型
+    - ```typescript
+      type StringNumberPair = [string, number];
+      let pair: StringNumberPair = ['tom', 185];
+    - 访问一个已知索引的元组时, 会得到正确的类型. 当然如果索引超过返回会报错. 也可以只赋值其中一项
+    - 直接对元组类型的变量进行初始化或者赋值的时候，需要提供所有元组类型中指定的项
+    - ```typescript
+      function doSomething(pair: [string, number]): void {
+        const name: string = pair[0];
+        const height: number = pair[1];
+        const xx = pair[2];
+        // Tuple type '[string, number]' of length '2'  has no element at index '2'
+        pair[1] -= 5;
+        pair = ['jerry', 175];
+      }
+      doSomething(pair);
+2. 使用s `解构赋值` 语法解构元组
+    - ```typescript
+      let pair: StringNumberPair = ['tom', 185];
+      const [name1, height1] = pair;
+3. 可选的元素类型 `?`
+    - 只需在属性后加上 `?` 即可表示元组中该属性是可选的.
+    - 可选的元组属性必须放在元组的最后一位, 并且影响元组的 `length` 属性
+    - ```typescript
+      type Either2Or3 = [number, number, number?];
+      function setCoordinate(coord: Either2Or3): void {
+        const [x, y, z] = coord;
+        // z: number | undefined
+        console.log(`has ${coord.length} dimensions`);
+      }
+      const coord1: Either2Or3 = [1, 2];
+      const coord2: Either2Or3 = [1, 2, 3];
+      setCoordinate(coord1); // 2
+      setCoordinate(coord2); // 3
+4. 带有 `rest` 参数的元组
+    - 
+    - ```typescript
+    - ```typescript
+5. 只读元组
+    - 使用 `readonly` 表示元组只读. 下面的例子, 整个替换元素是可以的, 但是没办法通过索引赋值.
+    - ```typescript
+      function setInfo(pair: readonly [string, number]) {
+        pair = ['word', 1];
+        pair[0] = 'tom';
+        // Cannot assign to '0' because it is a read-only property.
+      }
+      setInfo(['hello', 2]);
+    - ```typescript
+    - ```typescript
 ### 枚举
 ### 类
 ### 类与接口
