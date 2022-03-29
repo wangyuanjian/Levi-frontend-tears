@@ -17,6 +17,16 @@
     - [类型断言](#类型断言)
     - [声明文件](#声明文件)
     - [书写声明文件](#书写声明文件)
+    - [内置对象](#内置对象)
+  - [进阶](#进阶)
+    - [类型别名](#类型别名)
+    - [字符串字面量](#字符串字面量)
+    - [元组](#元组)
+    - [枚举](#枚举)
+    - [类](#类)
+    - [类与接口](#类与接口)
+    - [泛型](#泛型)
+    - [声明合并](#声明合并)
   - [参考](#参考)
 
 <!-- /TOC -->
@@ -537,10 +547,10 @@
       - ```
         /path/to/project
         ├── src
-        |  └── index.ts
+        |    └── index.ts
         ├── types
-        |  └── foo
-        |     └── index.d.ts
+        |    └── foo
+        |         └── index.d.ts
         └── tsconfig.json
       - `tsconfig.json` 中的内容
       - ```json
@@ -576,15 +586,119 @@
       - ```typescript
         import { name1, Animal } from 'foo';
       - 📕与全局变量的声明文件类似, `interface` 前是不需要 `declare` 的
+    - `export namespace`
+      - 用来导出一个拥有子属性的对象
+      - ```typescript
+        export namespace foo1 {
+          const name: string;
+          namespace bar {
+            function work(): string;
+          }
+        }
+        
+        declare namespace foo2 {
+          const name: string;
+          namespace bar {
+            function work(): string;
+          }
+        }
+        export { foo2 };
+      - 对应的导入和使用模块应该是这样
+      - ```typescript
+        import { foo1, foo2 } from 'foo';
+    - `export default`
+      - 在 `ES6` 模块中, 使用 `export default` 导出一个默认值
+      - ```typescript
+        export default function foo3(): string;
+      - ```typescript
+        import foo3 from 'foo';
+      - 📕注意, 只有 `function`, `class`, `interface` 可以直接默认导出, 其他的变量需要先定义再默认导出
+      - 针对这种默认导出，我们一般会将导出语句放在整个声明文件的最前面
+    - `export = `
+      - 在 `commonJS` 规范中, 使用下面的方式导出一个模块
+      - ```typescript
+        // 整体导出
+        module.exports = foo;
+        // 单个导出
+        exports.bar = bar;
+      - `ts` 中针对这种模块导出, 有很多对应的方式导入
+        - `方式1`: `const ... = require` 
+        - ```typescript
+          // 整体导入
+          const foo = require('foo');
+          // 单个导入
+          const bar = require('foo').bar;
+        - `方式2`: `import ... from`
+        - ```typescript
+          // 整体导入
+          import * as foo from 'foo';
+          // 单个导入
+          import { bar } from 'foo';
+        - `方式3`: `import ... require`. 这也是 `ts` 官方推荐的方式.
+        - ```typescript
+          // 整体导入
+          import foo = require('foo');
+          // 单个导入
+          import bar = foo.bar;
       - ```typescript
       - ```typescript
       - ```typescript
       - ```typescript
       - ```typescript
       - ```typescript
+### 内置对象
+1. `JavaScript` 中有很多内置对象, 它们可以在 `TypeScript` 中可以被当作定义好了的类型
+2. `ECMAScript` 的内置对象
+    - 包括 `Boolean`, `Date`, `Date`, `RegExp` 等.
+    - ```typescript
+      let b: Boolean = new Boolean(1);
+      let d: Date = new Date();
+      let r: RegExp = /[a-z]/g;
+3. `DOM` 和 `BOM` 的内置对象
+    - 包括 `Document`, `Element`, `Event` 等.
+    - ```typescript
+      let allDiv: NodeList = document.querySelectorAll('div');
+      document.addEventListener('click', (e: MouseEvent) => {
+        // ...
+      });
+4. `TypeScript` 核心库的定义文件
+    - 定义了苏哦有浏览器环境需要用到的类型, 并且是预置在 `TypeScript` 中的. 当使用 `Math.pow()` 等常用方法时, `TypeScript` 已经帮我们做了很多类型判断的工作.
+    - ```typescript
+      Math.pow(10, '2');
+      // Argument of type 'string' is not assignable to parameter of type 'number'
+    - 📕注意, `TypeScript` 核心库的定义中不包含 `Node.js` 部分
+5. 用 `TypeScript` 写 `Node.js`
+    - 需要引入第三方声明文件
+    - ```shell
+      npm install @types/node --save-dev
+## 进阶
+### 类型别名
+1. 用来给一个类型起个新名字
+    - 类型别名常用于联合类型
+    - ``` typescript
+      type Name = string;
+      type NameResolver = () => string;
+      type NameOrResolver = Name | NameResolver;
+      function getName(n: NameOrResolver): string {
+        if (typeof n === 'string') {
+          return n;
+        }
+        return n();
+      }
     - ```typescript
     - ```typescript
     - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
+### 字符串字面量
+### 元组
+### 枚举
+### 类
+### 类与接口
+### 泛型
+### 声明合并
     - ```typescript
     - ```typescript
     - ```typescript
