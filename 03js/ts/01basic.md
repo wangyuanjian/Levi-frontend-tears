@@ -499,10 +499,89 @@
             function extend(object: any): void;
           }
         }
+      - `interface` 和 `type`
+        - 除了全局变量, 又是希望一些类型能暴露出来, 在类型声明文件中, 可以直接使用 `interface` 或 `type` 声明一个全局的接口或类型, 如下面的 `AjaxSettings`
+        - 但如果不像将其暴露, 可以把 `interface` 或 `type` 放在 `namespace` 中, 如下面的 `AjaxSettingsInside`
+        - ```typescript
+          interface AjaxSettings {
+            method?: 'GET' | 'POST';
+            data?: any;
+          }
+          declare namespace jQuery {
+            interface AjaxSettingsInside {
+              method?: 'GET' | 'POST';
+              data?: any;
+            }
+            function ajax(url: string, settings?: AjaxSettings): void;
+            function ajax1(url: string, settings?: AjaxSettingsInside): void;
+          }
+        - 但是当使用内部 `interface` 时, 需要加上 `jQuery.` 的前缀.
+    - 加入 `jQuery` 既是一个函数, 又是一个对象, 拥有子鼠星, 可以组合多个声明语句, 这些声明语句会不冲突地合并起来.
+      - ```typescript
+        declare function jQuery(selector: string): any;
+        jQuery('#Foo');
+        declare namespace jQuery {
+          interface AjaxSettingsInside {
+            method?: 'GET' | 'POST';
+            data?: any;
+          }
+          function ajax1(url: string, settings?: AjaxSettingsInside): void;
+        }
+4. `npm` 包
+    - 通过 `import foo from 'foo'` 导入一个 `npm` 包时符合 `ES6` 模块规范的. 一个 `npm` 包的声明文件可能存在两个地方
+      - 与该 `npm` 包绑定在一起. 判断依据是 `package.json` 中有 `types` 字段或者有一个 `index.d.ts` 的声明文件. 这种模式不需要额外安装其他包, 最为推荐.
+      - 发布到 `@types` 中, 我们只需尝试通过命令 `npm install @types/foo --save-dev` 安装对应的 `@types` 包就知道是否存在该声明文件. 这种模式一般是由于 `npm` 包的维护者没有提供声明文件, 所有只能由其他人将声明文件发布到 `@types` 中
+    - 假如以上两种方式都没有找到对应的声明文件, 那么就需要自己写声明文件, 由于是通过 `import` 导入的模块, 所以声明文件存放的位置也有约束. 一般有两种方案
+      - 创建 `node_modules/@types/foo/index.d.ts` 文件, 存放 `foo` 模块的声明文件. 这种方式不需要额外的匹配值, 但是 `node_modules` 目录不稳定, 代码没有被保存, 不建议使用, 一般只用作临时测试
+      - 创建 `types` 目录, 专门管理自己写的声明文件, 将 `foo` 的声明文件放到 `types/foo/index.d.ts` 中, 这种方式需要配置 `tsconfig.json` 中的 `paths` 和 `baseUrl` 字段.
+      - ```
+        /path/to/project
+        ├── src
+        |  └── index.ts
+        ├── types
+        |  └── foo
+        |     └── index.d.ts
+        └── tsconfig.json
+      - `tsconfig.json` 中的内容
+      - ```json
+        {
+          "compilerOptions": {
+            "module": "commonjs",
+            "baseUrl": "./",
+            "paths": {
+                "*": ["types/*"]
+            }
+          }
+        }
+    - `npm` 包的声明文件主要有一下几种语法
+      - `export`: 导出变量
+      - `export namespace`: 导出对象
+      - `export default`: `ES6` 默认导出
+      - `export = `: `commonJS` 导出模块 
+    - `export`
+      - `npm` 包的声明文件与全局变量的声明文件有很大不同. 在 `npm` 包的声明文件中, 使用 `declare` 只会在当前文件中声明一个`局部变量`, 只有同时使用 `export` 导出, 然后使用方 `import` 导入后, 才会应用到这些类型声明.
+      - `export` 的语法与普通 `ts` 中的语法类型, 区别仅在于声明问家中禁止定义具体的实现.
+      - ```typescript
+        export const name: string;
+        export function finName1(name: string): string;
+
+        // export 和 declare 同时使用 
+        declare const name1: string;
+        declare class Animal {
+          name: string;
+          age: number;
+        }
+        export { Animal, name1 };
+      - 对应的导入和使用模块应该是这样
+      - ```typescript
+        import { name1, Animal } from 'foo';
+      - 📕与全局变量的声明文件类似, `interface` 前是不需要 `declare` 的
       - ```typescript
       - ```typescript
       - ```typescript
-    - ```typescript
+      - ```typescript
+      - ```typescript
+      - ```typescript
     - ```typescript
     - ```typescript
     - ```typescript
