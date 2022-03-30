@@ -759,6 +759,96 @@
       }
       setInfo(['hello', 2]);
 ### 枚举
+1. 枚举允许开发者定义一组命名常量. 使用枚举可以提高文档可读性. `TypeScript` 提供了数字枚举和字符串枚举
+2. 数字枚举
+    - 定义枚举使用 `enum` 关键字
+    - ```typescript
+      enum Direction {
+        Up = 1,
+        Down,
+        Left,
+        Right
+      }
+    - 上面的枚举中, `Up` 的初始值为 `1`. 跟在 `Up` 后买你的元素自动从 `1` 增加. 即 `Down` 的值为 `2`, `Left` 的值为 `3`, `Right` 的值为 `4`. 
+    - 如果不进行任何初始值, 那么 `Up` 的值从 `0` 开始.
+    - 使用枚举很简单, 
+    - ```typescript
+      enum UserResponse {
+        No = 0,
+        Yes = 1,
+      }
+      function respond(recipient: string, message: UserResponse): void {
+        //...
+      }
+      respond('I agree with you.', UserResponse.Yes);
+    - 数字枚举中, 没有初始化的成员要么排在第一位, 要么跟在有`数字常量`或其他常量枚举成员的后面, 下面的代码报错
+    - ```typescript
+      function getSomeValue(): number {
+        return 1;
+      }
+      enum E {
+        A = getSomeValue(),
+        B, // Enum member must have initializer
+      }
+3. 字符串枚举
+    - 字符串枚举要求, 每个成员必须是字符串字面量常量初始化, 或者另一个字符串枚举值.
+    - ```typescript
+      enum Person {
+        M = "man",
+        W = "woman"
+      }
+4. 异质枚举(`Heterogeneous enums`)
+    - 技术上枚举可以混用 `string` 和 `number` 成员. 但是这样做的目的却不清楚, 所以官网教程不建议这么做.
+    - ```typescript
+      enum WhatIsThisEnum {
+        No = 0,
+        Yes = "YES"
+      }
+5. 常量成员和计算成员
+    - 每一个枚举成员都有一个值与之关联, 这个值要么是常量要么是计算值. 如果一个枚举成员满足一下几个条件中的一个, 即为常量成员. 非常量成员的都是计算成员
+      - `情况1`: 是枚举的第一个成员, 并且没有初值赋值, 这种情况下其值为 `0`
+      - ```typescript
+        // E.X is constant
+        enum E {
+          X,
+        }
+      - `情况2`: 该成员没有初始赋值并且其前面的成员是数字类型的常量. 这种情况下, 该成员的值是其前面成员的值 `+1`
+      - ```typescript
+        // E1 和 E2 的所有成员都是常量
+        enum E1 {
+          X,
+          Y,
+          Z
+        }
+        enum E2 {
+          X = 1,
+          Y,
+          Z
+        }
+      - `情况3`: 成员被初始化为一个`常量枚举表达式`. 常量枚举表达式是 `TypeScript` 表达式的子集, 可以在编译阶段得到表达式的值. 具体哪些是`常量枚举表达式`, [👉可以查看官网](https://www.typescriptlang.org/docs/handbook/enums.html#computed-and-constant-members)
+      - ```typescript
+        enum FileAccess {
+          // 常量成员
+          None,
+          Read = 1 << 1,
+          Write = 1 << 2,
+          ReadWrite = Read | Write,
+          // 计算成员
+          G = "123".length
+        }
+6. 联合枚举和枚举成员类型
+    - 有一种特殊的常量枚举成员, 这类成员变量不需要计算: `字面量枚举成员`. `字面量枚举成员` 要么没有初始值, 要么初始值为
+      - `字符串字面量`:, 如 `foo`, `bar` 
+      - `数字字面量`: 如 `1`, `100`
+      - `带有一元减号运算符的任何数字字面量`: 如 `-1`, `-100` 
+    - 当枚举 **`所有`** 成员都是 `字面量枚举成员`, 一些特殊的用法出现了
+    - `用法1`: 枚举的成员变成了类型!!! 
+      - 例如, 可以指定某些接口成员的值只能为枚举成员
+      - ```typescript
+    - `用法2`: 
+      - ```typescript
+    - `用法3`: 
+      - ```typescript
     - ```typescript
     - ```typescript
 ### 类
