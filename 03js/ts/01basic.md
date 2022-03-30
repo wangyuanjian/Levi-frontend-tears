@@ -891,6 +891,58 @@
       const result = f1(E4);
       console.log('result is', result);
       // result is 0
+8. 编译时枚举
+    - `keyof` 顾名思义就是获取某种类型的所有键, 其返回类型是联合类型. 其多应用于第三方库的源码
+    - 使用 `keyof typeof` 可以获取枚举所有 `key` 作为字符串的类型
+    - ```typescript
+      /**
+      * LogLevlStrings = 'ERROR' | 'WARN' | 'INFO' | 'DEBUG'
+      */
+      type LogLevlStrings = keyof typeof LogLevel;
+
+      function printImportant(key: LogLevlStrings, message: string): void {
+        const num = LogLevel[key];
+        if (num <= LogLevel.WARN) {
+          console.log('log level key is: ', key);
+          console.log('log level value is: ', num);
+          console.log('log level message is: ', message);
+        }
+      }
+      printImportant('ERROR', "something bad just happened.")
+9. 反向映射(`reverse mapping`)
+    - `数字枚举`成员可以从枚举值反向映射为枚举名. 
+    - 📕只有数字枚举有, 字符串枚举没有!!!
+    - ```typescript
+      enum Age {
+        YOUNG,
+        OLD
+      }
+      let a = Age.YOUNG; // 0
+      let ageNumber = Age[a]; // 'YOUNG'
+    - 枚举被编译为下面的代码, 代码中枚举被编译为双向存储的对象, 既存储了 `name` 到 `value`, 又存储了 `value` 到 `name`
+    - ```typescript
+      (function (Age) {
+          Age[Age["YOUNG"] = 0] = "YOUNG";
+          Age[Age["OLD"] = 1] = "OLD";
+      })(Age || (Age = {}));
+10. 常量枚举
+    - 使用 `const` 即可定义常量枚举
+    - ```typescript
+      const enum Alphabet {
+        A = 1,
+        B = A * 2
+      }
+    - 常量枚举只能使用常量枚举表达式. 和通常枚举不同的是, 常量枚举在编译后都被移除了. 常量枚举不能有计算属性.
+11. 外部枚举(`Ambient enums`)
+    - 外部枚举用于描述已经存在的枚举类型
+    - ```typescript
+      declare enum Enum1 {
+        A = 1,
+        B,
+        C = 2
+      }
+    - 外部枚举和非外部枚举的一个重要不同是. 常规枚举的成员, 如果没有初始值但是这个成员的前一个成员是常量, 那么这个成员同样被当作常量. 相反, 外部枚举的成员如果没有初始值, 将会被当作计算成员.
+    - ```typescript
     - ```typescript
     - ```typescript
     - ```typescript
