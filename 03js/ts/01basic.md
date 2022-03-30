@@ -845,10 +845,56 @@
     - `用法1`: 枚举的成员变成了类型!!! 
       - 例如, 可以指定某些接口成员的值只能为枚举成员
       - ```typescript
-    - `用法2`: 
+        enum ShapeKind {
+          Circle,
+          Square
+        }
+        interface Circle {
+          kind: ShapeKind.Circle;
+          radius: number;
+        }
+        let c2: Circle = {
+          kind: ShapeKind.Circle,
+          radius: 3.14
+        }
+    - `用法2`: The other change is that enum types themselves effectively become a union of each enum member. With union enums, the type system is able to leverage the fact that it knows the exact set of values that exist in the enum itself. Because of that, TypeScript can catch bugs where we might be comparing values incorrectly. 
       - ```typescript
-    - `用法3`: 
-      - ```typescript
+        enum E3 {
+        Foo,
+        Bar,
+      }
+      function f(x: E3) {
+        // if (x !== 0 || x !== 1)
+        if (x !== E3.Foo || x !== E3.Bar) {
+          console.log('whoops');
+          return
+        }
+        // 报错  
+        // This condition will always return 'true' since the types 'E3.Foo' and 'E3.Bar' have no overlap
+        console.log('got it');
+      }
+      - 上面的例子中, 首先检查 `x` 是否为 `E3.Foo`. 如果不是, 那么根据 `||` 的短路效应, 执行 `if` 块中的内容. 如果是, 那么 `x !== E3.Bar` 成立, 无论如何都会返回 `true`
+7. 运行时枚举
+    - 枚举在运行时是真实存在的对象
+    - ```typescript
+      enum E4 {
+        X,
+        Y,
+        Z,
+      }
+
+      function f1(obj: {X: number}) {
+        console.log('obj is ', obj);
+        // obj is  { '0': 'X', '1': 'Y', '2': 'Z', X: 0, Y: 1, Z: 2 }
+        return obj.X;
+      }
+      const result = f1(E4);
+      console.log('result is', result);
+      // result is 0
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
     - ```typescript
     - ```typescript
 ### 类
