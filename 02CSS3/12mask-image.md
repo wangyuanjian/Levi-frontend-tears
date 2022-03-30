@@ -38,9 +38,52 @@
     - ![](../../image/Snipaste_2022-03-30_11-40-59.png)
     - 上面的例子分别是不设置遮罩, 设置 `svg` 类型的图片和设置 `png` 类型的图片. 并且后面两个 `div` 都设置了背景色来突出显示图像的轮廓
 3. `<mask-source>`
+    - 指向图片或 `svg` 中 `<mask>` 的 `url`
+    - ```html
+      <svg width="0" height="0" viewBox="0 0 200 150">
+        <defs>
+          <mask id="mask">
+            <circle fill="#FFFFFF" cx="75" cy="75" r="50" />
+          </mask>
+        </defs>
+      </svg>
+      <div class="box box4">Lorem ...</div>
+    - ```css
+      .box4 {
+        background-color: salmon;
+        -webkit-mask-image: url(#mask);
+        mask-image: url(#mask);
+      }
+    - ![](../../image/Snipaste_2022-03-30_15-17-05.png)
+    - 📕目前, 只有 `Firefox` 支持这种语法😟
 ## 其他
 1. 使用渐变遮罩的效果, 突出图片下方的文字
-    - 
-- ```html
-- ```css
-- ![](../../image/)
+    - ```html
+      <div class="box-demo">
+        <img src="../../float/coffee-whole.png" alt="">
+        <figcaption>Coffee</figcaption>
+      </div>
+    - ```css
+      .box-demo {
+        padding: 0;
+        width: var(--box-size);
+        height: var(--box-size);
+        position: relative;
+      }
+      .box-demo > img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        -webkit-mask-image: linear-gradient(black, transparent);
+        mask-image: linear-gradient(black, transparent);
+      }
+      .box-demo > figcaption {
+        position: absolute;
+        right: 1rem;
+        bottom: 2rem;
+        font-size: 1.5rem;
+      }
+    - ![](../../image/Snipaste_2022-03-30_14-51-06.png)
+    - 📕❗注意: `mask-image` 部分, 前面说过, 完全透明的部分才会遮住元素, 所以渐变是由 `black` 过渡到 `transparent`. 
+    - 而不是视觉上想当然, 图片上面完整显示, 那应该是从 `transparent` 过渡到 `black` 吧? NO!
+2. 谢谢你看到这里
