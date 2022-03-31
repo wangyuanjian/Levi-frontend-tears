@@ -24,6 +24,8 @@
     - [枚举](#枚举)
     - [类](#类)
       - [类成员](#类成员)
+      - [方法](#方法)
+      - [类继承](#类继承)
     - [类与接口](#类与接口)
     - [泛型](#泛型)
     - [声明合并](#声明合并)
@@ -973,7 +975,7 @@
         x!: number;
       }
 2. 只读 `readonly`
-    - 域可以在其前加上 `readonly` 修饰符. 这可以阻止其在**`构造函数之外`**的赋值.
+    - 域可以在其前加上 `readonly` 修饰符. 这可以阻止其在 **`构造函数之外`** 的赋值.
     - ```typescript
       class Greeter {
         readonly name: string = "word"
@@ -990,6 +992,107 @@
       }
 
       new Greeter().name = 'n';
+3. 构造函数(`Constructors`)
+    - 构造函数可以重载, 可以有默认参数值. 但是
+      - 构造函数不能有泛型类型参数
+      - 构造函数没有返回类型. 它返回的就是类的实例, 既对象.
+    - ```typescript
+      class Point3 {
+        x: number;
+        y: number;
+
+        constructor(x: number, y: number);
+        constructor(x: number);
+        constructor(xs: number, ys: number = 0) {
+
+        }
+      }
+    - 在`子类`中, 构造函数调用 `this` 之前必须先调用 `super`
+    - ```typescript
+      class Base {
+        k = 4;
+      }
+      class Derived extends Base {
+        constructor() {
+          super();
+          this.k = 6;
+        }
+      }
+#### 方法
+1. 方法就是类的函数属性
+    - 在方法体中, 强势使用 `this` 来访问域或方法.
+    - ```typescript
+      class Point4 {
+        x: number;
+        y: number;
+
+        area(): number {
+          return this.x * this.y
+        }
+
+        scale(n: number): void {
+          this.x *= n;
+          this.y *= n;
+          this.area();
+        }
+      }
+2. 访问器(`Accessors`)
+    - ```typescript
+      class C {
+        _length = 0;
+        get length() {
+          return this._length;
+        }
+        set length(value: number) {
+          this._length = value;
+        }
+      }
+    - `TypeScript` 对访问有一些特别的规则
+      - 如果只有 `getter` 没有 `setter`, 那么这个属性默认`只读`
+      - 如果 `setter` 的参数类型没有指定, 那么将会从 `getter` 的返回类型推断
+      - `getter` 和 `setter` 必须具有相同的访问可见性
+    - 从 `TypeScript 4.3` 开始, `getter` 和 `setter` 可以有不同的类型
+    - ```typescript
+      class Thing {
+        _size = 0;
+        get size(): number {
+          return this._size;
+        }
+        set size(value: string | number | boolean) {
+          let num = Number(value);
+
+          if (!Number.isFinite(num)) {
+            this._size = 0;
+            return;
+          }
+
+          this._size = num;
+        }
+      }
+#### 类继承
+1. `implements`
+    - 使用 `implements` 检查一个类是否满足特定的 `interface`. 当然可以实现不止一个接口
+    - ```typescript
+      interface Pingable {
+        ping(): void;
+      }
+      interface Pongable {
+        pang(): void;
+      }
+      class Sonar implements Pingable, Pongable {
+        ping(): void {
+          console.log('ping');
+        }
+        pang(): void {
+          console.log('pang');
+        }
+      }
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
     - ```typescript
     - ```typescript
 ### 类与接口
