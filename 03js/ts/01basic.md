@@ -23,6 +23,7 @@
     - [元组](#元组)
     - [枚举](#枚举)
     - [类](#类)
+      - [类成员](#类成员)
     - [类与接口](#类与接口)
     - [泛型](#泛型)
     - [声明合并](#声明合并)
@@ -942,22 +943,58 @@
         C = 2
       }
     - 外部枚举和非外部枚举的一个重要不同是. 常规枚举的成员, 如果没有初始值但是这个成员的前一个成员是常量, 那么这个成员同样被当作常量. 相反, 外部枚举的成员如果没有初始值, 将会被当作计算成员.
-    - ```typescript
-    - ```typescript
-    - ```typescript
-    - ```typescript
-    - ```typescript
-    - ```typescript
-    - ```typescript
 ### 类
+1. 最简单的类
+    - ```typescript
+      class Point {}
+#### 类成员
+1. 域(`Field`)
+    - 一个域声明创建了一个`公共的可写的`属性(`property`)
+    - 其中类型可以被省略, 比如下面的 `y`, 但是省略就默认为 `any`
+    - ```typescript
+      class Point1 {
+        x: number;
+        y;
+      }
+
+      const pt = new Point1();
+      pt.x = 100;
+      pt.y = 100;
+    - 域也可以初始化, 会在类实例化时自动初始化. 并且会根据初始化值自动推断域的类型
+    - ```typescript
+      class Point1 {
+        x: number;
+        y;
+        z = 0;
+      }
+    - `!`: 在 `TypeScript` 中, 如果打算通过构造函数以外的方式初始化成员, 可以使用`绝对赋值断言操作符(definite assignment assertion operator)` `!`
+    - ```typescript
+      class Point2 {
+        x!: number;
+      }
+2. 只读 `readonly`
+    - 域可以在其前加上 `readonly` 修饰符. 这可以阻止其在**`构造函数之外`**的赋值.
+    - ```typescript
+      class Greeter {
+        readonly name: string = "word"
+
+        constructor(othername?: string) {
+          if (othername !== undefined) {
+            this.name = othername;
+          }
+        }
+        err() {
+          this.name = 'a';
+          // Cannot assign to 'name' because it is a read-only property
+        }
+      }
+
+      new Greeter().name = 'n';
+    - ```typescript
+    - ```typescript
 ### 类与接口
 ### 泛型
 ### 声明合并
-    - ```typescript
-    - ```typescript
-    - ```typescript
-    - ```typescript
-    - ```typescript
     - ```typescript
 ## 参考
 1. [TypeScript 入门教程](http://ts.xcatliu.com/basics/primitive-data-types.html)
