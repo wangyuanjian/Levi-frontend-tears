@@ -1087,9 +1087,52 @@
           console.log('pang');
         }
       }
+    - `implements` 并没有改变 `class` 或者 `class` 中的 方法本身.
     - ```typescript
+      interface Checkable {
+        check(s: string): boolean;
+      }
+
+      class NumberCheck implements Checkable {
+        // Parameter 's' implicitly has an 'any' type
+        check(s): boolean {
+          // 因为any上调用任何方法都不会报错, 所以这里没有报错
+          return s.toLowercase() === 'ok';
+        }
+      }
+      new NumberCheck().check(1);
+    - 上面的例子, 我们可能期望 `s` 的类型受 `s: string` 的影响, 但是没有. 下面的例子同样, 如果 `interface` 带有可选属性, 那么类并不会创建这个属性.
     - ```typescript
+      interface A {
+        x: number;
+        y?: number;
+      }
+      class C1 implements A {
+        x = 0;
+      }
+      const c = new C1();
+      c.y = 10; // Property 'y' does not exist on type 'C1'
+2. `extends`
+    - 类可以从基类继承, 子类拥有父类所有的方法和属性.
     - ```typescript
+      class Animal {
+        move() {
+          console.log('moving');
+        }
+      }
+
+      class Dog extends Animal {
+        woof(times: number) {
+          for (let index = 0; index < times; index++) {
+            console.log('woofs');      
+          }
+        }
+      }
+      const d = new Dog();
+      d.move();
+      d.woof(3);
+3. 方法重写
+    - 
     - ```typescript
     - ```typescript
     - ```typescript
