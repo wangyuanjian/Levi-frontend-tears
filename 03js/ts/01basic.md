@@ -1230,7 +1230,7 @@
       const d3 = new Derived3();
       console.log('d3.m is', d3.m); // 15
 4. 跨层级 `protected` 访问
-    - 不同的面向对象语言在是否可以通过父类实例访问父类 `protected` 成员上看法不一. `Java` 认为是合法的, 但是 `C#` 和 `C++` 认为是不和反的. `TypeScript` 
+    - 不同的面向对象语言在是否可以通过父类实例访问父类 `protected` 成员上看法不一. `Java` 认为是合法的, 但是 `C#` 和 `C++` 认为是不和反的. `TypeScript` 同样认为不合法.
     - ```typescript
       class Base4 {
         protected x: number = 1;
@@ -1247,7 +1247,42 @@
           // 报错
         }
       }
-
+5. `private`
+    - 只能在当前类中访问
+    - ```typescript
+      class Base5 {
+        private x = 0;
+      }
+      const b5 = new Base5();
+      // b5.x = 1;
+      // Property 'x' is private and only accessible within class 'Base5'
+      class Derived5 extends Base5 {
+        showX() {
+          // console.log(this.x);
+        }
+      }
+    - 子类中也无法提高 `private` 成员的可见性
+    - ```typescript
+      class Base5 {
+        private x = 0;
+      }
+      class Derived6 extends Base5 {
+        x = 1;
+        // Class 'Derived6' incorrectly extends base class 'Base5'.
+      }
+6. 跨实例的 `private` 访问
+    - 不同面向对象语言对于同一个类的不同实例是否能访问互相的 `priavte` 成员看法不同, `Java`, `C#` 允许, 但是 `Ruby` 不允许. `TypeScript` 允许跨实例的 `private` 成员访问.
+    - ```typescript
+      class A1 {
+        private x = 10;
+        public sameAs(other: A1) {
+          // no error
+          return other.x === this.x;
+        }
+      }
+    - ```typescript
+    - ```typescript
+    - ```typescript
     - ```typescript
     - ```typescript
 ### 类与接口
