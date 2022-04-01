@@ -29,6 +29,7 @@
       - [成员可见性](#成员可见性)
       - [静态成员](#静态成员)
       - [泛型类](#泛型类)
+      - [`this`](#this)
     - [类与接口](#类与接口)
     - [泛型](#泛型)
     - [声明合并](#声明合并)
@@ -1353,7 +1354,105 @@
           this.contents = value;
         }
       }
+#### `this`
+1. `TypeScript` 不会改变 `JavaScript` 的运行时行为. 
     - ```typescript
+      class MyClass2 {
+        name: 'MyClass2';
+        getName() {
+          return this.name;
+        }
+      }
+      const c3 = new MyClass2();
+      const obj = {
+        name: 'obj',
+        getName: c3.getName,
+      }
+      // obj
+      console.log('this runtime is', obj.getName()); 
+    - 为什么打印出来的是 `obj` 呢? 因为在 `JavaScript` 中, 函数内部的 `this` 值取决于函数是如何调用的. 在上面的例子中, 因为函数是通过 `对象.` 的方式调用, 所以 `this` 指向了 `.` 前面的 `对象`.
+2. 箭头函数
+    - 如果一个函数经常在失去 `this` 语境的条件下调用, 那么最好使用箭头函数作为函数的定义
+    - ```typescript
+      class MyClass3 {
+        name = 'myClass';
+        getName = () => {
+          return this.name;
+        }
+      }
+      const c4 = new MyClass3();
+      const g = c4.getName;
+      console.log(g === c4.getName); // true
+      console.log('g in arrow', g()); // myClass
+3. `this` 参数
+    - 在方法或函数定义中, 有一个名为 `this` 的初始化参数在 `TypeScript` 中有特别的意义. 这个参数在编译器将将会被移除
+    - ```typescript
+      function fn1(this: boolean, x: number) {
+      }
+      // 编译后
+      function fn1(x) {
+      }
+    - `TypeScript` 会检查调用一个带有 `this` 的函数是否在正确的上下文中. 
+    - ```typescript
+      class MyClass5 {
+        name = 'MyClass';
+        getName(this: MyClass5) {
+          return this.name;
+        }
+      }
+      const c5 = new MyClass5();
+      c5.getName(); // ok
+
+      const g5 = c5.getName;
+      // The 'this' context of type 'void' is not assignable to method's 'this' of type 'MyClass5'
+      console.log(g5());
+4. `this` 类型
+    - 类中, `this` 这种特殊的类型动态指向当前类. 下面的代码中, `set` 的返回类型时 `this` 而不是 `Box1`
+    - ```typescript
+      class Box1 {
+        content: string = '';
+        set(value: string) {
+          this.content = value;
+          return this;
+        }
+      }
+    - 如果使一个类, 继承 `Box1` 那么会做更智能的类型
+    - ```typescript
+      class ClearableBox extends Box1 {
+        clear() {
+          this.content = '';
+        }
+      }
+
+      const a1 = new ClearableBox();
+      const b1 = a1.set('world');
+      // const b1: ClearableBox
+    - 同样, 也可以在参数列表中使用 `this` 类型. 
+    - ```typescript
+      class Box1 {
+        content: string = '';
+        sameAs(other: this) {
+          return other.content === this.content;
+        }
+      }
+    - 📕这不同于 `other: Box`, 因为如果有一个子类, 子类的 `sameAs` 方法将只接受从子类继承的类
+    - ```typescript
+      class Box1 {
+        content: string = '';
+        sameAs(other: this) {
+          return other.content === this.content;
+        }
+      }
+      class ClearableBox extends Box1 {
+        clear() {
+          this.content = '';
+        }
+      }
+
+      const a2 = new Box1();
+      const b2 = new ClearableBox();
+      b2.sameAs(a2);
+      // Argument of type 'Box1' is not assignable to parameter of type 'ClearableBox'.
     - ```typescript
     - ```typescript
     - ```typescript
@@ -1368,6 +1467,3 @@
     - ```typescript
 ## 参考
 1. [TypeScript 入门教程](http://ts.xcatliu.com/basics/primitive-data-types.html)
-
-
-- ```typescript
