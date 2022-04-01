@@ -26,6 +26,7 @@
       - [类成员](#类成员)
       - [方法](#方法)
       - [类继承](#类继承)
+      - [成员可见性](#成员可见性)
     - [类与接口](#类与接口)
     - [泛型](#泛型)
     - [声明合并](#声明合并)
@@ -1132,10 +1133,121 @@
       d.move();
       d.woof(3);
 3. 方法重写
-    - 
+    - 子类可以重写父类的域或属性. `TypeScript` 强制子类总是父类的一个子类型
     - ```typescript
+      class Base1 {
+        greet() {
+          console.log('hello, World.');
+        }
+      }
+      class Derived1 extends Base1 {
+        greet(name?: string): void {
+          if (name === undefined) {
+            super.greet();
+            return;
+          }
+          console.log(`hello, ${name.toUpperCase()}`);
+        }
+      }
+
+      const d1 = new Derived1();
+      d1.greet();
+      d1.greet('John');
+    - 可以永远使用子类实例指向父类的引用.
     - ```typescript
+      const d1: Derived1 = new Derived1();
+      const d2: Base1 = new Derived1();
+    - 📕注意上面例子子类中, `greet(name?: string)` 使用了可选参数 `?`, 如果取消可选, 那么编译报错. 所以子类必须遵守父类的约定 `contract`
     - ```typescript
+      class Derived1 extends Base1 {
+        // Property 'greet' in type 'Derived1' is not assignable to the same property in base type 'Base1'.
+        greet(name: string): void {
+          if (name === undefined) {
+            super.greet();
+            return;
+          }
+          console.log(`hello, ${name.toUpperCase()}`);
+        }
+      }
+4. 初始化顺序
+    - 类初始化顺序
+      - 初始化基类的域
+      - 执行基类的构造函数
+      - 初始化子类的域
+      - 执行子类的构造函数
+    - ```typescript
+      class Base2 {
+        name: string = "base";
+        constructor() {
+          console.log('base name is ' + this.name);
+        }
+      }
+      class Derived2 extends Base2 {
+        name = "derived";
+      }
+      new Derived2();
+      // base name is base
+#### 成员可见性
+> 控制是否特定的方法或属性在 `class` 外是可见的.
+1. `public`
+    - 类成员默认可见性为 `public`. 表示该成员在代码任意位置都可见. 所以一般省略 `public` 不写.
+    - ```typescript
+      class Greeter1 {
+        public greet() {
+          console.log('hi');
+        }
+      }
+      new Greeter1().greet();
+2. `protected`
+    - `protected` 成员只在类和该类的子类中可见. 是没有办法通过子类的实例调用的.
+    - ```typescript
+      class Greeter2 {
+        public greet() {
+          console.log(`hello, ` + this.getName());
+        }
+        protected getName(): string {
+          return 'hi';
+        }
+      }
+      class SpecialGreeter extends Greeter2 {
+        public howdy() {
+          console.log('howdy, ' + this.getName());
+        }
+      }
+      const g1 = new SpecialGreeter();
+      g1.greet(); // ok
+      // g1.getName();
+      // Property 'getName' is protected and only accessible within class 'Greeter2' and its subclasses.
+3. 暴露 `protected` 成员
+    - 子类需要遵从父类的约定, 但是子类仍然可以将父类的 `protected` 成员变成 `public`
+    - ```typescript
+      class Base3 {
+        protected m = 10;
+      }
+      class Derived3 extends Base3 {
+        m = 15;
+      }
+      const d3 = new Derived3();
+      console.log('d3.m is', d3.m); // 15
+4. 跨层级 `protected` 访问
+    - 不同的面向对象语言在是否可以通过父类实例访问父类 `protected` 成员上看法不一. `Java` 认为是合法的, 但是 `C#` 和 `C++` 认为是不和反的. `TypeScript` 
+    - ```typescript
+      class Base4 {
+        protected x: number = 1;
+      }
+      class Derived4A extends Base4 {
+        protected x: number = 5;
+      }
+      class Derived4B extends Base4 {
+        f1(other: Derived4B) {
+          other.x = 10;
+        }
+        f2(other: Base4) {
+          // other.x = 10;
+          // 报错
+        }
+      }
+
     - ```typescript
     - ```typescript
 ### 类与接口
