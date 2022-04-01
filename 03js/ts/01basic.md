@@ -27,6 +27,8 @@
       - [方法](#方法)
       - [类继承](#类继承)
       - [成员可见性](#成员可见性)
+      - [静态成员](#静态成员)
+      - [泛型类](#泛型类)
     - [类与接口](#类与接口)
     - [泛型](#泛型)
     - [声明合并](#声明合并)
@@ -1280,6 +1282,81 @@
           return other.x === this.x;
         }
       }
+#### 静态成员
+1. 静态成员并不和类的实例关联. 静态会员也有 `public`, `protected` 和 `private` 的可见性
+    - ```typescript
+      class MyClass {
+        static x = 0;
+        private static y = 0;
+        static printX() {
+          console.log(MyClass.x);
+        }
+      }
+      // Property 'y' is private and only accessible within class 'MyClass'
+      console.log(MyClass.y);
+    - 静态成员也可以被继承
+    - ```typescript
+      class English extends MyClass {
+        z = English.x;
+      }
+2. 特殊的静态成员名
+    - 重写 `Function` 原型的属性既不安全也不可能, 因为类自身就是可以用 `new` 调用的函数. 因此, 像 `name`, `length` 或 `call` 等都不能作为合法的静态成员名
+    - ```typescript
+      class S {
+        // Static property 'name' conflicts with built-in property 'Function.name' of constructor function 'S'.
+        static name = "1";
+      }
+3. 静态块
+    - 静态块是允许在其范围内写一系列能访问 `private` 域的代码块. 我们可以在静态块中进行初始化的操作.
+    - ```typescript
+      class Foo {
+        static count = 0;
+        static {
+          Foo.count = 1;
+          console.log('base class staic'); // 1
+        }
+        constructor() {
+          console.log('base class constructor'); // 3
+        }
+      }
+    - 下面看看加上静态块之后的代码初始化执行顺序
+    - ```typescript
+      class Bar extends Foo {
+        static {
+          console.log('derived class static') // 2
+        }
+        constructor() {
+          super();
+          console.log('derived class constructor'); // 4
+        }
+      }
+      new Bar();
+    - ![](../../../image/Snipaste_2022-04-01_14-27-51.png)
+#### 泛型类
+1. 当一个泛型类使用 `new` 实例化时, 其类型参数将会从推断
+    - ```typescript
+      class Box<Type> {
+        contents: Type;
+        constructor(value: Type) {
+          this.contents = value;
+        }
+      }
+      const b = new Box('hello');
+2. 泛型静态成员
+    - 泛型类中的静态成员永远不能指向类的泛型. 因为运行时, 只有一个 `Box.defaultValue` 属性, 如果设置 `Box<string>.defaultValue` 将会改变 `Box<number>.defaultValue`, 这是不可能的.
+    - ```typescript
+      class Box<Type> {
+        // Static members cannot reference class type parameters.
+        static defaultValue: Type;
+        contents: Type;
+        constructor(value: Type) {
+          this.contents = value;
+        }
+      }
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
     - ```typescript
     - ```typescript
     - ```typescript
