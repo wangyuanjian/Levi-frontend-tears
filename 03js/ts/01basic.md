@@ -30,6 +30,8 @@
       - [静态成员](#静态成员)
       - [泛型类](#泛型类)
       - [`this`](#this)
+      - [抽象类和抽象方法](#抽象类和抽象方法)
+      - [其他](#其他)
     - [类与接口](#类与接口)
     - [泛型](#泛型)
     - [声明合并](#声明合并)
@@ -1453,15 +1455,142 @@
       const b2 = new ClearableBox();
       b2.sameAs(a2);
       // Argument of type 'Box1' is not assignable to parameter of type 'ClearableBox'.
+5. `this`-based 类型守卫
+    - 可以在类或接口的方法的返回值的位置使用 `this is Type` 语法. 没看咋懂
     - ```typescript
+      class FileSystemObject {
+        isFile(): this is FileRep {
+          return this instanceof FileRep;
+        }
+        isDirectory(): this is Directory {
+          return this instanceof Directory;
+        }
+        isNetwork(): this is NetWork & this {
+          return this.networked;
+        }
+        constructor(public path: string, private networked: boolean) {}
+      }
+      class FileRep extends FileSystemObject {
+        constructor(path: string, public content: string) {
+          super(path, false);
+        }
+      }
+      class Directory extends FileSystemObject {
+        children: FileSystemObject[];
+      }
+      interface NetWork {
+        host: string;
+      }
+
+      const fso: FileSystemObject = new FileRep('foo/bar.txt', 'foo');
+      if (fso.isFile()) {
+        fso.content;
+        // const fso: FileRep
+      } else if (fso.isDirectory()) {
+        fso.children;
+        // const fso: Directory
+      } else if (fso.isNetwork()) {
+        fso.host;
+        // const fso: NetWork & FileSystemObject
+      }
+#### 抽象类和抽象方法
+1. 在 `TypeScript` 中, 类, 方法和域都可能是抽象的.
+    - 抽象方法或抽象域没有具体的实现, 它们必须存在域抽象类内部, 抽象类不能直接被实例化.
+    - 抽象类的作用是作为基类供所有子类实现所有抽象成员. 如果类没有任何抽象成员, 那它就是`实体类`
     - ```typescript
+      abstract class Base6 {
+        abstract getName(): string;
+        abstract name: string;
+        printName() {
+          console.log('hello, ' + this.getName());
+        }
+      }
+      class Derived6 extends Base6 {
+        getName(): string {
+          return this.name;
+        }
+        name: string = 'hello';
+      }
+      new Derived6().printName();
+2. 抽象构造签名
+    - 有时, 你希望接受某个抽象类的子类类的构造函数, 以便创建一个类的实例
     - ```typescript
+      function greet(ctor: typeof Base6) {
+        const instance = new ctor();
+        // Cannot create an instance of an abstract class.
+        instance.printName();
+      }
+    - 相反, 应该这样写. emmm, 我有点不懂
     - ```typescript
+      function greet1(ctor: new () => Base6) {
+        const instance = new ctor();
+        // Cannot create an instance of an abstract class.
+        instance.printName();
+      }
+#### 其他
+1. 参数属性(`parameter property`)
+    - `TypeScript` 提供特殊的语法将构造函数的参数转换成类的同名同值属性. 这就是`参数属性`, 通过在构造函数的参数前加上可见性修饰符 `public`, `protected`, `private` 或 `readonly`. 
     - ```typescript
+      class Params {
+        constructor(
+          public readonly x: number,
+          protected y: number,
+          private z: number
+        ) {
+
+        }
+      }
+      const a5 = new Params(1, 2, 3);
+      console.log(a5.x);
+2. 类表达式(`class expression`)
+    - 类表达式与类声明很像, 唯一不同的是类表达式不需要名字, 尽管我们可以通过类表达式被赋值的变量访问
     - ```typescript
+      const someClass = class<Type> {
+        content: Type;
+        constructor(value: Type) {
+          this.content = value;
+        }
+      }
+      const m = new someClass('Happy Fool"s Day!');
+3. 类之间的关系
+    - 大多数情况, `TypeScript` 中的类进行结构化比较, 比如下面的两个类因为完全相同就可以互相替换
     - ```typescript
+      class PointA {
+        x = 0;
+        y = 0;
+      }
+      class PointB {
+        x = 0;
+        y = 0;
+      }
+      const p: PointA = new PointB();
+    - 类似的, `子类型`的关系在类之间仍然存在, 即便没有明显的继承
     - ```typescript
+      class PersonA {
+        name: string;
+      }
+      class Student {
+        name: string;
+        score: number;
+      }
+      const student: PersonA = new Student();
+    - 还有更奇怪的案例. `Empty` 这个类没有任何成员, 在 `TypeScript` 中, 没有任何成员的类型是其他所有类型的超类型, 因此, 如果你定义一个空的类, 那么任何其他类型都可以取代它
+    - ```typescript
+      class Empty {}
+      function fn(x: Empty) {
+      }
+
+      fn(window);
+      fn({});
+      fn(fn);
 ### 类与接口
+1. 
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
+
 ### 泛型
 ### 声明合并
     - ```typescript
