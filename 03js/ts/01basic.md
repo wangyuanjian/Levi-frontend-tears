@@ -12,6 +12,7 @@
     - [类型推断](#类型推断)
     - [联合类型(`Union Types`)](#联合类型union-types)
     - [接口(`interface`)](#接口interface)
+      - [泛型对象类型](#泛型对象类型)
     - [数组的类型](#数组的类型)
     - [函数的类型](#函数的类型)
     - [类型断言](#类型断言)
@@ -22,6 +23,7 @@
     - [type](#type)
     - [元组](#元组)
     - [枚举](#枚举)
+      - [属性修饰符](#属性修饰符)
     - [类](#类)
       - [类成员](#类成员)
       - [方法](#方法)
@@ -32,7 +34,6 @@
       - [`this`](#this)
       - [抽象类和抽象方法](#抽象类和抽象方法)
       - [其他](#其他)
-    - [类与接口](#类与接口)
     - [泛型](#泛型)
     - [声明合并](#声明合并)
   - [参考](#参考)
@@ -164,10 +165,34 @@
     - 即便其被赋值为某种联合类型中的某种类型, 但该变量仍然是联合类型
 ### 接口(`interface`)
 > 使用接口 ( `Interfaces`) 来定义对象的类型
-1. 什么是接口
+1. 在 `JavaScript` 中, 组织和传递数据的基本方式是通过`对象`; 在 `TypeScript` 中, 是通过`对象类型(object types)`
+    - `对象类型` 是可以匿名的
+    - ```typescript
+      function greet(person: { name: string; age: number; }) {
+        return 'hello, ' + person.name;
+      }
+    - 或者可以定义一个接口`interface`
+    - ```typescript
+      interface Person {
+        name: string;
+        age: number;
+      }
+      function greet1(person: Person) {
+        return 'hello, ' + person.name;
+      }
+    - 又或者, 给类型起个别名`type`
+    - ```typescript
+      type Person1 = {
+        name: string;
+        age: number;
+      };
+      function greet2(person: Person1) {
+        return 'hello, ' + person.name;
+      }
+2. 什么是接口
     - 接口时对行为的抽象, 具体的行动需要类 (`class`) 实现 (`implement`)
     - `TypeScript` 中的接口是一个非常灵活的概念, 可以对类的一部分行为进行抽象, 也可用于对对象的形状进行描述.
-2. 定义接口
+3. 定义接口
     - ```typescript
       interface Person {
         name: string;
@@ -180,7 +205,7 @@
         name: 'tom',
         age: 12,
       }
-3. 可选属性
+4. 可选属性
     - 定义接口时, 使用 `?` 表示该属性时可选的. 可选属性的含义是该属性可以不存在, 但这时仍然不允许添加未定义的属性
     - ```typescript
       interface Person {
@@ -188,7 +213,7 @@
         age: number;
         color?: string;
       }
-4. `Index Signatures`
+5. `Index Signatures`
     - 有时我们并不能提前知道一个类型的所有属性, 但是却这道这些属性值的 `shape`, 这种情况下, 可以使用 `index signature` 描述可能的值
       - ```typescript
         interface StringArray {
@@ -214,7 +239,7 @@
           [index: number]: string;
           name: number;
         }
-5. 只读属性
+6. 只读属性
     - 只读属性只能首次给对象赋值时赋值, 之后的赋值都不可以
       - 如果给只读属性赋值, 那么在类型检查期间就会报错.
       - ```typescript
@@ -243,6 +268,99 @@
         }
         person1.friend.age = 13; // ok
         person1.friend = {...} // 报错
+7. 继承接口
+    - 使用 `extends` 可以继承接口. 可以同时继承一个或多个接口.
+    - ```typescript
+      interface BasicAddress {
+        name?: string;
+        street?: string;
+        city?: string;
+        country?: string;
+        postalCode?: string;
+      }
+      interface AddressWithUnit extends BasicAddress {
+        unit: string;
+      }
+8. 相交类型(`Intersection Types`)
+    - TypeScript 提供了 `相交类型`, 主要用于将已经存在的`对象类型`结合起来. 使用 `&` 符号定义相交类型. 如下面的例子, `ColorfulCircle` 要求同时拥有 `Colorful` 和 `Circle` 的所有成员.
+    - ```typescript
+      interface Colorful {
+        color: string;
+      }
+      interface Circle {
+        radius: number;
+      }
+      type ColorfulCircle = Colorful & Circle;
+      function draw(circle: ColorfulCircle) {
+        console.log('color is ', circle.color);
+        console.log('radius is ', circle.radius);
+      }
+      draw({ color: 'red', radius: 12 });
+      // Object literal may only specify known properties, and 'radius111' does not exist in type 'ColorfulCircle'
+      // draw({ color: 'red', radius111: 12 });
+    - 相交类型和继承接口有什么不同的? 主要不同在于如何处理冲突,
+#### 泛型对象类型
+1. 
+    - 如果我们像创建一个又能装 `string`, 又能装 `number` 的接口, 就可以使用泛型对象类型. 下面代码的意思是, 创建了一个 `contents` 类型为 `T` 的 `T` `Box`. 当真正引用 `Box` 时, 需要使用具体的类型来替换 `T`
+    - ```typescript
+      interface Box<T> {
+        contents: T;
+      }
+      const b: Box<string> = { contents: 'hello' };
+    - 我们可以使用泛型函数完全避免函数重载
+    - ```typescript
+      function setContents<T>(box: Box<T>, newContent: T) {
+        box.contents = newContent;
+      }
+    - 类型别名也可以使用泛型哦
+    - ```typescript
+      type Box1<T> = {
+        contents: T
+      };
+      type OrNull<T> = T | null;
+      type OneOrMany<T> = T | T[];
+      type OneOrManyOrNull<T> = OrNull<OneOrMany<T>>;
+2. 数组泛型
+    - 泛型对象类型有些像容器类型, 不过容器类型和容器包含的类型无关, 可以更好的重用. 数组类型中, 当使用 `number[]` 实际上是 `Array<number>` 的缩写
+    - ```typescript
+      function doSomething(value: Array<string>) {
+        // ...
+      }
+      let myArray: string[] = ['1', '2'];
+      doSomething(myArray);
+3. `ReadonlyArray`
+    - `ReadonlyArray` 是特殊的类型, 描述的是只读的数组
+    - ```typescript
+      function doStuff(values: ReadonlyArray<string>) {
+        // We can read from 'values'...
+        const copy = values.slice();
+        console.log(`The first value is ${values[0]}`);
+        // Property 'push' does not exist on type 'readonly string[]'
+        values.push("hello!");
+      }
+    - 📕但是 `ReadonlyArray` 不可以用作构造函数, 只能将常规的 `Array` 赋值给 `ReadonlyArray`
+    - ```typescript
+      // 'ReadonlyArray' only refers to a type, but is being used as a value here.
+      new ReadonlyArray('red', 'blue');
+
+      const colors: ReadonlyArray<string> = ['red', 'green'];
+    - 正如 `TypeScript` 为 `Array<Type>` 提供了 `Type[]` 的简写语法, 也为 `ReadonlyArray<Type>` 提供了 `readonly Type[]`
+    - ```typescript
+      function doStuff2(values: readonly string[]) {
+        // values.push('111');
+      }
+    - 📕最后一个需要注意的是, `ReadonlyArray` 和 `Array` 是不能双向赋值的.
+    - ```typescript
+      let x: readonly string[] = [];
+      let yy: string[] = [];
+      x = yy; // ok
+      yy = x; 
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
 ### 数组的类型
 1. `「类型 + 方括号」`表示法
     - ```typescript
@@ -951,6 +1069,15 @@
         C = 2
       }
     - 外部枚举和非外部枚举的一个重要不同是. 常规枚举的成员, 如果没有初始值但是这个成员的前一个成员是常量, 那么这个成员同样被当作常量. 相反, 外部枚举的成员如果没有初始值, 将会被当作计算成员.
+
+#### 属性修饰符
+1. 
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
 ### 类
 1. 最简单的类
     - ```typescript
@@ -1583,8 +1710,6 @@
       fn(window);
       fn({});
       fn(fn);
-### 类与接口
-1. 
     - ```typescript
     - ```typescript
     - ```typescript
