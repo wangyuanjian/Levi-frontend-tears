@@ -7,6 +7,7 @@
     - [TypeScript 的特性](#typescript-的特性)
     - [安装 `TypeScript`](#安装-typescript)
   - [基础](#基础)
+    - [`tsconfig.json`](#tsconfigjson)
     - [原始数据类型](#原始数据类型)
     - [任意值(Any)](#任意值any)
     - [类型推断](#类型推断)
@@ -78,8 +79,19 @@
     - 我们约定使用 `TypeScript` 编写的文件以 `.ts` 为后缀, 用 `TypeScript` 编写 `React` 时，以 `.tsx` 为后缀. 
     - 📕即便编译报错, 仍能生成对应的 `JavaScript` 文件
 ## 基础
+### `tsconfig.json`
+1. `TypeScript` 默认将代码编译为 `ES3` 的 `JavaScript` 语法, 可以在编译选项中使用 `--target es2015` 改变其编译目标
+    - ```shell
+      tsc .\03interface.ts --target es2015
+    - 从高版本的 `ECMAScript` 转移到低版本的 `ECMAScript` 叫做 `downleveling`
+2. 使用 `--noEmitOnError` 选项 `TypeScript` 在编译出现问题时将不会生成对应的 `JavaScript` 文件
+    - ```shell
+      tsc --noEmitOnError .\03interface.ts
+3. `TypeScript` 有一些类型检查的开关, 在 `tsconfig.json` 中使用 `strict: true` 开启所有. 有两个需要特别单独说明
+    - `noImplicitAny`: 打开这个开关将在任何变量被隐式推断为 `any` 时报错.
+    - `strictNullChecks`: 打开这个开关将在任何期待具体变量但是却被赋值为 `null` 或 `undefined` 的变量时报错.
 ### 原始数据类型
-1. JavaScript 的类型分为两种: `原始数据类型` 和 `对象类型`
+1. `JavaScript` 的类型分为两种: `原始数据类型` 和 `对象类型`
     - 原始数据类型包括: `布尔值`, `数字`, `字符串`, `null`, `undefined`, `Symbol`, `BigInt`
 2. `布尔值`
     - 布尔值是最基础的数据类型, 在 `TypeScript` 中, 使用 `boolean` 定义布尔值类型: 
@@ -1715,7 +1727,6 @@
     - ```typescript
     - ```typescript
     - ```typescript
-
 ### 泛型
 ### 声明合并
     - ```typescript
