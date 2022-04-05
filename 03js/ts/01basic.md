@@ -136,6 +136,22 @@
         let x4: undefined = undefined;
         let x5: null = null;
         a = x4;
+    - `strictNullChecks`
+      - 当开关是 `off`, 可能为 `null` 或 `undefined` 的值都可以正常访问, `null` 和 `undefined` 也可以被赋值给任意类型的属性.
+      - 当开关是 `on`, 当一个值是 `null` 或 `undefined` 时, 需要在访问这个值的属性或方法前进行验证
+      - 官方文档推荐 `on`
+    - 非 `null` 断言操作符 (`!`)
+      - `TypeScript` 有一个特殊的语法, 无需额外的检查就可以从某个类型移除 `null` 和 `undefined`. 将 `!` 写在任意表达式之后就是断言该表达式不为 `null` 或 `undefined`
+      - ```typescript
+        function ld(x?: number | null) {
+          // no error
+          console.log(x!.toFixed());
+        }
+      - 就像其他断言, 这并不改变运行时行为, 因此只有当你非常确定表达式不为 `null` 或 `undefined` 时才使用 `!`
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
 ### 任意值(Any)
 > 表示允许赋值为任意类型
 1. 如果是普通类型, 在赋值过程中是不允许改变类型的. 但如果是 `any` 则被允许赋值为任意类型.
@@ -881,9 +897,39 @@
       configure("auto");
       configure("automatic"); // no
 3. 字面量推断
-    - 当初始化一个变量为对象时, `TypeScript` 认为这个对象的属
+    - 即便使用 `const` 初始化一个变量为对象时, `TypeScript` 认为这个对象的属性稍后会改变. 因此, 下面的代码行不通
     - ```typescript
-    - ```typescript
+      function handleRequest(url: string, methods: 'GET' | 'POST') {
+      }
+      const req = {
+        url: 'https://example.com',
+        method: 'GET',
+      };
+      // Argument of type 'string' is not assignable to parameter of type '"GET" | "POST"'
+      handleRequest(req.url, req.method);
+    - 有两种方式可以修复上面的问题
+      - 方式`1: ` 使用 `as` 将 `string` 转为 `'GET'`
+      - ```typescript
+        handleRequest(req.url, req.method as 'GET');
+        // 或
+        const req = {
+          url: 'https://example.com',
+          method: 'GET' as 'GET',
+        };
+      - 上面的语法表示 `req.method` 只能由字面量类型 `GET`, 防止其被赋值为其他字符串; 下面的语法表示在调用函数前, `req.method` 属性就会是 `GET` 值.
+      - 方式`2: ` 使用 `as const` 将整个对象转为类型字面量
+      - ```typescript
+        const req1 = {
+          url: 'https://example.com',
+          method: 'GET' ,
+        } as const;
+        handleRequest(req1.url, req1.method);
+      - ```typescript
+      - ```typescript
+      - ```typescript
+      - ```typescript
+      - ```typescript
+
 ### 元组
 1. 元组是另一种类型的数组, 因为元组已经明确一共有多少个元素, 并且元组每个位置的元素类型也已经确定了.
     - 下面的代码就定义了一个元组, 这个元组只有 `2` 个元素, 索引为 `0` 的元素必须是 `string` 类型, 索引为 `1` 的元素必须是 `number` 类型
