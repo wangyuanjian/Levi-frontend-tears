@@ -1845,9 +1845,43 @@
     - 在 `if` 的语句中, `TypeScript` 将 `typeof padding === 'number'` 成为 `类型守卫(type guard)`. `TypeScript` 将这种一系列的检查之后, 某个类型变为比声明时类型更精确的过程叫做 `narrowing`
     - 如下面的代码, 经过一次类型守卫, `padding` 由联合类型被 `narrow` 为 `string` 类型
     - ![](../../../image/Snipaste_2022-04-05_20-50-26.png)
-    - 📕注意, 上面的几种类型中并不包含 `null`, 因此如果想要判断一个变量为 `object` 的话, 可能会中招! 因为 `typeof null` 的结果也是 `object`
+    - 📕注意, 上面的几种类型中并不包含 `null`, 因此如果想要判断一个变量为 `object` 的话, 可能会中招! 因为 `typeof null` 的结果也是 `object`. 所以在判断是否为 `object` 之前需要进行真值判断
 2. `truthiness narrowing`
-    - ``
+    - 在 `JavaScript` 中, 像 `if` 这样的结构首先将其条件转换为 `boolean` 值, 然后根据值判断分支. 只有下面的值会被判断为 `false`
+      - `0`: (包括 `+0` 和 `-0`)
+      - `NaN`
+      - `''`: (空字符串)
+      - `0n`: (`bigint`)
+      - `null`
+      - `undefined`
+    - 有下面两种方式可以将任意值转为 `boolean`
+      - ```typescript
+        // 方式1
+        Boolean('Hello'); // type: boolean, value: true
+        !!'world'; // type: true, value: true
+3. `Equality narrowing`
+    - `TypeScript` 同样使用 `switch` 和相等性检查 如 `===`, `!==`, `==`, `!=` 来 `narrow type`
+    - ```typescript
+      function example(x: string | number, y : string | boolean) {
+        if (x === y) {
+          x.toUpperCase();
+        } else {
+          console.log(x);
+        }
+      }
+    - 上面例子中, 当 `x === y` 成立时, `x` 和 `y` 只能是 `string` 类型, 因此可以在 `x` 上调用任意 `string` 的方法而不会报错.
+    - `JavaScript` 中的 `==` 和 `!=` 同样正确工作. 检查某个值是否 `== null` 不知检查这个值就是 `null` 还减产其是不是 `undefined`. 反过来同样.
+    - ![](../../../image/Snipaste_2022-04-06_22-01-17.png)
+    - ```typescript
+      interface Container {
+        value: number | null | undefined;
+      }
+      function MultiplyValue(container: Container, factor: number) {
+        if (container.value != null) {
+          container.value *= factor;
+        }
+      }
+    - ![](../../../image/Snipaste_2022-04-06_22-03-58.png)
     - ```typescript
     - ```typescript
     - ```typescript
