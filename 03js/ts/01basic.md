@@ -36,7 +36,8 @@
       - [`this`](#this)
       - [抽象类和抽象方法](#抽象类和抽象方法)
       - [其他](#其他)
-    - [泛型](#泛型)
+    - [narrowing](#narrowing)
+    - [typeof](#typeof)
     - [声明合并](#声明合并)
   - [参考](#参考)
 
@@ -1822,12 +1823,35 @@
       fn(window);
       fn({});
       fn(fn);
+### narrowing
+1. 有一个需求, 一个函数接收一个参数, 如果是 `number` 类型就将 `input` 重复 `number` 次; 如果是 `string` 类型就将其和 `input` 拼接在一起
+    - ```typescript
+      function padLeft(padding: number | string, input: string) {
+        if (typeof padding === 'number') {
+          return ''.repeat(padding) + input;
+        }
+        return padding + input;
+      }
+### typeof
+1. TypeScript 中 typeof 返回下面类型
+    - `string`
+    - `number`
+    - `bigint`
+    - `boolean`
+    - `symbol`
+    - `undefined`
+    - `object`
+    - `function`
+    - 在 `if` 的语句中, `TypeScript` 将 `typeof padding === 'number'` 成为 `类型守卫(type guard)`. `TypeScript` 将这种一系列的检查之后, 某个类型变为比声明时类型更精确的过程叫做 `narrowing`
+    - 如下面的代码, 经过一次类型守卫, `padding` 由联合类型被 `narrow` 为 `string` 类型
+    - ![](../../../image/Snipaste_2022-04-05_20-50-26.png)
+    - 📕注意, 上面的几种类型中并不包含 `null`, 因此如果想要判断一个变量为 `object` 的话, 可能会中招! 因为 `typeof null` 的结果也是 `object`
+2. `truthiness narrowing`
+    - ``
     - ```typescript
     - ```typescript
     - ```typescript
     - ```typescript
-    - ```typescript
-### 泛型
 ### 声明合并
     - ```typescript
 ## 参考
