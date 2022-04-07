@@ -1882,7 +1882,19 @@
         }
       }
     - ![](../../../image/Snipaste_2022-04-06_22-03-58.png)
+4. `in operator narrowing`
+    - `in` 操作符的作用是: 判断对象是否有给定名字的键. `TypeScript` 根据 `in` 操作符作类型 `narrowing`
     - ```typescript
+      type Fish = { swim: () => void; };
+      type Bird = { fly: () => void; };
+      
+      function move(animal: Fish | Bird) {
+        if ('swim' in animal) {
+          return animal.swim();
+        }
+        return animal.fly();
+      }
+    - ![](../../../image/Snipaste_2022-04-07_22-08-41.png)
     - ```typescript
     - ```typescript
     - ```typescript
