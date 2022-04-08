@@ -2031,6 +2031,29 @@
         console.log(fn.description + ' returned ' + fn(6));
       }
     - 📕注意: 语法上和函数类型表达式有点点不同, 在参数和返回值之间使用的是 **`:`** 而不是 `=>`
+    - 现在出现了一个问题, 究竟怎么声明一个 `DescribableFunction` 类型的变量呢? [可以看 stackoverflow 上的讲解](https://stackoverflow.com/questions/69504538/call-signatures-example-on-ts-handbook)
+    - 调用方式 `1: 函数声明`
+    - ```typescript
+      // 调用方式1
+      function greaterThanTen(n: number) {
+        return n > 10;
+      }
+      greaterThanTen.description = 'greaterThanTen Func';
+      doSomething(greaterThanTen);
+    - 调用方式 `2: 函数表达式`
+    - ```typescript
+      const isEven: DescribableFunction = (someArg) => someArg % 2 === 0;
+      isEven.description = 'isEven';
+      doSomething(isEven);
+    - 调用方式 `3: Object.assign`
+      - 这个方法要调整编译选项 `--target es2015` 因为 `Object.assign()` 是比较新的方法
+    - ```typescript
+      const isNegative = Object.assign(
+        (someArg: number) => someArg < 0,
+        { description: 'isNegative' }
+      );
+      doSomething(isNegative);
+    - 观察上面三种调用方式, 基本上 `DescribableFunction` 就是一个函数, 外加一个描述属性. 因此三种调用方式基本上都是围绕着函数构造的.
 3. 构造签名(`Construct Signatures`)
     - `JavaScript` 中函数仍然可使用 `new` 调用, `TypeScript` 在 `可调用签名` 之前加上 `new` 关键字即为 `构造签名` 
     - ```typescript
@@ -2040,8 +2063,22 @@
       function fn(ctor: SomeConstructor) {
         return new ctor('hello');
       }
+    - 问题又来了, 如何调用呢? [可以看 stackoverflow 的这篇文章](https://stackoverflow.com/questions/69195747/how-to-define-implementation-of-function-call-signatures-and-construct-signature), 这个语法基本上就指向了 `class`, 因此
     - ```typescript
+      class SomeCC {
+        constructor(s: string) {}
+      }
+      let a: SomeConstructor = SomeCC;
+      const hello = fn(a);
+      console.log(`hello, is `, hello);
+      // hello, is  SomeCC {}
+    - 在 `JavaScript` 中, 像 `Date`, 既可以通过 `new` 调用, 也可以不通过 `new` 调用. 我们同样可以将 `call signature` 和 `construct signature` 结合起来
     - ```typescript
+      interface CallOrConstruct {
+        new (s: string): Date;
+        (n?: number): number;
+      }
+    - 怎么使用呢? [参考这篇 stackoverflow 文章 ](https://stackoverflow.com/questions/66874130/how-to-properly-use-functions-construct-signatures-in-typescript)
     - ```typescript
     - ```typescript
 ### 声明合并
