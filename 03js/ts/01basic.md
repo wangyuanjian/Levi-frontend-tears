@@ -1919,6 +1919,7 @@
       // let x3: string
     - 上面代码中, 即便 `x` 的类型变成 `number` 还是可以将其赋值为 `string` 类型. 这时因为 `x` 的声明类型时 `string | number`, 因此在赋值时总会检查 `声明类型`
 7. 使用类型谓语(`type predicates`)
+    > 断言的意思, 就是给定一组条件和一个对象, 判断这个对象是否满足条件
     - 有时, 我们像直接控制类型的变化, 为了自定义一个类型守卫, 我们需要定义一个函数, 函数的返回值类型是一个 `类型谓语`
     - ```typescript
       function isFish(pet : Fish | Bird): pet is Fish {
@@ -1943,6 +1944,61 @@
       const isString: string[] = zoo.filter((member): member is string => {
         return member > 0;
       });
+8. 辨别后的联合类型(`Discriminated Unions`)
+    - 先来看一个问题, 求一个类型面积的函数, 先定义了几个类型
+    - ```typescript
+      interface Circle {
+        kind: 'circle';
+        radius: number;
+      }
+      interface Square {
+        kind: 'square';
+        sideLength: number;
+      }
+      type Shape = Circle | Square;
+
+      function getArea(shape: Shape) {
+        return Math.PI * shape.radius ** 2;
+        // Property 'radius' does not exist on type 'Shape'.
+        // Property 'radius' does not exist on type 'Square'
+      }
+    - `TypeScript` 在提醒我们, `shape` 可能是 `Square`, 但是 `Square` 没有 `radius`.
+    - ```typescript
+      function getArea1(shape: Shape) {
+        if (shape.kind === 'circle') {
+          return Math.PI * shape.radius ** 2;
+        }
+      }
+    - 解决了! 当联合类型中的每个类型都包含一个公共的字面量类型的属性, `TypeScript` 会将该联合类型当作`辨别后的联合类型`, 可以对联合类型的所有成员进行 `narrow`. 上面的例子中, `kind` 就是一个公共属性, 检查这个属性将 `shape narrow` 为 `Circle`
+    - 上面代码中, 最重要的是如何编码定义 `Shape`
+9. `never`
+    - 当 `narrowing` 时, 可能排除一个联合类型的所有选项然后啥也没上下, 这时, `TypeScript` 会使用 `never` 类型表示这种不应该存在的状态
+    - ```typescript
+      function getArea2(shape: Shape) {
+        if (shape.kind === 'circle') {
+          return Math.PI * shape.radius ** 2;
+        } else if (shape.kind === 'square') {
+
+        } else {
+          shape;
+        }
+      }
+    - ![](../../../image/Snipaste_2022-04-08_11-58-00.png)
+    - `never` 类型可以赋值给任意类型变量, 没有类型可以赋值给 `never` 类型(除了 `never` 类型自身). 这意味着我们可以依赖 `never` 在 `switch` 中作穷尽检查.
+    - 例如, 添加 `default` 分支当没有可能的类型被处理时, 会返回 `never`. 这样做的好处是什么呢? 如果 `Shape` 又增加了 `Triangle` 类型, 那么函数就会报错, 因为我们没有处理 `Triangle` 类型的求面积
+    - ```typescript
+      function getArea3(shape: Shape) {
+        switch (shape.kind) {
+          case 'circle':
+            return Math.PI * shape.radius ** 2;
+          case 'square':
+            return shape.sideLength ** 2;
+          default: 
+            const _exhaustiveCheck: never = shape;
+            return _exhaustiveCheck;
+        }
+      }
+    - ```typescript
     - ```typescript
     - ```typescript
     - ```typescript
