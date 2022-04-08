@@ -38,6 +38,8 @@
       - [其他](#其他)
     - [narrowing](#narrowing)
     - [typeof](#typeof)
+    - [函数](#函数)
+    - [函数类型表达式](#函数类型表达式)
     - [声明合并](#声明合并)
   - [参考](#参考)
 
@@ -1997,6 +1999,46 @@
             const _exhaustiveCheck: never = shape;
             return _exhaustiveCheck;
         }
+      }
+### 函数
+### 函数类型表达式
+1. 描述函数最简单的方式就是`函数类型表达式`, 这种类型在语法上很像箭头函数
+    - ```typescript
+      function printToConsole(s: string) {
+        console.log(s);
+      }
+      function greeter(fn: (a: string) => void) {
+        fn('Hello, World');
+      }
+
+      greeter(printToConsole);
+    - 语法 `(a: string) => void` 表示 `函数接收一个名为 a 的 string 类型的参数并且没有返回值`. 如果参数类型没有指定, 就是 `any`
+      - 📕函数名是必须的, 如果写成 `(string) => void`, 表示函数名是 `string`, 类型是 `type`❗❗❗
+    - 也可以使用别名类型
+    - ```typescript
+      type GreetFunction = (a: string) => void;
+      function greeter1(fn: GreetFunction) {
+        fn('Hello, World');
+      }
+2. 可调用签名
+    - 在 `JavaScript` 中, `functions` 是可以有属性以备调用的. 但是在上面的函数类型表达式是没办法添加额外属性的, 因此如果我们想要函数可调用, 可以在对象类型中增加 `可调用签名`
+    - ```typescript
+      type DescribableFunction = {
+        description: string;
+        (someArg: number): boolean;
+      }
+      function doSomething(fn: DescribableFunction) {
+        console.log(fn.description + ' returned ' + fn(6));
+      }
+    - 📕注意: 语法上和函数类型表达式有点点不同, 在参数和返回值之间使用的是 **`:`** 而不是 `=>`
+3. 构造签名(`Construct Signatures`)
+    - `JavaScript` 中函数仍然可使用 `new` 调用, `TypeScript` 在 `可调用签名` 之前加上 `new` 关键字即为 `构造签名` 
+    - ```typescript
+      type SomeConstructor = {
+        new (s: string): Object;
+      }
+      function fn(ctor: SomeConstructor) {
+        return new ctor('hello');
       }
     - ```typescript
     - ```typescript
