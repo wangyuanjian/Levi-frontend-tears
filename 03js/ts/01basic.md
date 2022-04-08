@@ -1895,6 +1895,54 @@
         return animal.fly();
       }
     - ![](../../../image/Snipaste_2022-04-07_22-08-41.png)
+5. `instanceof narrowing`
+    - `intanceof` 是一个检查一个值是否为另一个值的实例, 实际上 `x instanceof Foo` 是检查是否 `x` 的原型链上包含 `Foo.prototype`. `TypeScript` 同样使用其进行类型 `narrowing`
+    - ```typescript
+      function logValue(x: Date | string) {
+        if (x instanceof Date) {
+          console.log(x.toUTCString());
+        } else {
+          console.log(x.toUpperCase());
+        }
+      }
+    - ![](../../../image/Snipaste_2022-04-08_11-03-19.png)
+6. 赋值
+    - 当给一个变量赋值时, `TypeScript` 会根据所赋的值将该变量进行类型 `narrowing`
+    - ```typescript
+      let x3 = Math.random() < 0.5 ? 10 : 'Monday';
+      // let x3: string | number
+      x3 = 1;
+      console.log(x3);
+      // let x3: number
+      x3 = 'hello';
+      console.log(x3);
+      // let x3: string
+    - 上面代码中, 即便 `x` 的类型变成 `number` 还是可以将其赋值为 `string` 类型. 这时因为 `x` 的声明类型时 `string | number`, 因此在赋值时总会检查 `声明类型`
+7. 使用类型谓语(`type predicates`)
+    - 有时, 我们像直接控制类型的变化, 为了自定义一个类型守卫, 我们需要定义一个函数, 函数的返回值类型是一个 `类型谓语`
+    - ```typescript
+      function isFish(pet : Fish | Bird): pet is Fish {
+        return (pet as Fish).swim !== undefined;
+      }
+    - `pet is Fish` 就是 `类型谓语`, `类型谓语` 遵循这 **`参数名 is 类型`** 的模式, 其中 `参数名` 必须是当前函数签名的某个参数的名字.
+    - 任何时候 `is 类型` 和某个变量被调用时, 如果变量的类型时兼容的, `TypeScript` 就会将变量 `narrow` 为指定的类型
+    - 对比下面没有返回值的情况, 默认返回值类型是 `boolean`
+    - ![](../../../image/Snipaste_2022-04-08_11-16-15.png)
+    - ```typescript
+      // Both calls to 'swim' and 'fly' are now okay.
+      let pet = getSmallPet();
+      
+      if (isFish(pet)) {
+        pet.swim();
+      } else {
+        pet.fly();
+      }
+    - 我们可以使用类型断言从联合类型的数组提取某个特定类型的数组
+    - ```typescript
+      const zoo: (string | number)[] = [1, 2, 'hello'];
+      const isString: string[] = zoo.filter((member): member is string => {
+        return member > 0;
+      });
     - ```typescript
     - ```typescript
     - ```typescript
