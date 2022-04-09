@@ -41,7 +41,7 @@
     - [函数](#函数)
     - [函数类型表达式](#函数类型表达式)
       - [泛型函数(`Generic Function`)](#泛型函数generic-function)
-      - [可选参数](#可选参数)
+      - [重载](#重载)
     - [声明合并](#声明合并)
   - [参考](#参考)
 
@@ -486,6 +486,17 @@
       // 注意
       const result: string = buildName1(undefined, 'Levi'); // Levi wong
       buildName1('Wong', 'Levi'); // Levi Wong
+    - 在编写回调函数类型是, `永不`使用可选参数, 除非明确调用回调函数时不传可选参数, 如果真的是这种情况, 可选参数也就没有意义了
+      - ```typescript
+        function myForEach(arr: any[], callback: (arg: any, index?: number) => void) {
+          for (let i = 0; i < arr.length; i++) {
+            callback(arr[i], i);
+            callback(arr[i]);
+          }
+        }
+      - 在上面的方法中, `index` 是可选参数, 如果调用者刚好不传这个参数, 但是函数实现中又恰好使用了这个函数, 那么就会报错!    
+      - ```typescript
+        myForEach([1, 2, 3], (a, i) => console.log(a, i.toFixed()));
 6. 剩余参数
     - 在 `TypeScript` 中, 可以用数组类型定义 `rest` 参数. 📕注意 `rest` 参数必须是最后一个参数.
     - ```typescript
@@ -2172,11 +2183,37 @@
           return 'hello' + s;
         }
       - 有时我们会忘记一个函数根本不需要泛型, 📕记住泛型参数是用来关联多个值(至少 `2` 个)的类型, 如果类型参数只在一个地方出现, 那么它没有关联任何东西
-#### 可选参数
-1. 在 JavaScript 中
-      - ```typescript
-      - ```typescript
+#### 重载
+1. `JavaScript` 中的某些函数可以以不同数量和类型的参数调用, 例如 `Date`, 可以只传一个 `timestamp` 作为参数, 也可以同时传 `month/day/year` 三个参数
+    - `TypeScript` 将这种可以被不同方式调用的函数称为 `重载签名(overload signatures)`. 为了实现这一点, 首先要写`两个或更多`函数签名, 然后紧跟着函数实现.
     - ```typescript
+      // 函数签名
+      function makeDate(timestamp: number): Date;
+      function makeDate(month: number, day: number, year: number): Date;
+      // 函数实现
+      function makeDate(monthOrTimestamp: number, day?: number, year?: number): Date {
+        if (day === undefined && year === undefined) {
+          return new Date(monthOrTimestamp);
+        }
+        return new Date(year, monthOrTimestamp, day);
+      }
+
+      const d1 = makeDate(123434857345);
+      const d2 = makeDate(11, 19, 2022);
+    - 这个例子中, 首先写了两个`重载签名`: 一个接收单个参数, 另一个接收三个参数. 接下来写了函数实现, 这个实现的签名`完全兼容`重载签名. 但是这个实现签名`不能`被直接调用!!! 比如下面的调用, 我们没法只通过两个参数调用.
+    - ```typescript
+      const d3 = makeDate(11, 19);
+      // No overload expects 2 arguments,
+      // but overloads do exist that expect either 1 or 3 arguments.
+    - 📕注意函数实现和重载签名的兼容, 下面这个例子就是第二个重载签名的返回类型和实现签名的返回类型不兼容.
+    - ```typescript
+      function f2(x: string): string;
+      function f2(x: number): boolean;
+      function f2(x: number | string) {
+        return 'oops';
+      }
+2. 怎样写出好的重载?
+    - 
     - ```typescript
     - ```typescript
     - ```typescript
