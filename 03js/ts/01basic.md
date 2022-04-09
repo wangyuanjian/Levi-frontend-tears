@@ -40,6 +40,7 @@
     - [typeof](#typeof)
     - [函数](#函数)
     - [函数类型表达式](#函数类型表达式)
+      - [泛型函数(`Generic Function`)](#泛型函数generic-function)
     - [声明合并](#声明合并)
   - [参考](#参考)
 
@@ -2078,7 +2079,70 @@
         new (s: string): Date;
         (n?: number): number;
       }
-    - 怎么使用呢? [参考这篇 stackoverflow 文章 ](https://stackoverflow.com/questions/66874130/how-to-properly-use-functions-construct-signatures-in-typescript)
+    - 怎么使用呢? [参考这篇 stackoverflow 文章 ](https://stackoverflow.com/questions/66874130/how-to-properly-use-functions-construct-signatures-in-typescript), 当然这样做会报错, 因为 `CallOrConstruct` 是一个类型, 不能直接使用
+    - ```typescript
+      // construct
+      let object: Date = new CallOrConstruct("optional string s");
+      // call
+      let myNumber: number = CallOrConstruct(/* n= */ 42);
+#### 泛型函数(`Generic Function`)
+1. 泛型函数
+    - 有时写一个函数, 希望函数的两个输入类型有某种关系, 或函数的返回类型依赖输入参数类型. 如果沿返回一个数组元素的第一个, 通常会这样写
+    - ```typescript
+      function firstElement(arr: any[]) {
+        return arr[0];
+      }
+    - 这个函数不好的点就是返回了 `any` 类型. 在 TypeScript 中, 当我们想要描述两个值之间的关系时就使用 `泛型`, 通过在函数签名中声明一个类型参数就可以啦
+    - ```typescript
+      function firstElement1<Type>(arr: Type[]): Type | undefined {
+        return arr[0];
+      }
+    - 通过添加类型参数 `Type` 并在参数和返回类型两个地方使用 `Type`, 我们创建了函数的输入参数和返回值的联系, 接下来尝试调用
+    - ```typescript
+      const s = firstElement1(['a', 'b', 'c']);
+      const n = firstElement1([1, 2, 3]);
+      const u = firstElement1([])
+2. 多个类型参数
+    - 我们也可以使用多个类型参数
+    - ```typescript
+      function map<Input, Output>(arr: Input[], func: (arg: Input) => Output): Output[] {
+        return arr.map(func);
+      }
+
+      // function map<string, number>(arr: string[], func: (arg: string) => number): number[]
+      const parsed = map(['1', '2', '3'], (n) => parseInt(n));
+3. 约束类型参数
+    - 比如我们像写一个函数, 返回两个值中更长的那个. 为了做到这个, 需要比较两个值的 `length` 属性, 因此我们约束参数类型通过 `extends` 必须拥有 `length` 属性
+    - ```typescript
+      function longer<T extends { length: number }>(a: T, b: T) {
+        if (a.length >= b.length) {
+          return a;
+        }
+        return b;
+      }
+
+      const longerArrag = longer([1, 2], [1, 2, 3]);
+      const longerString = longer('12', '123');
+      const longerNumber = longer(1, 23);
+      // Argument of type 'number' is not assignable to parameter of type '{ length: number; }'.
+    - 下面时使用泛型约束的常见错误
+    - ```typescript
+      function minLength<T extends { length: number }>(
+        obj: T, minimum: number
+      ): T {
+        if (obj.length > minimum) {
+          return obj;
+        }
+        // 报错
+        return { length: minimum }; 
+      }
+    - 上面的函数看起来好像没问题, 函数的返回值要么是 `T` 要么是满足约束的值, 但是函数本意是返回和 `obj` 一样类型的值,, 而不是满足泛型约束的值.
+4. 
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
+    - ```typescript
     - ```typescript
     - ```typescript
 ### 声明合并
