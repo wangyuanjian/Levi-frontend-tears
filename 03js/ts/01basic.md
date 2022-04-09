@@ -41,6 +41,7 @@
     - [函数](#函数)
     - [函数类型表达式](#函数类型表达式)
       - [泛型函数(`Generic Function`)](#泛型函数generic-function)
+      - [可选参数](#可选参数)
     - [声明合并](#声明合并)
   - [参考](#参考)
 
@@ -2137,8 +2138,44 @@
         return { length: minimum }; 
       }
     - 上面的函数看起来好像没问题, 函数的返回值要么是 `T` 要么是满足约束的值, 但是函数本意是返回和 `obj` 一样类型的值,, 而不是满足泛型约束的值.
-4. 
-    - ```typescript
+4. 如何写出好的泛型函数
+    - `泛型约束不是第一位的考虑(Push Type Parameters Down)`
+      - 规则就是: 尽可能使用泛型参数自身, 而不是约束泛型参数
+      - ```typescript
+        function firstElement2<T>(arr: T[]) {
+          return arr[0];
+        }
+        function firstElement3<T extends any[]>(arr: T) {
+          return arr[0];
+        }
+        const a5 = firstElement2([1, 2, 3]); // number
+        const b5 = firstElement3([1, 2, 3]); // any
+      - `firstElement2` 是更好的选择, 因为它的返回值是 `T`, 即 `number`. 而 `firstElement3` 的返回值是 `any`.
+    - `用更少的类型参数`
+      - ```typescript
+        function filter1<T>(arr: T[], func: (arg: T) => boolean): T[] {
+          return arr.filter(func);
+        }
+        function filter2<T, Func extends (arg: T) => boolean>(
+          arr: T[],
+          func: Func
+        ){
+          return arr.filter(func);
+        }
+      - `filter2` 的类型参数 `Func` 并没有将两个值关联起来, 所以 `filter1` 是更好的选择
+    - `类型参数应该出现两次`
+      - ```typescript
+        function greeter4<Str extends string>(s: Str) {
+          return 'hello' + s;
+        }
+        function greeter5(s: string) {
+          return 'hello' + s;
+        }
+      - 有时我们会忘记一个函数根本不需要泛型, 📕记住泛型参数是用来关联多个值(至少 `2` 个)的类型, 如果类型参数只在一个地方出现, 那么它没有关联任何东西
+#### 可选参数
+1. 在 JavaScript 中
+      - ```typescript
+      - ```typescript
     - ```typescript
     - ```typescript
     - ```typescript
