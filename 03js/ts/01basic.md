@@ -44,6 +44,7 @@
       - [重载](#重载)
       - [函数中的 `this`](#函数中的-this)
       - [其他类型](#其他类型)
+      - [返回 `void` 类型](#返回-void-类型)
     - [声明合并](#声明合并)
   - [参考](#参考)
 
@@ -509,6 +510,22 @@
       }
       const from: any[] = [1, 2, 3];
       push1(from, 4, 5, 6)
+    - 如果没有指定剩余的类型, 那么默认为 `any[]`, 而不是 `any`. 如果如果要指定类型, 必须是 `Array<T>`, `T[]`, 或元组中的一种
+    - ```typescript
+      function fn4(name: string, ...m) {
+        return;
+      }
+    - ![](../../../image/Snipaste_2022-04-10_13-38-14.png)
+    - 此外, TypeScript 并不认为是数组是不可变的, 因此这可能导致一下奇怪的行为, 比如
+    - ```typescript
+      const args = [8, 5];
+      const angle = Math.atan2(...args);
+      // A spread argument must either have a tuple type or be passed to a rest parameter.
+    - 解决这个问题最直接的方法就是使用 `const`
+    - ```typescript
+      const args = [8, 5] as const;
+      const angle = Math.atan2(...args);    
+    - 当编译的目标 `JS` 版本比较旧时, 使用剩余参数可能要求打开 `downlevelIteration` 编译选项
 7. 重载
     - 为了实现重载, 需要先两个或者更多的函数声明, 后面接着函数实现.
     - ```typescript
@@ -524,6 +541,25 @@
       }
 
       fx(); // Expected 1 arguments, but got 0
+8. 参数解构
+    - 可以使用参数的解构赋值语法方便地将一个对象中的参数赋值为多个函数体中的变量, 在 `JavaScript` 中是这样地
+    - ```typescript
+      function sum({ a, b, c }) {
+        return a + b + c;
+      }
+      sum({ a: 10, b: 3, c: 9 });
+    - 在 TypeScript 中可以这样写
+    - ```typescript     
+      function sum({ a, b, c }: { a: number, b: number, c: number }) {
+        return a + b + c;
+      }
+      sum({ a: 10, b: 3, c: 9 });
+
+      // 使用类型别名
+      type ABC = { a: number, b: number, c: number };
+      function sum1({ a, b, c }: ABC) {
+        return a + b + c;
+      }
 ### 类型断言
 > 可以用来手动指定一个值的类型.
 1. 语法
@@ -2306,8 +2342,31 @@
         f(1, 2, 2);
       }
     - 但是上面的这种做法最好避免, 因为这种函数调用并没有指定类型, 而且返回值 `any` 也不安全. 如果你需要接收一个任意函数但是不调用, 那么 `() => void` 是一个更安全的选择
+#### 返回 `void` 类型
+1. 返回类型为 `void` 的上下文类型并不强制函数不返回任何东西, 换句话说, 上下文函数类型如果返回 `void`, 那么实现时, 可以返回任意类型, 但是返回值将会被忽略
     - ```typescript
+      type voidFunc = () => void;
+      const f7: voidFunc = () => {
+        return true;
+      }
+      const f8: voidFunc = function () {
+        return true;
+      }
+    - 调用这些函数的返回值也是 `void`
     - ```typescript
+      const r1 = f7(); // const r1: void
+      const r2 = f8();
+    - 正是这样的行为存在, 所以下面的代码才是合法的, 因为 `push` 返回 `number`, 但是 `forEach` 希望函数返回 `void`
+    - ```typescript
+      src.forEach((el) => dst.push(el));
+2. 但是, 如果是函数表达式或者函数声明, 返回 `void` 类型, 那么就一定不能返回任何东西
+    - ```typescript
+      function fx(): void {
+        return true;
+      }
+      const fx1 = function (): void {
+        return false;
+      }
 ### 声明合并
     - ```typescript
 ## 参考
