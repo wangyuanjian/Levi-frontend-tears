@@ -42,6 +42,7 @@
     - [函数类型表达式](#函数类型表达式)
       - [泛型函数(`Generic Function`)](#泛型函数generic-function)
       - [重载](#重载)
+      - [函数中的 `this`](#函数中的-this)
     - [声明合并](#声明合并)
   - [参考](#参考)
 
@@ -2213,10 +2214,44 @@
         return 'oops';
       }
 2. 怎样写出好的重载?
-    - 
+    - `如果可能, 尽量使用联合类型而不是函数重载`
+    - 看下面的例子
     - ```typescript
+      function len(s: string): number;
+      function len(s: any[]): number;
+      function len(s: any) {
+        return s.length;
+      }
+
+      len('1');
+      len([1]);
+      // 报错, 就是 string | number[] 不兼容任何一个重载签名
+      len(Math.random() < 0.5 ? '1' : [1]);
+    - 要想解决这个问题很容易: 使用联合类型
     - ```typescript
+      function len1(s: string | any[]) {
+        return s.length;
+      }
+      len1('1');
+      len1([1]);
+      len1(Math.random() < 0.5 ? '1' : [1]);
+#### 函数中的 `this`
+1. `TypeScript` 直到在很多情况下我们需要控制 `this` 究竟代表哪个对象, `JavaScript` 中 `this` 不能作为参数名, 因此 `TypeScript` 使用这个语法让我们声明方法体中 `this` 的类型
     - ```typescript
+      interface DB {
+        // filter 是一个函数,不过函数参数中指定了 this 必须为 User实例
+        filterUsers(filter: (this: User) => boolean): User[];
+      }
+      class DBClass implements DB {
+        filterUsers(filter: (this: User) => boolean): User[] {
+          return null; 
+        }
+      }
+      const db = new DBClass();
+      const admins = db.filterUsers(function (this: User) {
+        return this.admin;
+      });
+    - 📕: 注意需要使用函数表达式而不是箭头函数来实现这种控制
     - ```typescript
     - ```typescript
 ### 声明合并
