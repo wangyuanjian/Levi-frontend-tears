@@ -43,6 +43,7 @@
       - [泛型函数(`Generic Function`)](#泛型函数generic-function)
       - [重载](#重载)
       - [函数中的 `this`](#函数中的-this)
+      - [其他类型](#其他类型)
     - [声明合并](#声明合并)
   - [参考](#参考)
 
@@ -2252,6 +2253,59 @@
         return this.admin;
       });
     - 📕: 注意需要使用函数表达式而不是箭头函数来实现这种控制
+#### 其他类型
+> `void`, `object`, `unknown`, `never`, `Function`
+1. 和所有类型一样, 你可以在任何地方使用这些类型, 但是他们确和函数的语境相关
+2. `void`
+    - 不返回任何值的函数的返回值. 当函数内没有任何 `return` 语句或者并不返回明显的值时, 比如下面
+    - ```typescript
+      function noop() {
+        return;
+      }
+    - 在 `JavaScript` 中, 如果一个函数不返回任何值将隐式返回 `undefined`, 但是 `void` 和 `undefined` 在 `TypeScript` 不是一回事, 稍后讨论.
+3. `object`
+    - 表示任何不是基础类型的值, 基础类型包括(`string`, `number`, `bigint`, `null`, `undefined`, `symbol`, `boolean`). 这不同于空对象类型 `{}`, 也不同于全局类型 `Object`.
+    - > object 不是 Object❗ 总是使用 object
+    - 在 `JavaScript` 中, 函数是对象. 在 `TypeScript` 中函数同样是 `object`
+4. `unknown`
+    - 表示任何值, 有些像 `any` 但是 `unknown` 更安全, 因为访问 `unknown` 的任何属性或方法都是不行的
+    - ```typescript
+      function ok(a: any) {
+        a.ok();
+      }
+      function notOk(a: unknown) {
+        a.ok();
+        // Property 'ok' does not exist on type 'unknown'.
+      }
+    - 可以返回一个 `unknown` 类型的值, 但是使用这个返回值的时候要很小心.
+    - ```typescript
+      function safeParse(s: string): unknown {
+        return JSON.parse(s);
+      }
+5. `never`
+    - 有一些函数返回 `never`. `never` 类型表达某个值从来没有被观察到. 
+    - ```typescript
+      function fail(msg: string): never {
+        throw new Error(msg);
+      }
+    - `never` 也用于 `TypeScript` 发现联合类型中没有其他可能类型了
+    - ```typescript
+      function fn3(x: string | number) {
+        if (typeof x === 'string') {
+
+        } else if (typeof x === 'number') {
+          
+        } else {
+          // x is never
+        }
+      }
+6. `Function`
+    - 全局类型 `Function` 在 `JavaScript` 中在所有函数上的属性, 像是 `call`, `bind` 等. 在 `TypeScript` 中, `Function` 表示所有可以被调用的值的类型, 并且这些调用返回 `any`
+    - ```typescript
+      function callF(f: Function) {
+        f(1, 2, 2);
+      }
+    - 但是上面的这种做法最好避免, 因为这种函数调用并没有指定类型, 而且返回值 `any` 也不安全. 如果你需要接收一个任意函数但是不调用, 那么 `() => void` 是一个更安全的选择
     - ```typescript
     - ```typescript
 ### 声明合并
