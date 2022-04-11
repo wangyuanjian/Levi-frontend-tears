@@ -45,6 +45,10 @@
       - [函数中的 `this`](#函数中的-this)
       - [其他类型](#其他类型)
       - [返回 `void` 类型](#返回-void-类型)
+    - [类型操纵(`Type Manipulation`)](#类型操纵type-manipulation)
+      - [`keyof`](#keyof)
+      - [`Typeof`](#typeof)
+    - [`Indexed Access Types`](#indexed-access-types)
     - [声明合并](#声明合并)
   - [参考](#参考)
 
@@ -2447,7 +2451,110 @@
       const fx1 = function (): void {
         return false;
       }
-### 声明合并
+### 类型操纵(`Type Manipulation`)
+#### `keyof`
+1. `keyof` 操作符接收对象类型, 返回该对象类型所有 `key` 的字符串或数字的联合类型.
     - ```typescript
+      type Point = { x: number; y: number; 1: string };
+      type keysInPoint = keyof Point;
+      function isKey(arg: keysInPoint) {
+        return true;
+      }
+
+      isKey('x');
+      isKey('y');
+      isKey(1);
+      isKey(2);
+      // Argument of type '2' is not assignable to parameter of type 'keyof Point'.
+    - `keyof` 在结合两个映射类型(`mapped types`) 时特别有用.
+2. 如果一个类型有一个 `string` 或者 `number` 的索引签名(`index signature`), 那么 `keyof` 会返回这些类型
+    - ```typescript
+      type Arrayish = {
+        [n: number]: unknown
+      };
+      type A = keyof Arrayish; // type A = number
+
+      type Mapish = {
+        [k: string]: unknown;
+      };
+      type M = keyof Mapish; // type M = string | number
+    - 📕`M` 是 `string | number` 因为 JavaScript 的对象键总是可以转为 `string`, 例如 `obj[0]` 和 `obj['0']` hi一样的.
+#### `Typeof`
+1. 在 `JavaScript` 中已经有了 `typeof` 修饰符, 可以用在表达式语境中. 在 `TypeScript` 新增其可以用在类型语句中以推断某个变量或属性的类型.
+    - ```typescript
+      // js
+      console.log(typeof "Hello world");
+
+      // ts
+      let s2 = 'Hello';
+      let s3: typeof s2; // let s3: string
+      let s4 = typeof s2;
+    - 📕注意 `s4`, 其值只可能是 `"string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function"` 中的一种
+2. `ReturnType`
+    - TypeScript 中预定义的类型 `ReturnType<T>` 接收 `函数类型` 返回函数的返回值类型
+    - ```typescript
+      type Predicate = (x: number) => boolean;
+      type K = ReturnType<Predicate>;
+      // type K = boolean
+    - 📕注意接收的时`函数类型`, 而不是`函数值`. 所以下面的写法是报错的.
+    - ```typescript
+      function f9() {
+        return { x: 10, y: 3};
+      }
+      type P1 = ReturnType<f9>; // not ok
+      // 'f9' refers to a value, but is being used as a type here. Did you mean 'typeof f9'?
+      
+
+      type P2 = ReturnType<typeof f9>;
+      // type P2 = { : number; y: number; }
+3. 限制
+    - `TypeScript` 有意限制可以作为 `typepf` 参数的表达式, 基本上, 只能在标识符(比如变量名)或者其属性上使用 typepf, 有助于帮助我们避免写一些自己以为可以但实际不可以的带啊吗
+    - ```typescript
+### `Indexed Access Types`
+1. 我们可以使用 `Indexed Access Types` 查找某个类型上的指定属性. 当然尝试访问不存在的属性会报错
+    - ```typescript
+      type Person = {
+        age: number;
+        name: string;
+        alive: boolean;
+      };
+      
+      type Age = Person['age']; // type Age = number
+      type Age1 = Person['aga']; 
+      // Property 'aga' does not exist on type 'Person'
+    - 📕尝试理解, 上面代码中的 `'age'` 不是一个值(`value`), 而是一个类型(`type`).
+2. 索引名本身就是类型, 因此可以整体使用联合类型, keyof 或其他类型
+    - ```typescript
+      type I1 = Person['age' | 'name']; // string | number
+      type I2 = Person[keyof Person]; // string | number | boolean
+
+      type AliveOrName = 'alive' | 'name';
+      type I3 = Person[AliveOrName]; // string | boolean
+    - 另一个用任意类型索引的例子是使用 `number` 获取数组元素的类型.
+    - ```typescript
+      const MyArray = [
+        { name: 'Alice', age: 15 },
+        { name: 'Bob', age: 16 },
+        { name: 'Cindy', age: 17 },
+      ];
+      
+      type Person1 = typeof MyArray[number];
+      // type Person1 = { name: string; age: number; }
+      type Age2 = typeof MyArray[number]['age'];
+      // type Age2 = number
+      type Age3 = Person1['age'];
+      // type Age3 = number
+3. 在索引时, 只能使用`类型`, 意味着不能使用 `const` 作变量引用
+    - ```typescript
+      const key = 'age';
+      type Age4 = Person1[key];
+      // 'key' refers to a value, but is being used as a type here. Did you mean 'typeof key'?
+    - 但是, 可以使用类型别名
+    - ```typescript
+      type key = 'age';
+      type Age5 = Person1[key];
+    - ```typescript
+    - ```typescript
+### 声明合并
 ## 参考
 1. [TypeScript 入门教程](http://ts.xcatliu.com/basics/primitive-data-types.html)
