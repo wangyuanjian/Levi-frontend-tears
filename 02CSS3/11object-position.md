@@ -13,7 +13,7 @@
     - 可能的情况
       - 是 `center`. 垂直水平居中显示
       - 是 `top`, `right`, `bottom`, `left` 中的一个, 另一个默认为 `center`. 图片紧贴着指定的边居中显示
-      - `<length>` 或 `<percentage>`. 表示相对于盒子左边界的 `x` 轴左边, `y` 轴默认 `center`
+      - `<length>` 或 `<percentage>`. 表示相对于盒子左边界的 `x` 轴坐标, `y` 轴默认 `center`
     - ```html
       <div>
         <p>object-position: center;</p>
@@ -80,6 +80,3 @@
 6. 三个属性值的情况所有浏览器都不支持, 四个属性值更不用说了, 所以咱就省了一半儿的篇幅🤭
 ## 其他
 1. `IE` 浏览器不支持该属性, 所有 `IE` 都不支持
-- ```html
-- ```css
-- ![](../../image/)

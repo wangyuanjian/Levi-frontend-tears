@@ -2152,6 +2152,38 @@
       const s = firstElement1(['a', 'b', 'c']);
       const n = firstElement1([1, 2, 3]);
       const u = firstElement1([])
+    - 调用泛型函数的第二种方式, 就是加上泛型参数
+    - ```typescript
+      const s1 = firstElement1<string>(['a', 'b', 'c']);
+      const n1 = firstElement1<number>([1, 2, 3]);
+      const u1 = firstElement1<any>([])
+2. 泛型类型
+    - 泛型函数类型, 就像非泛型函数类型一样
+    - ```typescript
+      function identity<T>(arg: T): T {
+        return arg;
+      }
+
+      let myIdentity: <T>(arg: T) => T = identity;
+      let myIdentityString: <String>(arg: String) => String = identity;
+    - 尝试用一张图更好理解
+    - ![](../../../image/Snipaste_2022-04-11_17-10-52.png)
+    - 也可以将泛型类型作为一个对象字面量类型的 `call
+     signature`. 这可以让我们写出第一个泛型接口.
+    - ```typescript
+      let myIdentity1: { <T>(arg: T): T } = identity;
+
+      // 泛型接口
+      interface GenericInterfaceFn {
+        <T>(arg: T): T;
+      }
+      let myIdentity2: GenericInterfaceFn = identity;
+    - 泛型接口的代码可以进一步优化, 即将泛型参数上移. 这使得泛型参数 `T` 对接口的其他成员也都是可见的.
+    - ```typescript
+      interface GenericInterfaceFn1<T> {
+        (arg: T): T;
+      }
+      let myIdentity3: GenericInterfaceFn1<number> = identity;
 2. 多个类型参数
     - 我们也可以使用多个类型参数
     - ```typescript
@@ -2187,6 +2219,54 @@
         return { length: minimum }; 
       }
     - 上面的函数看起来好像没问题, 函数的返回值要么是 `T` 要么是满足约束的值, 但是函数本意是返回和 `obj` 一样类型的值,, 而不是满足泛型约束的值.
+4. 在泛型约束中使用类型参数
+    - 我们同样可以声明被另一个类型参数(`A`)约束的类型参数(`B`), 例如我们想要根据名字访问某个对象的属性, 我们需要确保对象存在该属性
+    - ```typescript
+      function getProperty<T, Key extends keyof T>(obj: T, key: Key) {
+        return obj[key];
+      }
+      let x = { a: 1, b: 2, c: 3 };
+
+      getProperty(x, 'a');
+      getProperty(x, 'd');
+      // Argument of type '"d"' is not assignable to parameter of type '"a" | "b" | "c"'.
+5. 在泛型使用 `class` 类型
+    - 在 `TypeScript` 中使用泛型构建工厂时, 使用构造函数推断 `class` 类型是很有必要的.
+    - ```typescript
+      function create<T>(c: { new (): T }): T {
+        return new c();
+      }
+      class Hello {
+        constructor() {
+        }
+      }
+
+      const a6 = create(Hello);
+    - 另一个例子, 使用 `prototype` 推断和约束构造函数和 `class` 类型实例的关系
+    - ```typescript
+      class BeeKeeper {
+        hasMask: boolean = true;
+      }
+      class ZooKeeper {
+        nameTag: string = 'Mikle';
+      }
+      
+      class Animal {
+        numLegs: number = 4;
+      }
+      class Bee extends Animal {
+        keeper: BeeKeeper = new BeeKeeper();
+      }
+      class Lion extends Animal {
+        keeper: ZooKeeper = new ZooKeeper();
+      }
+
+      function createInstanceA<A extends Animal>(c: new () => A): A {
+        return new c();
+      }
+      createInstanceA(Bee).keeper.hasMask;
+      createInstanceA(Lion).keeper.nameTag;
+    - 📕一定要好好解释上面的内容, 我自己都晕晕乎乎的😵. 首先 `A` 要是 `Animal` 的子类, 然后 `Bee` 和 `Lion` 的默认构造函数都默认返回自身实例.
 4. 如何写出好的泛型函数
     - `泛型约束不是第一位的考虑(Push Type Parameters Down)`
       - 规则就是: 尽可能使用泛型参数自身, 而不是约束泛型参数
