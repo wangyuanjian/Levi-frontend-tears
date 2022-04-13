@@ -51,6 +51,7 @@
     - [`Indexed Access Types`](#indexed-access-types)
       - [`Conditional Type`](#conditional-type)
       - [映射类型(`Mapped Types`)](#映射类型mapped-types)
+      - [模板字面量类型(`Template Literal Types`)](#模板字面量类型template-literal-types)
     - [声明合并](#声明合并)
   - [参考](#参考)
 
@@ -2780,6 +2781,88 @@
           id: false;
           name: true;
       } */
+#### 模板字面量类型(`Template Literal Types`)
+1. 模板字面量类型基于字符串字面量类型构造, 并有通过联合类型扩展成为更多字符串的能力
+    - 模板字符串类型和 Javascript 中的模板字符串一样的语法, 不过是用在 `type` 的位置. 
+    - ```typescript
+      type World = 'world';
+      type Greeting = `hello, ${World}`;
+      // type Greeting = "hello, world"
+    - 当联合类型用于 `插值` 位置时, 最终的类型就是被联合类型每个成员表示的字符串
+    - ```typescript
+      // 一般写法
+      type EmailIDS = 'welcome_email' | 'bye_email';
+
+      type EmailTypes1 = 'welcome' | 'bye';
+      type EmailTypes2 = 'morning' | 'evening';
+      type EmailIDS_NEW = `${EmailTypes1 | EmailTypes2}_email`;
+      // type EmailIDS_NEW = "welcome_email" | "bye_email" | "morning_email" | "evening_email" 
+    - 来试试笛卡尔乘机版
+    - ```typescript 
+      type Way = 'weixin' | 'QQ';
+      type Message = 'text' | 'audio' | 'video';
+      type WayMessage = `${Way}_${Message}`;
+      // type WayMessage = "weixin_text" | "weixin_audio" | "weixin_video" | "QQ_text" | "QQ_audio" | "QQ_video"
+2. 类型中的字符串联合类型
+    - 当需要基于一个类型内部信息定义新字符串时, 模板字面量变得非常有用.
+    - 比如一个函数 `A` 将传来的参数 `obj` 上新增加一个 `on()` 的函数. 这个 `on` 函数接收两个参数
+      - `eventName: string`: 必须时 `obj` 中的某个属性名(`key`) 加上 `Changed`, 来监听这个属性的改变, 比如 `firstNameChanged`
+      - `callback: (arg: ?) => void`: 当这个函数调用时, 期望传递一个和 `eventName` 对应的函数类型. 比如, 如果是 `firstName` 改变了, 期望传递 `string` 类型; 如果是 `age` 改变了, 期望传递 `number` 类型
+      - 基于上面两地, 我们可以大概写出 on 函数的签名 `on(eventName: string, callback: (arg: any) => void)`, 但是, 这个签名却没有刚才分析出的类型关系进行约束
+    - ```typescript
+      const obj = {
+        firstName: 'Tom',
+        lastName: 'Jerry',
+        age: 36,
+      }; 
+    - 对于第一个参数 `eventName`, 我们只希望是传入对象中存在的属性, 比如 `Object.keys(obj).map(key => `${key}Changed`)`
+    - ```typescript 
+      type PropEventSource<T> = {
+        on(eventName: `${string & keyof T}Changed`, callback: (newValue: any) => void);
+      }
+      declare function addOnToObject<T>(obj: T): T & PropEventSource<T>;
+
+      const a4 = addOnToObject(passedObject);
+      a4.on('firstName', () => {});
+      // Argument of type '"firstName"' is not assignable to parameter of type '"firstNameChanged" | "lastNameChanged" | "ageChanged"'.
+3. 模板字面量的推断
+    - 上面的例子一点不足就是没有解决 `eventName` 指代属性的类型和 `callback` 参数类型的关联. 如何做? 💡关键在于将 on 函数变为泛型函数, `泛型` 就是存在于 `eventName` 的字面量类型
+    - ```typescript 
+      type PropEventSource1<T> = {
+        on<Key extends string & keyof T>
+          (eventName: `${Key}Changed`, callback: (arg: T[Key]) => void): void;
+      };
+
+      declare function addOnToObject1<T>(obj: T): T & PropEventSource1<T>;
+
+      const a7 = addOnToObject1(passedObject);
+      // (parameter) newAge: number
+      a7.on("ageChanged", newAge => {
+        if (newAge < 0) {
+          console.warn("warning! negative age");
+        }
+      });
+      // (parameter) newName: string
+      a7.on('firstNameChanged', newName => {
+        console.log('new name is', newName);
+      });
+4. 内置字符串操作类型
+    - `Uppercase<StringType>`: 字符串大写
+      - ```typescript 
+        type Greeting = "Hello, world"
+        type ShoutyGreeting = Uppercase<Greeting>
+        // type ShoutyGreeting = "HELLO, WORLD"
+        
+        type ASCIICacheKey<Str extends string> = `ID-${Uppercase<Str>}`
+        type MainID = ASCIICacheKey<"my_app">
+        // type MainID = "ID-MY_APP"
+    - `Lowercase<StringType>`: 字符串小写
+    - `Capitalize<StringType>`: 字符串第一个字符大写
+    - `Uncapitalize<StringType>`: 字符串第一个字符小写
+    - ```typescript 
+    - ```typescript 
+    - ```typescript 
+    - ```typescript 
     - ```typescript 
     - ```typescript 
     - ```typescript 
