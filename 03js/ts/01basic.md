@@ -50,6 +50,7 @@
       - [`Typeof`](#typeof)
     - [`Indexed Access Types`](#indexed-access-types)
       - [`Conditional Type`](#conditional-type)
+      - [映射类型(`Mapped Types`)](#映射类型mapped-types)
     - [声明合并](#声明合并)
   - [参考](#参考)
 
@@ -2657,6 +2658,128 @@
       type ToArrayNonDist<T> = [T] extends [any] ? T[] : never;
       type StrArrOrNumOrr1 = ToArrayNonDist<string | number>;
       // type StrArrOrNumOrr1 = (string | number)[] 
+#### 映射类型(`Mapped Types`)
+1. 当你不想重复自己时, 有时一个类型需要基于另一个类型. `映射类型` 构建在 `index signature` 语法上, 用于提前声明类型的属性
+    - ```typescript 
+      type Horse = {
+        whoop: string;
+      }
+      type OnlyBoolsAndHorses = {
+        [key: string]: boolean | Horse;
+      }
+      const conforms: OnlyBoolsAndHorses = {
+        del: true,
+        rodney: false,
+      };
+    - 一个映射类型为泛型类型时, 使用 `keyof` 的联合类型可以来迭代某个类型所有的 `key` 从而创建一个新的类型. 下面的例子中 `OptionsFlags` 将从 `T` 中拿到所有 `key` 并将其值转为 `boolean`
+      - 📕`[Property in keyof T]` 中的 `Property` 并不是一个关键字, 理解成变量名即可
+    - ```typescript 
+      type OptionsFlags<T> = {
+        [Property in keyof T]: boolean;
+      }
+      type student = {
+        name: string;
+        age: number;
+      }
+      type studentBools = OptionsFlags<student>;
+      /**
+      * type studentBools = {
+          name: boolean;
+          age: boolean;
+      } */
+2. 映射修饰符
+    - 我们知道, 一对象的属性可以有两个修饰符, 分别是 `readonly` 和 `?`, 表示只读和属性可选, 我们可以通过 `+` 或 `-` 两个映射修饰符来决定是否添加或移除 `readonly` 和 `?`.
+    - 如果`readonly` 和 `?`不加前缀, 默认是 `+`.
+    - ```typescript 
+      type CreateMutable<T> = {
+        -readonly [Property in keyof T]: T[Property];
+      };
+      type LockedAccount = {
+        readonly id: string;
+        readonly name: string;
+      };
+      type UnlockedAccount = CreateMutable<LockedAccount>;
+      /**type UnlockedAccount = {
+          id: string;
+          name: string;
+      } */
+    - ```typescript
+      type Concrete<T> = {
+        [Property in keyof T]-?: T[Property];
+      };
+      type MaybeUser = {
+        id: string;
+        name?: string;
+        age?: number;
+      };
+      type User1 = Concrete<MaybeUser>;
+      /**type User1 = {
+          id: string;
+          name: string;
+          age: number;
+      } */
+3. `key` 的映射: `as`
+    - 在 `TypeScript@4.1` 之后的版本, 我们可以在映射类型中使用 `as` 子句映射 `key` 了, 简言之, 就是原来的 `key` 换成了新的名字. 语法模板如下, 会报错, 因为需要指明具体的 `NewKeyType`
+    - ```typescript 
+      type MappedTypeWithNewProperty<T> = {
+        [Property in keyof T as NewKeyType]: T[Property];
+      }
+    - ```typescript 
+      type Getters<T> = {
+        // Capitalize: 将字符串字面量的首个字母变为大写, 内置
+        [Property in keyof T as `get${Capitalize<string & Property>}`]: () => T[Property];
+      }
+      interface Person2 {
+        name: string;
+        age: number;
+      }
+      type LazyPerson = Getters<Person2>;
+      /**type LazyPerson = {
+          getName: () => string;
+          getAge: () => number;
+      } */
+    - 📕解释`get${Capitalize<string & Property>}` 这个部分, 首先 `Capitalize` 只能接受字符串, 但是 `key` 的类型不止字符串, 还有可能是 `number` 或 `symbol`, 所以用 `&` 表示 `key` 的类型为 `string` 的 `key`
+    - 也可以使用条件类型过滤 `key`. 下面的 `Exclude` 意思是从 `T` 中移除所有赋值给 `kind` 的类型
+    - ```typescript 
+      type RemoveKindField<T> = {
+        // type Exclude<T, U> = T extends U ? never : T
+        // Exclude from T those types that are assignable to U
+        [Property in keyof T as Exclude<Property, 'kind'>]: T[Property];
+      }
+      interface Circle {
+        kind: 'Circle';
+        radius: number;
+      }
+      type KindlessCircle = RemoveKindField<Circle>;
+      // type KindlessCircle = { radius: number; }
+    - 进一步, 可以映射任意联合类型, 不仅仅是 `string | number | symbol`. 
+      - 📕注意下面的是 `in` 而不是 `in keyof`, 所以 `E` 表示的是联合类型中的每个成员, 而不是 `key`
+    - ```typescript 
+      type EventConfig<Events extends { kind: string }> = {
+        [E in Events as E['kind']]: (event: E) => void;
+      }
+      type SquareEvent = { kind: 'square', x: number, y: number };
+      type CircleEvent = { kind: 'circle', radius: number };
+      type Config = EventConfig<SquareEvent | CircleEvent>;
+      /**type Config = {
+          square: (event: SquareEvent) => void;
+          circle: (event: CircleEvent) => void;
+      } */
+4. 更多探索
+    - `映射类型` 搭配这一大章中的其他特点可以工作的更好, 比如搭配 `条件类型`
+    - ```typescript 
+      type ExtractPII<T> = {
+        [Property in keyof T]: T[Property] extends { pii: true } ? true : false;
+      };
+      type DBFields = {
+        id: { format: 'incrementing' },
+        name: { type: string; pii: true },
+      };
+      type ObjectNeedsPII = ExtractPII<DBFields>;
+      /**type ObjectNeedsPII = {
+          id: false;
+          name: true;
+      } */
     - ```typescript 
     - ```typescript 
     - ```typescript 
