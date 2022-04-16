@@ -48,11 +48,14 @@
     - [类型操纵(`Type Manipulation`)](#类型操纵type-manipulation)
       - [`keyof`](#keyof)
       - [`Typeof`](#typeof)
-    - [`Indexed Access Types`](#indexed-access-types)
+      - [`Indexed Access Types`](#indexed-access-types)
       - [`Conditional Type`](#conditional-type)
       - [映射类型(`Mapped Types`)](#映射类型mapped-types)
       - [模板字面量类型(`Template Literal Types`)](#模板字面量类型template-literal-types)
     - [声明合并](#声明合并)
+      - [基本概念](#基本概念)
+    - [合并接口](#合并接口)
+      - [合并名称空间](#合并名称空间)
   - [参考](#参考)
 
 <!-- /TOC -->
@@ -2513,7 +2516,7 @@
 3. 限制
     - `TypeScript` 有意限制可以作为 `typepf` 参数的表达式, 基本上, 只能在标识符(比如变量名)或者其属性上使用 typepf, 有助于帮助我们避免写一些自己以为可以但实际不可以的带啊吗
     - ```typescript
-### `Indexed Access Types`
+#### `Indexed Access Types`
 1. 我们可以使用 `Indexed Access Types` 查找某个类型上的指定属性. 当然尝试访问不存在的属性会报错
     - ```typescript
       type Person = {
@@ -2859,13 +2862,71 @@
     - `Lowercase<StringType>`: 字符串小写
     - `Capitalize<StringType>`: 字符串第一个字符大写
     - `Uncapitalize<StringType>`: 字符串第一个字符小写
-    - ```typescript 
-    - ```typescript 
-    - ```typescript 
-    - ```typescript 
-    - ```typescript 
-    - ```typescript 
-    - ```typescript 
 ### 声明合并
+1. 声明合并的意思是, 将两个同名的单独声明合并为一个定义. 合并之后的定义保留之前声明的所有特征. 当然, 不止两个, 多个同名声明也可以合并
+#### 基本概念
+1. 在 TypeScript 中, 一个声明至少创建了下面`namespace`, `type` 或 `value` 中的一个实体.
+    - 名称空间声明语句, 创建了一个名称空间, 就可以使用 `.` 访问其中的属性
+    - 类型声明语句, 声明了一个类型
+    - 值声明语句, 创建了一个可以在输出的 `JavaScript` 中看到的值
+### 合并接口
+1. 最简单和最常见的类型合并应该就是接口合并. 最基础的合并就是将所有声明的成员简单合并到一个接口中.
+    - ```typescript 
+      interface Box {
+        height: number;
+        width: number;
+      }
+      interface Box {
+        scale: number;
+      }
+      let box: Box = { height: 5, width: 6, scale: 10 };
+2. 非函数成员必须不同, 如果相同, 必须是相同类型, 否则编译器报错. 对于函数类型, 同名的函数成员被当作同一个函数的重载.
+    - ```typescript 
+      interface Cloner {
+        clone(animal: string): string;
+      }
+      interface Cloner {
+        clone(animal: number): number;
+      }
+      class ClonerClass implements Cloner {
+        clone(animal: string): string;
+        clone(animal: number): number;
+        clone(animal: any): string | number {
+          throw new Error("Method not implemented.");
+        }
+      }
+    - 顺序问题: 一个接口中的元素在合并之后的接口中顺序保持不变, 但是不同的接口, 靠后的接口的元素在合并后会在前面. 一个例外是如果函数的参数是`字符串字面量类型`, 那么这个函数会被移动到重载顶端.
+    - ```typescript 
+      interface Document {
+        createElement(tagName: any): Element;
+      }
+      interface Document {
+        createElement(tagName: "div"): HTMLDivElement;
+        createElement(tagName: "span"): HTMLSpanElement;
+      }
+      interface Document {
+        createElement(tagName: string): HTMLElement;
+        createElement(tagName: "canvas"): HTMLCanvasElement;
+      }
+    - 声明合并之后
+    - ```typescript 
+      interface Document {
+        createElement(tagName: "canvas"): HTMLCanvasElement;
+        createElement(tagName: "div"): HTMLDivElement;
+        createElement(tagName: "span"): HTMLSpanElement;
+        createElement(tagName: string): HTMLElement;
+        createElement(tagName: any): Element;
+      }
+#### 合并名称空间
+1. 
+    - ```typescript 
+    - ```typescript 
+    - ```typescript 
+    - ```typescript 
+    - ```typescript 
+    - ```typescript 
+    - ```typescript 
+    - ```typescript 
+    - ```typescript 
 ## 参考
 1. [TypeScript 入门教程](http://ts.xcatliu.com/basics/primitive-data-types.html)
