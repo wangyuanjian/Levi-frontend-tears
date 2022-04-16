@@ -16,6 +16,8 @@
   - [函数](#函数)
   - [`@-Rules`](#-rules)
     - [`@import`](#import)
+    - [`@media`](#media)
+    - [`@extend`](#extend)
   - [mixin 混合](#mixin-混合)
     - [给混合器传参](#给混合器传参)
   - [继承器](#继承器)
@@ -523,11 +525,57 @@
 ## `@-Rules`
 ### `@import`
 > 参看这里 [引入](#导入-sass-文件)
+### `@media`
+1. `Sass` 中 `@media` 指令与 `CSS` 中用法一样, 只能额外允许在 `CSS` 规则中嵌套. 如果 `@media` 嵌套在 `CSS` 规则中, `@media` 将被编译到文件的最外层, 包含嵌套的父选择器.
+    - ```scss
+      .box33 {
+        background-color: salmon;
+        @media screen and (max-width: 980px) {
+          background-color: skyblue;
+        }
+      }
+    - ![](../image/Snipaste_2022-04-16_09-59-03.png)
+    - 📕注意如果是 CSS 写法
+    - ```css
+      @media screen and (max-width: 980px) {
+        .box33 {
+          background-color: skyblue;
+        }
+      }
+2. ` @media` 的规则允许嵌套, 编译时 `Sass` 会自动添加 `and`
+    - ```scss
+      @media screen {
+        .box34 {
+          @media (max-width: 980px) {
+            background-color: skyblue;
+          }
+          @media (min-width: 1000px) {
+            background-color: salmon;
+          }
+        }
+      }
+    - ![](../image/Snipaste_2022-04-16_10-31-40.png)
+3. `@media` 甚至可以使用 SassScript (比如变量, 函数, 以及运算符) 代替条件的名称或者值
+    - 📕笔记本的 `device-pixel-ratio` 是 `1`, 像是智能手机或者 `iPad`, 其值更高.
+    - ```scss
+      $media: screen;
+      $feature: -webkit-min-device-pixel-ratio;
+      $value: 1;
+
+      @media #{$media} and ($feature: $value) {
+        .box35 {
+          background-color: red;
+        }
+      }
+    - ![](../image/Snipaste_2022-04-16_10-39-06.png)
+    - 📕记得在 `Vue` 项目中使用 `Sass` 变量时使用 `#{}`, 不然可能在某些打包环境下报错.
+### `@extend`
+> 参看这里 [继承器](#继承器)
 ## mixin 混合
 > 我们可以用变量来处理小小的类似样式, 但是如果样式变得复杂且要大段大段重复样式代码, 变量就不能再胜任, 而混合就是实现打断样式重用而来的.
 1. 定义混合 `@mixin`
     - 使用 `@mixin` 定义混合.
-    - ```dcss
+    - ```scss
       @mixin rounded {
         -moz-border-radius: 5px;
         -webkit-border-radius: 5px;
