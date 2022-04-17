@@ -4,6 +4,10 @@
   - [Hello World](#hello-world)
     - [创建虚拟 DOM 的第二种方式](#创建虚拟-dom-的第二种方式)
     - [JSX](#jsx)
+    - [元素](#元素)
+  - [组件](#组件)
+    - [函数式组件](#函数式组件)
+    - [类式组件](#类式组件)
 
 <!-- /TOC -->
 
@@ -65,6 +69,7 @@
 4. 虚拟 `DOM` 究竟是什么?
     - 对象
     - ![](../../image/Snipaste_2022-04-17_09-09-05.png)
+    - 一旦创建, 就无法改变, 是不可变对象, 因为它代表了某个特定时刻的 `UI`.
 ### JSX
 > const element = `<h1>Hello, world!</h1>`; 
 
@@ -135,3 +140,36 @@
         我是多行注释
         */
       }
+### 元素
+1. 元素是构成 `React` 应用的最小块, 描述了在页面上看到的内容. 组件是由元素构成的.
+    - 与浏览器的 `DOM` 元素不同, `React` 元素是创建开销极小的普通对象, `React DOM` 会负责更新 `DOM` 与 React 元素保持一致
+    - 之前截图的就是 React 元素
+    - ![](../../image/Snipaste_2022-04-17_09-09-05.png)
+## 组件
+> 组件允许你将 `UI` 拆分为独立可复用的代码片段，并对每个片段进行独立构思
+### 函数式组件
+1. 使用 `function` 编写函数即可定义函数式组件.
+    - ```jsx
+      function Welcome() {
+        return <h1>Function Component! :)</h1>
+      }
+    - 📕注意: 函数名首字母一定要大写!
+    - 📕注意: 要返回一个 React 元素.
+    - 接下来, 就将函数组件渲染至页面. 通过编写 `闭合` 的 `jsx` 即可
+    - ```jsx
+      ReactDOM.render(
+        <Welcome />,
+        document.getElementById('test')
+      ); 
+2. 函数式组件的本质仍是 `JavaScript` 中的函数, 通过控制台打印可以看到
+    - ![](../../image/Snipaste_2022-04-17_20-44-52.png)
+    - 📕注意: 函数中的 `this` 为 `undefined`, 因为 `Babel` 开启了严格模式.
+    - 📕在 React DevTools 插件安装之后, 可以在 F12 的 Components 选项卡中看到 Welcome 组件
+      - ![](../../image/Snipaste_2022-04-17_21-04-00.png)
+    - 📕既然是函数, 是 `React` 帮我们调用了, 并拿到了返回值. 如果在 `render()` 函数中直接调用函数会是怎么样呢?
+      - 同样的内容, 但是却看不到 `Welcome` 组件了, 因为下面的两种写法是相同的, 但是和组件没关系了, 而是元素.
+      - ```jsx
+        ReactDOM.render(Welcome(), document.getElementById('test'));
+        ReactDOM.render(<h1>Function Component! :)</h1>, document.getElementById('test'));
+      - ![](../../image/Snipaste_2022-04-17_21-05-55.png) 
+### 类式组件
