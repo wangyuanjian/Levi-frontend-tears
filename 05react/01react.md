@@ -8,6 +8,7 @@
   - [组件](#组件)
     - [函数式组件](#函数式组件)
     - [类式组件](#类式组件)
+    - [state](#state)
 
 <!-- /TOC -->
 
@@ -173,3 +174,24 @@
         ReactDOM.render(<h1>Function Component! :)</h1>, document.getElementById('test'));
       - ![](../../image/Snipaste_2022-04-17_21-05-55.png) 
 ### 类式组件
+1. 通过 `5` 步将函数式组件转为 `class` 组件
+    - 创建同名的 `class`, 并继承 `React.Component`
+    - 添加空的 `render` 方法
+    - 将函数体移动到 `render` 中
+    - 在 `render` 中使用 `this.props` 替换 `props`
+    - 删除剩余的空函数声明
+    - ```jsx
+      class Welcome extends React.Component {
+        render() {
+          return (
+            <h1>Function Component! :)</h1>
+          );
+        }
+      }
+2. 两个问题
+    - `render` 方法存在在哪? 在 `Welcome` 的原型对象上
+    - ![](../../image/Snipaste_2022-04-19_20-41-04.png)
+    - `render` 方法中的 `this` 是谁? 是组件实例对象
+    - ![](../../image/Snipaste_2022-04-19_20-50-15.png)
+### state
+1. 
