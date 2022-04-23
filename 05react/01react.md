@@ -223,6 +223,10 @@
         }
       }
     - 📕`state` 的初始化要在 `constructor` 中进行
+3. 什么样的数据需要放在 `state` 中?
+    - 首先就是不需要响应式使用的数据, 否则就是增加负担;
+    - 如果变量是通过 `props` 从父组件获取, 就不需要放在 `state` 中, 因为 `props` 中的数据是不能更改的;
+    - 如果在 `render` 函数中没有使用到, 也可以不将其放在 `state` 中;
 #### setState
 1. 如果我们要给 `h1` 增加一个点击事件, 切换天气状态
     - ```jsx
@@ -274,6 +278,67 @@
         }
       - 答案是合并, 当然不可能是覆盖了, 不然就没得玩了!
     - 在更新 `state` 时, 没更新一次就调用一次 `render` 函数,`在整个组件被初始化时, 会调用一次构造函数和 `render`
+4. `setState` 的异步更新 `1`
+    - 如果我们在 `changeWeather` 修改了 `isHot` 的值后立刻打印, 会发现其还是修改之前的值, 比如.
+    - ```js
+      state = {
+        isHot: false,
+      };
+      changeWeather = () => {
+        this.setState({
+          isHot: !this.state.isHot, // true
+        })
+        console.log('hhhh', this.state.isHot); // false
+      }
+    - ![](../../image/Snipaste_2022-04-23_17-35-59.png)
+    - 这样的原因是 `setState` `可能`是异步更新的, 📕注意这里是`可能`, 官网中也说是 `可能`, 代表在某些情况下是同步更新的.
+    - 因为可能是异步的, 所以官网不建议我们依赖 `state` 或 `prop` 来更新下一个状态.
+5. `setState` 的两种调用方式
+    - 首先从源码中可以看到, `setState` 接收两个参数
+      - 第一个参数: 是对象或函数类型
+      - 第二个参数: 可选, 函数类型. 在 `state` 更新后调用. 这个函数没有参数.
+    - ![](../../image/Snipaste_2022-04-23_17-54-06.png)
+    - 从上面的异步更新我们就知道了, 只传递一个对象类型的参数, 是没有办法立刻拿到更新后的 `state` 值的, 但是如果我们传递一个函数作为第二个参数, 这个函数就会在 `state` 更新后调用
+    - `调用1️⃣: 第一个参数是对象类型`
+      - ```jsx
+        changeWeather = () => {
+          this.setState({
+            isHot: !this.state.isHot,
+          }, () => {
+            console.log('state is updated', this.state);
+          });
+        }
+      - ![](../../image/Snipaste_2022-04-23_18-01-20.png)
+    - `调用2️⃣: 第一个参数是函数类型`
+      - 这个函数接收两个参数, 第一个参数是上一个 `state`, 第一个参数是上一个 `prop`.
+      - 这个函数, 仍然要返回一个对象, 用于 `state` 的合并
+      - 箭头函数方式
+        - ```jsx
+          changeWeather = () => {
+            this.setState((oldState, oldProp) => {
+              console.log('old', oldState.isHot);
+              return {
+                isHot: !oldState.isHot,
+              }
+            }, () => {
+              console.log('new', this.state.isHot);
+            });
+          }
+      - 一般函数
+        - ```jsx
+          changeWeather = () => {
+            // function(){}
+            this.setState(function (oldState, oldProp) {
+              console.log('old', oldState.isHot);
+              return {
+                isHot: !oldState.isHot,
+              }
+            }, () => {
+              console.log('new', this.state.isHot);
+            });
+          }
+      - ![](../../image/Snipaste_2022-04-23_18-26-42.png)
+
 #### state 的简写方式
 1. 首先, 因为没有组件实例对象都有 `state` 属性, 所以没必要将 `state` 初始化写在构造函数中, 直接作为 `class` 的成员变量即可
 2. 为解决函数的 `this` 问题, 可以使用箭头函数声明, 因此上面的标准代码精简为
