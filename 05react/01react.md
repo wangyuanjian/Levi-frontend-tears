@@ -8,8 +8,8 @@
   - [组件](#组件)
     - [函数式组件](#函数式组件)
     - [类式组件](#类式组件)
-    - [事件处理](#事件处理)
     - [state](#state)
+    - [事件处理](#事件处理)
 
 <!-- /TOC -->
 
@@ -194,20 +194,6 @@
     - ![](../../image/Snipaste_2022-04-19_20-41-04.png)
     - `render` 方法中的 `this` 是谁? 是组件实例对象
     - ![](../../image/Snipaste_2022-04-19_20-50-15.png)
-### 事件处理
-1. React 元素的事件处理和 DOM 元素的事件很像, 但是有些语法上的不同
-    - React 的事件命名采用小驼峰形式(`camelCase`), 而不是纯小写
-    - 采用 JSX 语法时需要传入`一个函数`作为事件处理函数, 而不是一个字符串.
-    - 原生写法
-      - ```html
-        <button onclick="activateLasers()">
-          Activate Lasers
-        </button>
-    - React 写法
-      - ```jsx
-        <button onClick={activateLasers}>
-          Activate Lasers
-        </button>
 ### state
 1. 复杂组件与简单组件
     - 简单组件: 无状态; 所以函数组件没有 `state`(不考虑 `hooks`)
@@ -233,5 +219,37 @@
         }
       }
     - 📕`state` 的初始化要在 `constructor` 中进行
-3. 函数中的 `this` 是谁?
-    - 
+### 事件处理
+1. React 元素的事件处理和 DOM 元素的事件很像, 但是有些语法上的不同
+    - React 的事件命名采用小驼峰形式(`camelCase`), 而不是纯小写
+    - 采用 JSX 语法时需要传入`一个函数`作为事件处理函数, 而不是一个字符串.
+    - 原生写法
+      - ```html
+        <button onclick="activateLasers()">
+          Activate Lasers
+        </button>
+    - React 写法
+      - ```jsx
+        // activateLasers 是一个函数
+        <button onClick={activateLasers}>
+          Activate Lasers
+        </button>
+2. 首先回顾一下 `ES6` 中 `class` 的一些语法
+    - ```js
+      class Student {
+        constructor(name, age) {
+          this.name = name;
+          this.age = age;
+        }
+        goToSchool() {
+          console.log('###', this);
+        }
+      }
+      const student = new Student();
+      console.log(student);
+      student.goToSchool();
+      const x = student.goToSchool;
+      x();
+    - 首先, `goToSchool` 这个函数并不存在对象身上, 而是在对象的原型对象上.
+      - ![](../../image/Snipaste_2022-04-20_22-42-16.png)
+    - 其次, 
