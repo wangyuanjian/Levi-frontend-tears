@@ -9,6 +9,7 @@
     - [函数式组件](#函数式组件)
     - [类式组件](#类式组件)
     - [state](#state)
+      - [setState](#setstate)
     - [事件处理](#事件处理)
       - [改变 `this` 之使用 `bind`](#改变-this-之使用-bind)
       - [改变 `this` 之使用 `箭头函数`](#改变-this-之使用-箭头函数)
@@ -221,6 +222,57 @@
         }
       }
     - 📕`state` 的初始化要在 `constructor` 中进行
+#### setState
+1. 如果我们要给 `h1` 增加一个点击事件, 切换天气状态
+    - ```jsx
+       class Weather extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            isHot: false,
+          };
+          this.changeWeather = this.changeWeather.bind(this);
+        }
+        changeWeather() {
+          this.state.isHot = !this.state.isHot;
+          console.log(this.state.isHot);
+        }
+        render() {
+          return (
+            <h1 onClick={this.changeWeather}>今天天气很{this.state.isHot ? '炎热' : '凉爽'}</h1>
+          )
+        }
+      }
+    - ![](../../image/Snipaste_2022-04-23_10-48-14.png)
+    - 😱从控制台看, `this.state.isHot` 的值改变了, 但是页面并没有发生变化, 这是因为 `React` 不允许我们直接修改 `state` 中的属性的值, 必须通过一个 `API`, `setState`
+2. `setState`
+    - 这个方法存在于 `React.Component` 对象上. 因此可以通过原型链调用这个方法.
+    - ```jsx
+      changeWeather() {
+        this.setState({
+          isHot: !this.state.isHot,
+        })
+      }
+3. 关于 `setState` 的几个问题
+    - 📕是合并还是覆盖? 换个表达方式就是, 如果 `state` 中还有多个属性, `setState` 时只修改一个属性, 其他的属性还在吗? 还是被覆盖了?
+      - ```jsx
+        constructor(props) {
+          super(props);
+          this.state = {
+            isHot: false,
+            wind: '微风',
+          };
+          this.changeWeather = this.changeWeather.bind(this);
+        }
+        render() {
+          return (
+            <h1 onClick={this.changeWeather}>
+              今天天气很{this.state.isHot ? '炎热' : '凉爽'}, 有{this.state.wind}
+            </h1>
+          )
+        }
+      - 答案是合并, 当然不可能是覆盖了, 不然就没得玩了!
+    - 在更新 `state` 时, 没更新一次就调用一次 `render` 函数,`在整个组件被初始化时, 会调用一次构造函数和 `render`
 ### 事件处理
 1. 首先回顾一下 `ES6` 中 `class` 的一些语法
     - ```js
