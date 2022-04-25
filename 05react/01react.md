@@ -350,6 +350,31 @@
           console.log('hhh', this.state.isHot);
         }
       - ![](../../image/Snipaste_2022-04-24_21-56-06.png)
+7. `setState` 的合并更新
+    - 先看下面的代码, 觉得执行的结果是多少?
+      - ```jsx
+        state = {
+          count: 1,
+        };
+        changeCount = () => {
+          this.setState({count: this.state.count + 1});
+          this.setState({count: this.state.count + 1});
+          this.setState({count: this.state.count + 1});
+          this.setState({count: this.state.count + 1});
+          console.log('count is', this.state.count);
+        }
+        render() {
+          const { count } = this.state;
+          return (
+            <div>
+              <h1>{ count }</h1>
+              <button onClick={this.changeCount}>++</button>
+            </div>
+          )
+        }
+      - 😱输出竟然是 `1`
+        - ![](../../image/Snipaste_2022-04-25_21-57-23.png)
+    - 因为多次的 `setState` 被合并为同一个, 合并之后的 `setState` 执行后执行 `render` 函数, 最后显示 `2`. 如果不想 `setState` 合并, 可以使用第一个参数为函数的写法.
 #### state 的简写方式
 1. 首先, 因为没有组件实例对象都有 `state` 属性, 所以没必要将 `state` 初始化写在构造函数中, 直接作为 `class` 的成员变量即可
 2. 为解决函数的 `this` 问题, 可以使用箭头函数声明, 因此上面的标准代码精简为
