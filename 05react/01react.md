@@ -442,8 +442,63 @@
       - 但是特殊在于可以使用展开运算符浅拷贝对象
       - ![](../../image/Snipaste_2022-04-26_20-44-15.png)
       - 📕上图中的 `{}` 表示对象字面量, 不同于 `jsx` 中的 `{}`
-      - ![](../../image/)
-      - ![](../../image/)
+3. `props` 是不可以修改的
+    - ```jsx
+      class Person extends React.Component {
+        render() {
+          this.props.name = this.props.name.toUpperCase();
+          const {name, age} = this.props;
+          return (
+            <ul>
+              <li>姓名:{name}</li>
+              <li>年龄:{age}</li>
+            </ul>
+          )
+        }
+      }
+    - ![](../../image/Snipaste_2022-04-27_13-46-11.png)
+4. `props` 的规则与约束
+    - 与 `Vue` 一样, `React` 中同样可以约束 `props` 值的类型, 是否为必输以及默认值
+    - 这时, 需要引入新的 `js` 文件: `prop-types.js`, 引入该文件的同时全局多了一个可使用的变量, `PropTypes`
+    - ```jsx
+      <script src="../js/react.development.js"></script>
+      <script src="../js/react-dom.development.js"></script>
+      <script src="../js/babel.min.js"></script>
+      <script src="../js/prop-types.js"></script>
+      <script type="text/babel">
+        class Person extends React.Component {
+          render() {
+            const {name, age} = this.props;
+            return (
+              <ul>
+                <li>姓名:{name}</li>
+                <li>年龄:{age}</li>
+              </ul>
+            )
+          }
+        }
+        // --------------------------
+        Person.propTypes = {
+          name: PropTypes.string.isRequired,
+          age: PropTypes.number,
+        };
+        Person.defaultProps = {
+          age: 19,
+        };
+        // ---------------------------
+        const p = {name: 'tom'};
+        ReactDOM.render(<Person {...p} />, document.getElementById('test'));
+    - 如果我们不按照规则传递 `name` 的类型, 就会报错
+    - ![](../../image/Snipaste_2022-04-27_13-56-00.png)
+5. 📕注意点
+    - 代码中第一个 `propTypes` 的 `p` 是小写, 第二个 `PropTypes` 的 `p` 是大写.
+    - `PropsTypes` 的其他类型
+      - 特别注意布尔类型和函数类型, 分别对应 `bool` 和 `func`
+      - ![](../../image/Snipaste_2022-04-27_17-31-19.png)
+    - 在 `React 16` 之前, 没有单独的 `prop-types.js` 文件. `PropTypes` 是 `React` 的一个属性, 写法就是 `React.PropTypes.string.isRequired` 这种, 后来改了.
+    - ![](../../image/)
+    - ![](../../image/)
+    - ![](../../image/)
         
 ### 事件处理
 1. 首先回顾一下 `ES6` 中 `class` 的一些语法
