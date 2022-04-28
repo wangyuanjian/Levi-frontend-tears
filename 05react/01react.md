@@ -499,7 +499,28 @@
     - ![](../../image/)
     - ![](../../image/)
     - ![](../../image/)
-        
+6. `props` 简写形式
+    - 上面定义 `props` 是写在 `class` 外, 这不太合适, 而且通过 `类名.` 的形式定义属性可以使用 `ES6` 的 `static` 属性替换
+    - ```jsx
+      class Person extends React.Component {
+        static propTypes = {
+          name: PropTypes.string.isRequired,
+          age: PropTypes.number,
+        }
+        static defaultProps = {
+          age: 19,
+        }
+        render() {
+          const { name, age } = this.props;
+          return (
+            <ul>
+              <li>姓名:{name}</li>
+              <li>年龄:{age}</li>
+            </ul>
+          )
+        }
+      }
+    - 
 ### 事件处理
 1. 首先回顾一下 `ES6` 中 `class` 的一些语法
     - ```js
