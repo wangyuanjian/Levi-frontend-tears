@@ -520,7 +520,66 @@
           )
         }
       }
-    - 
+7. `class` 组件中的构造器与 `props`
+    - 可以猜猜看下面构造函数中 `console.log` 的打印结果?
+    - ```jsx
+      class Person extends React.Component {
+        constructor() {
+          super();
+          console.log('props in constructor', this.props);
+        }
+        static propTypes = {
+          name: PropTypes.string.isRequired,
+          age: PropTypes.number,
+        }
+        static defaultProps = {
+          age: 19,
+        }
+        render() {
+          const { name, age } = this.props;
+          return (
+            <ul>
+              <li>姓名:{name}</li>
+              <li>年龄:{age}</li>
+            </ul>
+          )
+        }
+      }
+      const p = { name: 'tom' };
+      ReactDOM.render(<Person {...p} />, document.getElementById('test'));
+    - ![](../../image/Snipaste_2022-04-29_13-52-17.png)
+    - 我估计你也没想到是 `undefined`, 下面是 `React` 官网的介绍, 如果想要在 `class` 组件的构造函数中通过 `this.props` 的方式访问 `props` 的话, 必须 `constructor` 接收 `props` 参数而且在 `constructor` 的其他语句之前调用 `super(props)`, 即下面的写法
+    - ```jsx
+      constructor(props) {
+        super(props);
+        console.log('props in constructor', this.props);
+      }
+    - ![](../../image/Snipaste_2022-04-29_14-04-02.png)
+    - 其他任何写法都可能造成 `this.props` 在构造函数中未定义的 `bug`.
+8. 函数式组件中使用 `props`
+    - 函数式组件中没有 `this`, 因此无法使用 `state` 和 `refs`, 但是因为函数本身可以接收参数, 所以其可以接收 `props`.
+    - 又因为函数没有 `static` 属性, 所以只能通过 `函数名.propTypes` 的形式定义 `props` 规则.
+    - ```jsx
+      function Person(props) {
+        console.log('this in Person', props);
+        const { name, age } = props;
+        return (
+          <ul>
+            <li>姓名:{name}</li>
+            <li>年龄:{age}</li>
+          </ul>
+        );
+      }
+      Person.propTypes = {
+        name: PropTypes.string.isRequired,
+        age: PropTypes.number,
+      };
+      Person.defaultProps = {
+        age: 19,
+      };
+      const p = { name: 'tom' };
+      ReactDOM.render(<Person {...p} />, document.getElementById('test'));
+    - ![](../../image/Snipaste_2022-04-29_17-40-46.png)
 ### 事件处理
 1. 首先回顾一下 `ES6` 中 `class` 的一些语法
     - ```js
