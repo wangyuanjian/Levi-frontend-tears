@@ -632,6 +632,65 @@
       }
     - `ref={(current) => {this.input1 = current}}` 实际上 `{}` 中间的是个函数.
     - ![](../../image/Snipaste_2022-04-30_13-57-42.png)
+2. 回调型 `refs` 的缺陷
+    - 官网中介绍, 如果使用内联函数的方式定义, 在组建更新过程中这个内联函数会被执行两次, 第一次传入参数为 `null`, 第二次的参数才是 `DOM` 元素. 
+    - ![](../../image/Snipaste_2022-04-30_19-57-14.png)
+    - 要想更新组件, 我们可以通过更新 `state` 来实现这个效果
+      - ```jsx
+        class Person extends React.Component {
+          state = { isHot: true }
+          showData1 = () => {
+            console.log('this', this);
+          }
+          changeWeather = () => {
+            this.setState((prevState) => {
+              return {
+                isHot: !prevState.isHot,
+              }
+            });
+          }
+          render() {
+            return (
+              <div>
+                <h2>天气{this.state.isHot ? '炎热' : '凉爽'}</h2>
+                <input type="text" ref={(c) => {this.input1 = c; console.log('@', c);}} name="input1" />
+                <button onClick={this.showData1}>输入内容是</button>
+                <button onClick={this.changeWeather}>更改天气</button>
+              </div>
+            );
+          }
+        }
+      - ![](../../image/Snipaste_2022-04-30_19-56-31.png)
+    - 如果想要解决这个问题, 官网建议使用 class 绑定的函数方式
+      - ```jsx
+        class Person extends React.Component {
+          state = { isHot: true }
+          showData1 = () => {
+            console.log('this', this);
+          }
+          changeWeather = () => {
+            this.setState((prevState) => {
+              return {
+                isHot: !prevState.isHot,
+              }
+            });
+          }
+          bindInput = (element) => {
+            this.input1 = element;
+            console.log('@', element);
+          }
+          render() {
+            return (
+              <div>
+                <h2>天气{this.state.isHot ? '炎热' : '凉爽'}</h2>
+                <input type="text" ref={this.bindInput} name="input1" />
+                <button onClick={this.showData1}>输入内容是</button>
+                <button onClick={this.changeWeather}>更改天气</button>
+              </div>
+            );
+          }
+        }
+      - 点击切换按钮时, 控制台不会再输出内容.
 ### 事件处理
 1. 首先回顾一下 `ES6` 中 `class` 的一些语法
     - ```js
