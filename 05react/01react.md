@@ -12,6 +12,9 @@
       - [setState](#setstate)
       - [state 的简写方式](#state-的简写方式)
     - [Props](#props)
+    - [`Refs`](#refs)
+      - [字符串型 `Refs`](#字符串型-refs)
+      - [回调型`Refs`](#回调型refs)
     - [事件处理](#事件处理)
       - [改变 `this` 之使用 `bind`](#改变-this-之使用-bind)
       - [改变 `this` 之使用 `箭头函数`](#改变-this-之使用-箭头函数)
@@ -580,6 +583,55 @@
       const p = { name: 'tom' };
       ReactDOM.render(<Person {...p} />, document.getElementById('test'));
     - ![](../../image/Snipaste_2022-04-29_17-40-46.png)
+### `Refs`
+> `Refs` 提供了一种方式, 允许我们访问 `DOM` 节点或在 `render` 方法中创建的 `React` 元素
+#### 字符串型 `Refs`
+1. 字符串形式的 `Refs`
+    - 通过在 `HTML` 标签上定义 `ref` 属性和值 `xxx`, 就可以通过 `this.refs.xxx` 拿到该 `HTML` 标签.
+    - ```jsx
+      class Person extends React.Component {
+        showData1 = () => {
+          console.log('this.refs', this.refs);
+        }
+        showData2 = () => {
+          const { input2 } = this.refs;
+          alert(input2.value)
+        }
+        render() {
+          return (
+            <div>
+              <input type="text" ref="input1" name="input1" />
+              <button onClick={this.showData1}>输入内容是</button>
+              <input onBlur={this.showData2} type="text" ref="input2" name="input2" />
+            </div>
+          );
+        }
+      }
+    - 这种类似 `Vue` 的字符串 `ref` 写法因为效率问题已经不被官网推荐使用了.
+    - ![](../../image/Snipaste_2022-04-30_09-12-09.png)
+#### 回调型`Refs`
+1. 回调型 `refs` 可以更精细地控制何时 `refs` 被设置和解除. 可以传入一个函数, 函数接受 `React` 组件实例或 `HTML DOM` 元素作为参数
+    - ```jsx
+      class Person extends React.Component {
+        showData1 = () => {
+          console.log('this', this);
+        }
+        showData2 = () => {
+          const { input2 } = this;
+          alert(input2.value)
+        }
+        render() {
+          return (
+            <div>
+              <input type="text" ref={(current) => {this.input1 = current}} name="input1" />
+              <button onClick={this.showData1}>输入内容是</button>
+              <input onBlur={this.showData2} type="text" ref={current => this.input2 = current} name="input2" />
+            </div>
+          );
+        }
+      }
+    - `ref={(current) => {this.input1 = current}}` 实际上 `{}` 中间的是个函数.
+    - ![](../../image/Snipaste_2022-04-30_13-57-42.png)
 ### 事件处理
 1. 首先回顾一下 `ES6` 中 `class` 的一些语法
     - ```js
