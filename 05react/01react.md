@@ -15,6 +15,7 @@
     - [`Refs`](#refs)
       - [字符串型 `Refs`](#字符串型-refs)
       - [回调型`Refs`](#回调型refs)
+      - [`createRef()`](#createref)
     - [事件处理](#事件处理)
       - [改变 `this` 之使用 `bind`](#改变-this-之使用-bind)
       - [改变 `this` 之使用 `箭头函数`](#改变-this-之使用-箭头函数)
@@ -691,6 +692,31 @@
           }
         }
       - 点击切换按钮时, 控制台不会再输出内容.
+#### `createRef()`
+1. `createRef()` 是 React 目前推荐的创建 ref 的方式
+    - 使用 `React.createRef()` 创建 `refs`, 并通过 `ref` 属性附加到 `React` 元素. 
+    - 当 `ref` 被传递给 `render` 中的元素时, 对该节点的引用可以在 ref 的 `current` 属性中被访问
+    - 如果要创建多个 `ref` 引用, 就必须多次调用 `React.createRef()`, 每个 `React.createRef()` 只能创建一个 `ref` 引用.
+    - ```jsx
+      class Person extends React.Component {
+        input1Ref = React.createRef();
+        input2Ref = React.createRef();
+        showData1 = () => {
+          console.log('this', this);
+        }
+        showData2 = () => {}
+        render() {
+          return (
+            <div>
+              <input type="text" ref={this.input1Ref} name="input1" />
+              <button onClick={this.showData1}>输入内容是</button>
+              <input onBlur={this.showData2} type="text" ref={this.input2Ref} name="input2" />
+            </div>
+          );
+        }
+      }
+    - ![](../../image/Snipaste_2022-04-30_22-18-05.png)
+2. 
 ### 事件处理
 1. 首先回顾一下 `ES6` 中 `class` 的一些语法
     - ```js
