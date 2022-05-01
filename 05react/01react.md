@@ -1026,7 +1026,33 @@
       }
     - ![](../../image/Snipaste_2022-05-01_17-38-32.png)
 #### `select`
-1. 
+1. `<select>` 创建下拉列表, 在原生 `HTML` 中可以使用 `selected` 属性使得某项默认被选中, 但是 `React` 并不会使用 `selected` 属性, 而是在 `<select>` 本标签上使用 `value` 属性. 
+    - 📕但是也不要忘了使用 `onChange` 合成事件修改 state 的值哦!
+    - ```jsx
+      class Person extends React.Component {
+        state = { choice: 'apple' }
+        fruitChanged = (e) => {
+          this.setState({ choice: e.target.value });
+          console.log('now i choose, ', e.target.value);
+        }
+        render() {
+          return (
+            <div>
+              <form>
+                <select name="fruits" id="fruits" value={this.state.choice} onChange={this.fruitChanged}>
+                  <option value="banana">banana</option>
+                  <option value="apple">apple</option>
+                  <option value="pear">pear</option>
+                </select>
+              </form>
+            </div>
+          );
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-01_17-56-43.png)
+    - ![](../../image/)
+    - ![](../../image/)
+    - ![](../../image/)
     - ![](../../image/)
     - ![](../../image/)
     - ![](../../image/)
