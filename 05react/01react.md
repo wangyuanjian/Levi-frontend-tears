@@ -878,5 +878,40 @@
         }
       - ![](../../image/Snipaste_2022-05-01_08-53-48.png)
       - 😱整个页面甚至都没有渲染出来
-2. 
+2. 同时传递自定义参数与合成事件参数
+    - 实际上官网只介绍了两种方式, 第一种使用箭头函数绑定处理事件
+      - 这种情况下, 事件对象会被作为最后一个参数传递, 而且必须显示传递
+      - ```jsx
+        class Person extends React.Component {
+          showData2(arg1, arg2, event) {
+            console.log('arg1 is', arg1);
+            console.log('arg2 is', arg2);
+            console.log('e.target.value is', event.target.value);
+          }
+          render() {
+            return (
+              <div>
+                <input onBlur={(e) => this.showData2(1, 2, e)} type="text" name="input2" />
+              </div>
+            );
+          }
+        }
+      - ![](../../image/Snipaste_2022-05-01_09-00-11.png)
+    - 第二种是通过 `bind` 的方式, 事件对象隐式传递
+      - ```jsx
+        class Person1 extends React.Component {
+          showData2 = (arg1, arg2, event) => {
+            console.log('arg1 is', arg1);
+            console.log('arg2 is', arg2);
+            console.log('e.target.value is', event.target.value);
+          }
+          render() {
+            return (
+              <div>
+                <input onBlur={this.showData2.bind(this, 3, 4)} type="text" />
+              </div>
+            );
+          }
+        }
+      - ![](../../image/Snipaste_2022-05-01_09-05-28.png)
 - ![](../../image/)
