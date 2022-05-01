@@ -23,7 +23,8 @@
     - [表单处理](#表单处理)
       - [受控组件](#受控组件)
       - [非受控组件](#非受控组件)
-      - [textarea](#textarea)
+      - [`textarea`](#textarea)
+      - [`select`](#select)
 
 <!-- /TOC -->
 
@@ -978,7 +979,55 @@
         }
       }
     - ![](../../image/Snipaste_2022-05-01_16-46-35.png)
-#### textarea
+#### `textarea`
+1. 在 `HTML` 中使用 `<textarea>` 和 `<input>` 不同, 因为 `<input>` 的值由 value 属性控制, 而 `<textarea>` 其子元素定义其文本
+    - ```html
+      <input type="text" value="Hello, World" />
+      <textarea name="info" id="info" cols="30" rows="10">Hello, World</textarea>
+    - ![](../../image/Snipaste_2022-05-01_17-19-37.png)
+2. 在 React 中, `<textarea>` 使用 `value` 属性替代, 这样可以使用 `<textarea>` 的表单和使用单行 `input` 的表单非常类似
+    - ```jsx
+      class Person extends React.Component {
+        state = { info: 'World' }
+        submitForm = (event) => {
+          event.preventDefault();
+          console.log('textarea value of ', this.state.info);
+        }
+        render() {
+          return (
+            <div>
+              <form>
+                <textarea name="input2" value={this.state.info}></textarea>
+                <button onClick={this.submitForm} >submit</button>
+              </form>
+            </div>
+          );
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-01_17-30-13.png)
+    - 这样会报错, 因为我们没有提供 `onChange` 处理函数, 导致这个多行文本框变成 `readonly`. 要解决这个问题很简单, 要么提供 `onChange`, 要么真的让多行文本框变为 `readonly`
+    - ```jsx
+      class Person extends React.Component {
+        state = { info: 'World' }
+        infoChanged = (e) => {
+          this.setState({ 
+            info: e.target.value 
+          });
+        }
+        render() {
+          return (
+            <div>
+              <form>
+                <textarea name="input2" onChange={this.infoChanged} value={this.state.info}></textarea>
+              </form>
+            </div>
+          );
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-01_17-38-32.png)
+#### `select`
+1. 
+    - ![](../../image/)
     - ![](../../image/)
     - ![](../../image/)
 
