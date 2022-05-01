@@ -20,6 +20,9 @@
       - [改变 `this` 之使用 `bind`](#改变-this-之使用-bind)
       - [改变 `this` 之使用 `箭头函数`](#改变-this-之使用-箭头函数)
       - [向事件处理函数传递参数](#向事件处理函数传递参数)
+    - [表单处理](#表单处理)
+    - [受控组件](#受控组件)
+    - [非受控组件](#非受控组件)
 
 <!-- /TOC -->
 
@@ -914,4 +917,48 @@
           }
         }
       - ![](../../image/Snipaste_2022-05-01_09-05-28.png)
+### 表单处理
+### 受控组件
+1. 在 `React` 中, `HTML` 表单元素的工作方式与其他 `DOM` 元素有些不同, 这时因为表单元素通常会保持一些内部的 `state` 并根据用户输入进行更新. 在 `React` 中, 通常保存在 `state` 中并只能通过 `setState` 更新.
+2. 因此, 可以结合两者, 首先表达元素的值来自 `state`, 在表单元素更新时, 同步使用 `setState` 更新 `state` 的内容, 被 `React` 以这种方式控制取值的表达输入元素就叫做 **`受控组件`**
+3. 下面展示一个用户在提交时打印输入内容的受控表单
+    - ```jsx
+      class Person extends React.Component {
+        // 初始化输入DOM元素的绑定值
+        state = {
+          username: '',
+        }
+        // 在输入发生改变时,将新的值更新到state
+        usernameChanged = (e) => {
+          console.log('new Value is ', e.target.value);
+          this.setState({
+            username: e.target.value,
+          });
+        }
+        // 提交时输出值
+        submitForm = () => {
+          alert(`用户输入了 ${this.state.username}`)
+        }
+        render() {
+          return (
+            <div>
+              <form>
+                <input 
+                  value={this.state.username}
+                  onChange={this.usernameChanged}
+                  type="text" name="input2" 
+                />
+                <button onClick={this.submitForm} >submit</button>
+              </form>
+            </div>
+          );
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-01_10-41-07.png)
+### 非受控组件
+1. 有时使用受控组件很麻烦, 因为需要为数据变化的每种方式都编写事件处理函数并通过一个 `React` 组件传递所有输入的 `state`. 可以使用`非受控组件`, 这时实现表达输入的另一种形式
+    - ![](../../image/)
+    - ![](../../image/)
+    - ![](../../image/)
+
 - ![](../../image/)
