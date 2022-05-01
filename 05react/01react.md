@@ -21,8 +21,9 @@
       - [改变 `this` 之使用 `箭头函数`](#改变-this-之使用-箭头函数)
       - [向事件处理函数传递参数](#向事件处理函数传递参数)
     - [表单处理](#表单处理)
-    - [受控组件](#受控组件)
-    - [非受控组件](#非受控组件)
+      - [受控组件](#受控组件)
+      - [非受控组件](#非受控组件)
+      - [textarea](#textarea)
 
 <!-- /TOC -->
 
@@ -918,7 +919,7 @@
         }
       - ![](../../image/Snipaste_2022-05-01_09-05-28.png)
 ### 表单处理
-### 受控组件
+#### 受控组件
 1. 在 `React` 中, `HTML` 表单元素的工作方式与其他 `DOM` 元素有些不同, 这时因为表单元素通常会保持一些内部的 `state` 并根据用户输入进行更新. 在 `React` 中, 通常保存在 `state` 中并只能通过 `setState` 更新.
 2. 因此, 可以结合两者, 首先表达元素的值来自 `state`, 在表单元素更新时, 同步使用 `setState` 更新 `state` 的内容, 被 `React` 以这种方式控制取值的表达输入元素就叫做 **`受控组件`**
 3. 下面展示一个用户在提交时打印输入内容的受控表单
@@ -955,9 +956,29 @@
         }
       }
     - ![](../../image/Snipaste_2022-05-01_10-41-07.png)
-### 非受控组件
+#### 非受控组件
 1. 有时使用受控组件很麻烦, 因为需要为数据变化的每种方式都编写事件处理函数并通过一个 `React` 组件传递所有输入的 `state`. 可以使用`非受控组件`, 这时实现表达输入的另一种形式
-    - ![](../../image/)
+2. 不同于受控组件, 在非受控组件中, 不需要将保存 `DOM` 表单元素至 `state`, 不需要在用户输入的数据改变时更新输入至 `state`, 而是使用 `ref` 来从 `DOM` 节点中获取表单数据
+    - ```jsx
+      class Person extends React.Component {
+        usernameRef = React.createRef();
+        submitForm = (event) => {
+          event.preventDefault();
+          console.log('i got value of ', this.usernameRef.current.value);
+        }
+        render() {
+          return (
+            <div>
+              <form>
+                <input ref={this.usernameRef} type="text" name="input2" />
+                <button onClick={this.submitForm} >submit</button>
+              </form>
+            </div>
+          );
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-01_16-46-35.png)
+#### textarea
     - ![](../../image/)
     - ![](../../image/)
 
