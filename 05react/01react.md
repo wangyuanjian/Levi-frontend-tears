@@ -25,6 +25,7 @@
       - [非受控组件](#非受控组件)
       - [`textarea`](#textarea)
       - [`select`](#select)
+      - [`<input type="file">`](#input-typefile)
 
 <!-- /TOC -->
 
@@ -979,13 +980,44 @@
         }
       }
     - ![](../../image/Snipaste_2022-05-01_16-46-35.png)
+3. 默认值
+    - 在非受控组件中, 如果希望 `React` 能赋予组件一个初始值但是不控制后续的更新, 可以指定 `defaultValue` 属性
+    - ```jsx
+      class Person extends React.Component {
+        render() {
+          return (
+            <div>
+              <form>
+                <input type="text" defaultValue="Hello," />
+                <textarea name="input2" defaultValue="World!" ></textarea>
+                <div>
+                  <input type="checkbox" name="color" id="color" />Red
+                  <input type="checkbox" name="color" id="color1" defaultChecked />Blue
+                  <input type="checkbox" name="color" id="color2" defaultChecked />Black
+                </div>
+                <div>
+                  <input type="radio" name="hobby" id="music" />music
+                  <input type="radio" name="hobby" id="movie" />movie
+                  <input type="radio" name="hobby" id="running" defaultChecked />running
+                </div>
+                <select name="fruit" id="fruit" defaultValue="apple" >
+                  <option value="banana">banana</option>
+                  <option value="apple">apple</option>
+                  <option value="orange">orange</option>
+                </select>
+              </form>
+            </div>
+          );
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-02_09-09-46.png)
 #### `textarea`
 1. 在 `HTML` 中使用 `<textarea>` 和 `<input>` 不同, 因为 `<input>` 的值由 value 属性控制, 而 `<textarea>` 其子元素定义其文本
     - ```html
       <input type="text" value="Hello, World" />
       <textarea name="info" id="info" cols="30" rows="10">Hello, World</textarea>
     - ![](../../image/Snipaste_2022-05-01_17-19-37.png)
-2. 在 React 中, `<textarea>` 使用 `value` 属性替代, 这样可以使用 `<textarea>` 的表单和使用单行 `input` 的表单非常类似
+2. 在 `React` 中, `<textarea>` 使用 `value` 属性替代, 这样可以使用 `<textarea>` 的表单和使用单行 `input` 的表单非常类似
     - ```jsx
       class Person extends React.Component {
         state = { info: 'World' }
@@ -1025,6 +1057,17 @@
         }
       }
     - ![](../../image/Snipaste_2022-05-01_17-38-32.png)
+3. 正如上面所说, 如果指定了 `value` 但是输入仍然可编辑的还, 表示可能意外地将 `value` 设置为了 `undefined` 或者 `null`
+    - 下面代码演示了这一点, 输入最初被锁定, 但在短时间延迟后变为可编辑
+    - ```jsx
+      function valueChanged() {}
+      ReactDOM.render(<input value="hi" onChange={valueChanged} />, document.getElementById('test'));
+
+      setTimeout(() => {
+        ReactDOM.render(<input value={null} onChange={valueChanged} />, document.getElementById('test'));
+      }, 5000);
+    - 📕但是会报错
+    - ![](../../image/Snipaste_2022-05-02_08-53-07.png)
 #### `select`
 1. `<select>` 创建下拉列表, 在原生 `HTML` 中可以使用 `selected` 属性使得某项默认被选中, 但是 `React` 并不会使用 `selected` 属性, 而是在 `<select>` 本标签上使用 `value` 属性. 
     - 📕但是也不要忘了使用 `onChange` 合成事件修改 state 的值哦!
@@ -1124,9 +1167,9 @@
             });
           }
         }
-      - ![](../../image/Snipaste_2022-05-02_08-38-12.png)
-      
-2. 
+      - ![](../../image/Snipaste_2022-05-02_08-38-12.png)  
+#### `<input type="file">`
+1. `<input type="file">` 的 `value` 是只读的, 因此它是 `React` 中的一个非受控组件
     - ![](../../image/)
     - ![](../../image/)
     - ![](../../image/)
