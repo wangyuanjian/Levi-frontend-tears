@@ -1050,7 +1050,83 @@
         }
       }
     - ![](../../image/Snipaste_2022-05-01_17-56-43.png)
-    - ![](../../image/)
+2. 面对多选的情况, 可以传入一个数组
+    - ```jsx
+      class Person1 extends React.Component {
+        state = { choice: ['apple'] }
+        fruitChanged = (e) => {
+          const select = e.target.value;
+          console.log('click', select);
+          // 不存在
+          if (this.state.choice.indexOf(select) === -1 && select) {
+            this.setState((prevState) => {
+              prevState.choice.push(select)
+              return {
+                choice: prevState.choice,
+              };
+            });
+          } else {
+            let indexOfSelected = this.state.choice.findIndex((fruit) => fruit === select);
+            console.log('indexOfSelected', indexOfSelected);
+            this.setState((prevState) => {
+              if (prevState.choice.length === 1) {
+                console.log('i am here');
+                prevState.choice = [];
+              } else {
+                prevState.choice.splice(indexOfSelected, 1);
+              }
+              return {
+                choice: prevState.choice,
+              };
+            });
+          }
+        }
+        render() {
+          return (
+            <div>
+              <form>
+                <select name="fruits" id="fruits" multiple={true} value={this.state.choice} onChange={this.fruitChanged}>
+                  <option value="banana">banana</option>
+                  <option value="apple">apple</option>
+                  <option value="pear">pear</option>
+                  <option value="peach">peach</option>
+                </select>
+              </form>
+            </div>
+          );
+        }
+      }
+    - 📕注意第一个地方, 多选和单选都可以只点击鼠标, 但如果只剩下最后一个选项要取消的话, 要在摁下 `Ctrl` 的时候点鼠标
+    - 📕要注意不同数组方法返回值是什么, 比如 `splice` 返回的是被删除的数组元素
+    - 📕最后也是最重要的, 如果代码写成下面的样子就会报错, 因为 `e.target.value` 是没办法在 `setState` 这个异步操作中获得的, 不然就会报错
+      - ```js
+        fruitChanged = (e) => {
+          if (this.state.choice.indexOf(e.target.value) === -1 && e.target.value) {
+            this.setState((prevState) => {
+              prevState.choice.push(e.target.value)
+              return {
+                choice: prevState.choice,
+              };
+            });
+          } else {
+            let indexOfSelected = this.state.choice.findIndex((fruit) => fruit === e.target.value);
+            console.log('indexOfSelected', indexOfSelected);
+            this.setState((prevState) => {
+              if (prevState.choice.length === 1) {
+                console.log('i am here');
+                prevState.choice = [];
+              } else {
+                prevState.choice.splice(indexOfSelected, 1);
+              }
+              return {
+                choice: prevState.choice,
+              };
+            });
+          }
+        }
+      - ![](../../image/Snipaste_2022-05-02_08-38-12.png)
+      
+2. 
     - ![](../../image/)
     - ![](../../image/)
     - ![](../../image/)
