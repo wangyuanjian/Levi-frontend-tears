@@ -27,6 +27,8 @@
       - [`select`](#select)
       - [`<input type="file">`](#input-typefile)
     - [生命周期](#生命周期)
+      - [旧的生命周期钩子](#旧的生命周期钩子)
+      - [新的生命周期钩子](#新的生命周期钩子)
 
 <!-- /TOC -->
 
@@ -1235,7 +1237,69 @@
       }
     - ![](../../image/Snipaste_2022-05-02_09-47-44.png)
 ### 生命周期
-1. 
+1. 案例: 页面出现的文字由不透明变透明, 然后循环往复
+    - ```jsx
+      class Person extends React.Component {
+        state = { opacity: 1 }
+        destroy = () => {
+          ReactDOM.unmountComponentAtNode(document.getElementById('test'));
+        }
+        componentDidMount() {
+          this.timer = setInterval(() => {
+            let { opacity } = this.state;
+            opacity -= 0.1;
+            opacity = opacity <= 0 ? 1 : opacity;
+            this.setState({ opacity });
+          }, 200);
+        }
+        componentWillUnmount() {
+          clearInterval(this.timer);
+        }
+        render() {
+          return (
+            <div>
+              <h2 style={{opacity: this.state.opacity}}>Hello, World</h2>
+              <button onClick={this.destroy}>销毁实例</button>
+            </div>
+          );
+        }
+      }
+    - 在组件挂载到页面时开启定时器, 在组件卸载时取消定时器
+#### 旧的生命周期钩子
+1. ![](../../image/react_lifecycle_old.png)
+2. 一个组件简单的生命周期
+    - ```jsx
+      class Person extends React.Component {
+        constructor() {
+          super()
+          console.log('Person---constructor1');
+        }
+        componentWillMount() {
+          console.log('Person---componentWillMount2');
+        }
+        componentDidMount() {
+          console.log('Person---componentDidMount3');
+        }
+        componentWillUnmount() {
+          console.log('Person---componentWillUnmount5');
+        }
+        destroy = () => {
+          ReactDOM.unmountComponentAtNode(document.getElementById('test'));
+        }
+        render() {
+          console.log('Person---render4');
+          return (
+            <div>
+              <button onClick={this.destroy}>销毁实例</button>
+            </div>
+          );
+        }
+      }
+    - 点击销毁按钮后, 组件销毁, 输出最后一句
+    - ![](../../image/Snipaste_2022-05-02_22-01-21.png)
+#### 新的生命周期钩子
+1. ![](../../image/react_lifecycle_new.png)
+
     - ![](../../image/)
     - ![](../../image/)
     - ![](../../image/)
