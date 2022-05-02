@@ -26,6 +26,7 @@
       - [`textarea`](#textarea)
       - [`select`](#select)
       - [`<input type="file">`](#input-typefile)
+    - [生命周期](#生命周期)
 
 <!-- /TOC -->
 
@@ -883,6 +884,7 @@
           }
         }
       - ![](../../image/Snipaste_2022-05-01_08-53-48.png)
+      - 📕注意这种方式的错位, 因为 `onBlur={this.showData2('a', 'b')}` 是将 `this.showData2` 的返回值交给了 `onBlur`, 而不是把 `showData2` 这个函数交给了 `onBlur`
       - 😱整个页面甚至都没有渲染出来
 2. 同时传递自定义参数与合成事件参数
     - 实际上官网只介绍了两种方式, 第一种使用箭头函数绑定处理事件
@@ -919,7 +921,27 @@
             );
           }
         }
-      - ![](../../image/Snipaste_2022-05-01_09-05-28.png)
+      - ![](../../image/Snipaste_2022-05-01_09-05-28.png
+3. 使用柯里化解决 `1` 中的问题
+    - ```jsx
+      class Person2 extends React.Component {
+        showData2 = (arg1, arg2) => {
+          return (event) => {
+            console.log('arg1 is', arg1);
+            console.log('arg2 is', arg2);
+            console.log('e.target.value is', event.target.value);
+          }
+        }
+        render() {
+          return (
+            <div>
+              <input onBlur={this.showData2('a', 'b')} type="text" />
+            </div>
+          );
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-02_15-36-59.png)
+    - 再次要说明的是, 在首次创建组件时, `React` 就帮我们调用了 `onBlur={...}` 中间的内容, 并将其注册为 `onBlur` 的回调函数, 因此真正的回调函数是 `()=>{}`, 在真正的回调函数中才会接收到 `event` 参数
 ### 表单处理
 #### 受控组件
 1. 在 `React` 中, `HTML` 表单元素的工作方式与其他 `DOM` 元素有些不同, 这时因为表单元素通常会保持一些内部的 `state` 并根据用户输入进行更新. 在 `React` 中, 通常保存在 `state` 中并只能通过 `setState` 更新.
@@ -958,6 +980,28 @@
         }
       }
     - ![](../../image/Snipaste_2022-05-01_10-41-07.png)
+3. 受控表单一个问题就是要为所有输入维护更新 `state`, 如果按照上面的写法有多少个输入就得有多少个对应的函数, 使用柯里化和计算属性帮助我们解决这个问题.
+    - ```jsx
+      class Person3 extends React.Component {
+        saveForm = (property) => {
+          return (event) => {
+            let value = event.target.value;
+            console.log(property, value);
+            this.setState({
+              [property]: value,
+            });
+          }
+        }
+        render() {
+          return (
+            <div>
+              <input onBlur={this.saveForm('username')} type="text" name="username" />
+              <input onBlur={this.saveForm('password')} type="password" name="password"/>
+            </div>
+          );
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-02_15-48-41.png)
 #### 非受控组件
 1. 有时使用受控组件很麻烦, 因为需要为数据变化的每种方式都编写事件处理函数并通过一个 `React` 组件传递所有输入的 `state`. 可以使用`非受控组件`, 这时实现表达输入的另一种形式
 2. 不同于受控组件, 在非受控组件中, 不需要将保存 `DOM` 表单元素至 `state`, 不需要在用户输入的数据改变时更新输入至 `state`, 而是使用 `ref` 来从 `DOM` 节点中获取表单数据
@@ -1170,7 +1214,28 @@
       - ![](../../image/Snipaste_2022-05-02_08-38-12.png)  
 #### `<input type="file">`
 1. `<input type="file">` 的 `value` 是只读的, 因此它是 `React` 中的一个非受控组件
-    - ![](../../image/)
+2. 下面的例子中展示了如何在点击按钮时获得输入的文件名
+    - ```jsx
+      class Person extends React.Component {
+        fileRef = React.createRef();
+        submitForm = (event) => {
+          event.preventDefault();
+          console.log('i got file of ', this.fileRef.current.files[0].name);
+        }
+        render() {
+          return (
+            <div>
+              <form>
+                <input ref={this.fileRef} type="file" name="input2" />
+                <button onClick={this.submitForm} >submit</button>
+              </form>
+            </div>
+          );
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-02_09-47-44.png)
+### 生命周期
+1. 
     - ![](../../image/)
     - ![](../../image/)
     - ![](../../image/)
