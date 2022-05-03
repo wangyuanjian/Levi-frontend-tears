@@ -1267,6 +1267,19 @@
     - 在组件挂载到页面时开启定时器, 在组件卸载时取消定时器
 #### 旧的生命周期钩子
 1. ![](../../image/react_lifecycle_old.png)
+    - 初始化阶段
+      - `constructor`
+      - `componentWillMount`
+      - `render`
+      - `componentDidMount`
+    - 更新阶段
+      - `componentWillReceiveProps`
+      - `shouldComponentUpdate`
+      - `componentWillUpdate`
+      - `render`
+      - `componentDidUpdate`
+    - 卸载阶段
+      - `componentWillUnmount`
 2. 一个组件简单的生命周期(先验证上图`挂载时`的流程)
     - 各个生命周期钩子(下面列出的顺序就是执行的顺序)
       - `constructor`: 构造函数
@@ -1427,8 +1440,36 @@
       }
     - ![](../../image/Snipaste_2022-05-03_09-34-17.png)
 #### 新的生命周期钩子
+> 下面代码使用 `React@17.0.1` 版本
 1. ![](../../image/react_lifecycle_new.png)
+2. 首先, 如果还是使用旧版本的钩子, 会报下面的错误, 总体来说就是三个钩子要重命名: `componentWillMount`, `componentWillReceiveProps`, `componentWillUpdate`
+    - ![](../../image/Snipaste_2022-05-03_20-52-06.png)
+    - ```jsx
+      class Son extends React.Component {
+        UNSAFE_componentWillReceiveProps(props) {
+          console.log('Son---componentWillReceiveProps1', props);
+        }
+        UNSAFE_componentWillUpdate() {
+          console.log('Son---componentWillUpdate3');
+        }
+        UNSAFE_componentWillMount() {
+          console.log('Son---componentWillMount');
+        }
 
+        render() {
+          console.log('Son---render4');
+          const { car } = this.props
+          return (
+            <div>
+              <h2>我是B组件: {car}</h2>
+            </div>
+          );
+        }
+      }
+3. 
+    - ![](../../image/)
+    - ![](../../image/)
+    - ![](../../image/)
     - ![](../../image/)
 
 - ![](../../image/)
