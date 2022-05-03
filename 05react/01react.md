@@ -1267,7 +1267,13 @@
     - 在组件挂载到页面时开启定时器, 在组件卸载时取消定时器
 #### 旧的生命周期钩子
 1. ![](../../image/react_lifecycle_old.png)
-2. 一个组件简单的生命周期
+2. 一个组件简单的生命周期(先验证上图`挂载时`的流程)
+    - 各个生命周期钩子(下面列出的顺序就是执行的顺序)
+      - `constructor`: 构造函数
+      - `componentWillMount`: 组件将要挂载到页面
+      - `render`: 组件渲染
+      - `componentDidMount`: 组件已经挂载到页面
+      - `componentWillUnmount`: 组件将要卸载
     - ```jsx
       class Person extends React.Component {
         constructor() {
@@ -1297,10 +1303,54 @@
       }
     - 点击销毁按钮后, 组件销毁, 输出最后一句
     - ![](../../image/Snipaste_2022-05-02_22-01-21.png)
+2. 验证`setState`流程
+    - 接下来看上图右侧的流程中的一个流程, `setState`
+    - 各个生命周期钩子
+      - `shouldComponentUpdate`: 是否应该更新组件. 需要一个返回值, 默认返回 `true`, 如果返回 `false`, 这个钩子之后的钩子将不会执行, 数据不会刷新
+      - `componentWillUpdate`: 组件将要更新
+      - `componentDidUpdate`: 组件已经更新
+    - ```jsx
+      class Person extends React.Component {
+        state = { sum: 0 }
+        shouldComponentUpdate() {
+          console.log('Person---shouldComponentUpdate1');
+          return true;
+        }
+        componentWillUpdate() {
+          console.log('Person---componentWillUpdate2');
+        }
+        componentDidUpdate() {
+          console.log('Person---componentDidUpdate4');
+        }
+        componentWillUnmount() {
+          console.log('Person---componentWillUnmount5');
+        }
+        destroy = () => {
+          ReactDOM.unmountComponentAtNode(document.getElementById('test'));
+        }
+        add = () => {
+          this.setState((prevState) => {
+            return {
+              sum: prevState.sum + 1
+            };
+          });
+        }
+        render() {
+          console.log('Person---render3');
+          const { sum } = this.state
+          return (
+            <div>
+              <h2>当前求和为: {sum}</h2>
+              <button onClick={this.add}>点我+1</button>
+              <button onClick={this.destroy}>销毁实例</button>
+            </div>
+          );
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-03_08-26-24.png)
 #### 新的生命周期钩子
 1. ![](../../image/react_lifecycle_new.png)
 
-    - ![](../../image/)
     - ![](../../image/)
     - ![](../../image/)
     - ![](../../image/)
