@@ -1348,11 +1348,87 @@
         }
       }
     - ![](../../image/Snipaste_2022-05-03_08-26-24.png)
+3. 验证 `forceUpdate` 流程
+    - ```jsx
+      class Person extends React.Component {
+        state = { sum: 0 }
+        componentWillUpdate() {
+          console.log('Person---componentWillUpdate2');
+        }
+        componentDidUpdate() {
+          console.log('Person---componentDidUpdate4');
+        }
+        componentWillUnmount() {
+          console.log('Person---componentWillUnmount5');
+        }
+        update = () => {
+          this.forceUpdate();
+        }
+        destroy = () => {
+          ReactDOM.unmountComponentAtNode(document.getElementById('test'));
+        }
+        render() {
+          console.log('Person---render3');
+          const { sum } = this.state
+          return (
+            <div>
+              <h2>当前求和为: {sum}</h2>
+              <button onClick={this.update}>强制更新</button>
+              <button onClick={this.destroy}>销毁实例</button>
+            </div>
+          );
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-03_08-53-55.png)
+4. 验证父组件更新
+    - 各个生命周期钩子
+      - `componentWillReceiveProps`: 这个钩子在第一次传递 `props` 是不会调用, 在第二次和之后传递才会调用, 并且接收传递的 `props` 为参数. 即便第二次和之后传递的值都没有发生改变.
+    - ```jsx
+      class Son extends React.Component {
+        componentWillReceiveProps(props) {
+          console.log('Son---componentWillReceiveProps1', props);
+        }
+        shouldComponentUpdate() {
+          console.log('Son---shouldComponentUpdate2');
+          return true;
+        }
+        componentWillUpdate() {
+          console.log('Son---componentWillUpdate3');
+        }
+        componentDidUpdate() {
+          console.log('Son---componentDidUpdate5');
+        }
+        render() {
+          console.log('Son---render4');
+          const { car } = this.props
+          return (
+            <div>
+              <h2>我是B组件: {car}</h2>
+            </div>
+          );
+        }
+      }
+
+      class Father extends React.Component {
+        state = { car: 'BMW' }
+        changeCar = () => {
+          console.log('flow started');
+          this.setState({ car: 'Benz' })
+        }
+        render() {
+          return (
+            <div>
+              <h2>我是A组件</h2>
+              <Son car={this.state.car}></Son>
+              <button onClick={this.changeCar}>换车</button>
+            </div>
+          );
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-03_09-34-17.png)
 #### 新的生命周期钩子
 1. ![](../../image/react_lifecycle_new.png)
 
-    - ![](../../image/)
-    - ![](../../image/)
     - ![](../../image/)
 
 - ![](../../image/)
