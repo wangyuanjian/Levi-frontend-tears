@@ -1361,6 +1361,12 @@
         }
       }
     - ![](../../image/Snipaste_2022-05-03_08-26-24.png)
+    - 📕 `componentDidUpdate` 钩子会接收到两个参数, 第一个是更新之前的 `props`, 第二个是更新之前的 `state`
+      - ```jsx
+        componentDidUpdate(prevProps, prevState) {
+          console.log('Person---componentDidUpdate4', prevProps, prevState);
+        }
+      - ![](../../image/Snipaste_2022-05-04_15-53-33.png)
 3. 验证 `forceUpdate` 流程
     - ```jsx
       class Person extends React.Component {
@@ -1500,6 +1506,49 @@
     - 但是, 如果我们返回了一个对象, 这个对象就会更新 `state`, 不论我们怎么修改, 页面始终显示的是 `Haha`
     - ![](../../image/Snipaste_2022-05-04_10-51-50.png)
     - 📕官网提示: 此方法适用于罕见的用例, 即 `state` 的值在任何时候都取决于 `props`, 派生状态会导致代码冗余，并使组件难以维护
+4. `getSnapshotBeforeUpdate`
+    - 在最近一次渲染输出(提交到 `DOM` 节点)之前调用. 它使得组件能在发生更改之前从 `DOM` 中捕获一些信息(例如, 滚动位置). 此生命周期方法的任何返回值将作为参数传递给 `componentDidUpdate`
+    - 此用法并不常见, 但它可能出现在 `UI` 处理中, 如需要以特殊方式处理滚动位置的聊天线程等
+    - 应返回 `snapshot` 的值(或 `null`)
+    - ```jsx
+      class Son extends React.Component {
+        state = { newsArr: [] }
+        newListRef = React.createRef();
+
+        getSnapshotBeforeUpdate() {
+          // 返回之间的容器高度
+          return this.newListRef.current.scrollHeight;
+        }
+
+        componentDidUpdate(prevProps, prevState, oldHeight) {
+          // 当前容器高度-之前容器高度,就是要新增加的滚动高度
+          this.newListRef.current.scrollTop += (this.newListRef.current.scrollHeight - oldHeight);
+        }
+
+        componentDidMount() {
+          // 每两秒钟增加一个新的新闻
+          setInterval(() => {
+            let newNews = `News@${this.state.newsArr.length + 1}`;
+            this.setState((prevState) => {
+              return {
+                newsArr: [newNews, ...prevState.newsArr]
+              }
+            });
+          }, 1000);
+        }
+        render() {
+          return (
+            <div className="news-list" ref={this.newListRef}>
+              {
+                this.state.newsArr.map((news, index) => {
+                  return <div className="news-item" key={index}>{news}</div>
+                })
+              }
+            </div>
+          );
+        }
+      }
+      ReactDOM.render(<Son />, document.getElementById('test'));
     - ![](../../image/)
     - ![](../../image/)
 
