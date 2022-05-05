@@ -29,6 +29,8 @@
     - [生命周期](#生命周期)
       - [旧的生命周期钩子](#旧的生命周期钩子)
       - [新的生命周期钩子](#新的生命周期钩子)
+  - [脚手架](#脚手架)
+    - [文件项目介绍](#文件项目介绍)
 
 <!-- /TOC -->
 
@@ -1549,6 +1551,29 @@
         }
       }
       ReactDOM.render(<Son />, document.getElementById('test'));
+## 脚手架
+1. 安装教授架
+    - ```shell
+      npm i -g create-react-app
+    - 创建 react 项目. 📕必须 Node 14 版本及以上
+    - ```shell
+      create-react-app xxx(项目名)
+    - 启动项目
+    - ```shell
+      npm start
+### 文件项目介绍
+1. `public.html`
+    - ` <meta name="theme-color" content="#000000" />`
+      - 仅支持安卓手机浏览器, 用于修改导航栏和地址栏的颜色
+      - 兼容性不好
+    - `<link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />`
+      - 手机浏览器可以将某个网站添加到主屏幕, 上面的配置就是添加到主屏幕后使用什么图片. 根据其 `rel`, 上面的写法是 `iOS` 系统的.
+    - `<link rel="manifest" href="%PUBLIC_URL%/manifest.json" />`
+      - 这是用于应用加壳. 有些安卓或 `iOS` 应用是原生 `HTML` 等技术开发, 不过外面包了一层壳, 开发之后的应用的配置信息, 比如应用名称, 应用图标都保存在 `manifest.json` 中
+2. `robots.txt`
+    - 爬虫规则文件
+3. `asd`
+    - 
     - ![](../../image/)
     - ![](../../image/)
 
