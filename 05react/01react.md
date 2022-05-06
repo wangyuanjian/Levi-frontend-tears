@@ -31,6 +31,7 @@
       - [新的生命周期钩子](#新的生命周期钩子)
   - [脚手架](#脚手架)
     - [文件项目介绍](#文件项目介绍)
+    - [严格模式](#严格模式)
 
 <!-- /TOC -->
 
@@ -1572,8 +1573,51 @@
       - 这是用于应用加壳. 有些安卓或 `iOS` 应用是原生 `HTML` 等技术开发, 不过外面包了一层壳, 开发之后的应用的配置信息, 比如应用名称, 应用图标都保存在 `manifest.json` 中
 2. `robots.txt`
     - 爬虫规则文件
-3. `asd`
-    - 
+### 严格模式
+> 仅在开发模式下运行; 它们不会影响生产构建
+1. 在 `index.js` 中有下面的代码
+    - ```jsx
+      root.render(
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      )
+    - 官网解释, `StrictMode` 是一个用来突出显示应用程序中潜在问题的工具, 不会渲染任何可见的 `UI`, 它为其后代元素触发额外的检查和警告
+    - 你可以为应用程序的任何部分启用严格模式
+    - ```jsx
+      function ExampleApplication() {
+        return (
+          <div>
+            <Header />
+            <React.StrictMode>
+              <div>
+                <ComponentOne />
+                <ComponentTwo />
+              </div>
+            </React.StrictMode>
+            <Footer />
+          </div>
+        );
+      }
+    - 在上述的示例中 不会对 `Header` 和 `Footer` 组件运行严格模式检查. 但是, `ComponentOne` 和 `ComponentTwo` 以及它们的所有后代元素都将进行检查
+2. `StrictMode` 目前有助于
+    - 识别不安全的生命周期
+    - 关于使用过时字符串 `ref` `API` 的警告. 即字符串形式的 `ref`
+    - 关于使用废弃的 `findDOMNode` 方法的警告
+    - 检测意外的副作用
+      - 从概念上讲, `React` 分两个阶段工作
+        - `渲染阶段`: 会确定需要进行哪些更改, 比如 `DOM`. 在此阶段, `React` 调用 `render`, 然后将结果与上次渲染的结果进行比较
+        - `提交阶段`: 发生在当 `React` 应用变化时. (对于 `React` `DOM` 来说, 会发生在 `React` 插入, 更新及删除 `DOM` 节点的时候.) 在此阶段, `React` 还会调用 `componentDidMount` 和 `componentDidUpdate` 之类的生命周期方法
+      - 提交阶段通常会很快, 但渲染过程可能很慢. 渲染阶段的生命周期钩子可能被多次调用, 因此官网不建议在这些钩子中编写副作用相关的代码.
+      - 严格模式不能自动检测到你的副作用, 但它可以帮助你发现它们, 使它们更具确定性. 通过故意重复调用以下函数来实现的该操作
+        - `class` 组件的 `constructor`, `render` 以及 `shouldComponentUpdate` 方法
+        - `class` 组件的生命周期方法 `getDerivedStateFromProps`
+        - 函数组件体
+        - 状态更新函数 (即 `setState` 的第一个参数）
+        - 函数组件通过使用 `useState`, `useMemo` 或者 `useReducer`
+        - 📕这仅适用于开发模式. 生产模式下生命周期不会被调用两次
+    - 检测过时的 `context` `API`
+    - 检测不安全的副作用
     - ![](../../image/)
     - ![](../../image/)
 
