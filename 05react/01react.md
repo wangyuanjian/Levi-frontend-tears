@@ -32,6 +32,7 @@
   - [脚手架](#脚手架)
     - [文件项目介绍](#文件项目介绍)
     - [严格模式](#严格模式)
+    - [样式模块化](#样式模块化)
 
 <!-- /TOC -->
 
@@ -1620,5 +1621,61 @@
     - 检测不安全的副作用
     - ![](../../image/)
     - ![](../../image/)
-
+### 样式模块化
+1. 现在我们有两个组件, `Hello` 和 `Welcome`, 以及两个组件对应的 `css` 文件且这两个 `css` 文件中内容相同从而演示问题
+    - `Hello`
+      - ```css
+        .title {
+          background-color: hotpink;
+        }
+      - ```jsx
+        import React, { Component } from 'react'
+        import './hello.css'
+        export default class Hello extends Component {
+          render() {
+            return (
+              <div className='title'>Hello</div>
+            )
+          }
+        }
+    - `Welcome`
+      - ```css
+        .title {
+          background-color: hotpink;
+        }
+      - ```jsx
+        import React, { Component } from 'react';
+        import './welcome.css'
+        export default class Welcome extends Component {
+          render() {
+            return (
+              <div className="title">Welcome</div>
+            )
+          }
+        }
+    - 在 `App` 组件中先引入 `Hello`, 再引入 `Welcome`. 最后的结果是, 样式以 `Welcome` 对应的 `css` 为主.
+    - ![](../../image/Snipaste_2022-05-08_08-20-15.png)
+2. 问题在于 `css` 文件如何模块化引入?
+    - 在文件名和文件后缀之间加上 `module`, 例如, `index.css` 改为 `index.module.css`
+    - 引入 `css` 时
+      - ```jsx
+        // old
+        import './hello.css'
+        // new
+        import hello from './hello.module.css'
+    - 使用类名时
+      - ```jsx
+        // old
+        <div className="title">Welcome</div>
+        // new
+        <div className={welcome.title}>Welcome</div>
+    - ![](../../image/Snipaste_2022-05-08_09-00-53.png)
+    - 可以看到真实的  class 都发生了改变
+    - 下面我们打印一下引入的 hello, 看看他们究竟是什么?
+    - ![](../../image/Snipaste_2022-05-08_09-31-25.png)
 - ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)  
+- ![](../../image/)
+    
