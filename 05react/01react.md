@@ -1673,7 +1673,25 @@
     - 可以看到真实的  class 都发生了改变
     - 下面我们打印一下引入的 hello, 看看他们究竟是什么?
     - ![](../../image/Snipaste_2022-05-08_09-31-25.png)
-- ![](../../image/)
+3. 更多的问题, 如果有两个或多个类应该怎么写? 如果类名中有 `-` 应该怎么写?
+    - 首先给出正确答案, 因为我试了好多次
+    - ```css
+      .title {
+        background-color: hotpink;
+      }
+      .title-name {
+        color: red;
+      }
+    - ```jsx
+       <div className={`${hello.title} ${hello['title-name']}`}>Hello</div>
+    - 📕简单的想法就是真实的 `class` 是字符串, 用逗号分隔, 所以我们写的时候也需要遵循这样的模式
+    - ![](../../image/Snipaste_2022-05-08_09-37-07.png)
+    - 下面的写法都是错误的
+    - ```jsx
+      // 使用小驼峰
+      <div className={`${hello.title} ${hello.titleName}`}>Hello</div>
+      // 使用数组
+      <div className={[hello.title, hello['title-name']]}>Hello</div>
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)  
