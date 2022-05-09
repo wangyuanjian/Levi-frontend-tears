@@ -33,6 +33,7 @@
     - [文件项目介绍](#文件项目介绍)
     - [严格模式](#严格模式)
     - [样式模块化](#样式模块化)
+    - [子组件给父组件传值](#子组件给父组件传值)
 
 <!-- /TOC -->
 
@@ -1692,8 +1693,54 @@
       <div className={`${hello.title} ${hello.titleName}`}>Hello</div>
       // 使用数组
       <div className={[hello.title, hello['title-name']]}>Hello</div>
-- ![](../../image/)
-- ![](../../image/)
+### 子组件给父组件传值
+1. 现在有一个需求, 需要子组件的输入框输入信息后, 保存在父组件中, 父组件可以渲染一个列表
+    - ![](../../image/Snipaste_2022-05-09_21-51-28.png)
+2. 思路就是: 将父组件的一个函数作为 `props` 传递给子组件, 并且该函数接收参数作为回调.
+    - 父组件
+    - ```jsx
+      export default class Father extends Component {
+        state = {
+          fruits: ['apple', 'banana'],
+        }
+        receiveFruit = (newFruit) => {
+          console.log('new fruit is ', newFruit);
+          const newFruits = [newFruit, ...this.state.fruits];
+          this.setState({
+            fruits: newFruits
+          });
+        }
+        render() {
+          return (
+            <div>
+              <Son receiveFruit={this.receiveFruit}></Son>
+              <ul>
+                {
+                  this.state.fruits.map((item, index) => {
+                    return <li key={index}>{item}</li>
+                  })
+                }
+              </ul>
+            </div>
+          )
+        }
+      }
+    - 子组件
+    - ```jsx
+      export default class Son extends Component {
+        inputChanged = (event) => {
+          if (event.key !== 'Enter') return;
+          this.props.receiveFruit(event.target.value);
+        }
+        render() {
+          return (
+            <div>
+              <input type="text" onKeyUp={this.inputChanged} />
+            </div>
+          )
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-09_22-05-44.png)
 - ![](../../image/)  
 - ![](../../image/)
     
