@@ -37,7 +37,7 @@
     - [使用 confirm/alert 等函数前需要加上 window](#使用-confirmalert-等函数前需要加上-window)
     - [使用代理服务器](#使用代理服务器)
       - [方式一: 写在 `package.json`](#方式一-写在-packagejson)
-      - [方式二: 写在 ``](#方式二-写在-)
+      - [方式二: 写在 `setupProxy.js` 中](#方式二-写在-setupproxyjs-中)
 
 <!-- /TOC -->
 
@@ -1771,6 +1771,7 @@
           )
         }
       }
+    - 📕注意如果我们的 `url`, 即便代理 `5000` 端口服务器, 但是 `url` 中请求的仍是 `3000(React 自身端口)`
     - 下面是服务端代码
     - ```jsx
       const express = require('express');
@@ -1798,10 +1799,55 @@
         ...,
         "proxy": "http://localhost:3000",
       }
+    - 上面代码的意思就是将所有请求转发至 `http://localhost:3000`
     - 修改完之后重启项目
     - ![](../../image/Snipaste_2022-05-11_21-41-22.png)
-#### 方式二: 写在 ``  
-- ![](../../image/)  
+#### 方式二: 写在 `setupProxy.js` 中
+1. 这个文件在 `src` 下, 文件的内容是
+    - ```js
+      // http-proxy-middleware 低版本
+      // const proxy = require('http-proxy-middleware');
+      // http-proxy-middleware高版本
+      const {createProxyMiddleware: proxy} = require('http-proxy-middleware');
+
+      module.exports = function(app) {
+        console.log('app is', app);
+        console.log('proxy is', proxy);
+        app.use(
+          proxy('/api1', {
+            target: 'http://localhost:5000',
+            changeOrigin: true,
+            pathRewrite: {
+              '^/api1': '',
+            },
+          }),
+          proxy('/api2', {
+            target: 'http://localhost:4000',
+            changeOrigin: true,
+            pathRewrite: {
+              '^/api2': '',
+            },
+          })
+        )
+      }  
+    - 方式一代理的不足之处在于只能转发至一个服务器, 如果后端采用微服务, 不同服务在不同的端口, 就会有局限. 所以采用多个代理的方式, 和 `Vue.config.js` 中书写含义相同.
+    - 因为改了代理方式, 所以为了能够将请求转发至端口 `5000` 服务器, 需要在请求 `url` 的 `path` 前加上 `/api1`
+    - ```jsx
+      login = () => {
+        axios.post(
+          'http://localhost:3000/api1/login',
+          {
+            username: 'tom',
+            password: '123456'
+          }
+        )
+        .then(
+          response => console.log('请求成功', response.data),
+          error => console.log('登录失败', error),
+        );
+      }
+    - ![](../../image/)  
+2. 📕注意 `http-proxy-middleware` 版本, 我测试时的版本为 `2.0.6` 按照尚硅谷教程里写的不能工作, 网站打不开.
 - ![](../../image/)  
 - ![](../../image/)  
 - ![](../../image/)  
