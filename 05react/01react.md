@@ -35,6 +35,9 @@
     - [样式模块化](#样式模块化)
     - [子组件给父组件传值](#子组件给父组件传值)
     - [使用 confirm/alert 等函数前需要加上 window](#使用-confirmalert-等函数前需要加上-window)
+    - [使用代理服务器](#使用代理服务器)
+      - [方式一: 写在 `package.json`](#方式一-写在-packagejson)
+      - [方式二: 写在 ``](#方式二-写在-)
 
 <!-- /TOC -->
 
@@ -1743,6 +1746,64 @@
       }
     - ![](../../image/Snipaste_2022-05-09_22-05-44.png)
 ### 使用 confirm/alert 等函数前需要加上 window
+### 使用代理服务器
+1. 如下代码, 点击按钮登录
+    - ```jsx
+      export default class Proxy extends Component {
+        login = () => {
+          axios.post(
+            'http://localhost:3000/login',
+            {
+              username: 'tom',
+              password: '123456'
+            }
+          )
+          .then(
+            response => console.log('请求成功', response.data),
+            error => console.log('登录失败', error),
+          );
+        }
+        render() {
+          return (
+            <div>
+              <button onClick={this.login}>登录</button>
+            </div>
+          )
+        }
+      }
+    - 下面是服务端代码
+    - ```jsx
+      const express = require('express');
+      let app = express();
+
+      app.use(express.urlencoded({
+        extended: false
+      }));
+      app.use(express.json());
+
+      app.post('/login', (req, res) => {
+        let { username, password } = req.body;
+        console.log('username: ', username);
+        console.log('password: ', password);
+        res.json(req.body);
+      });
+
+      app.listen('5000', () => {
+        console.log('server started...');
+      });
+#### 方式一: 写在 `package.json`
+1. 在 `package.json` 中增加如下配置
+    - ```json
+      {
+        ...,
+        "proxy": "http://localhost:3000",
+      }
+    - 修改完之后重启项目
+    - ![](../../image/Snipaste_2022-05-11_21-41-22.png)
+#### 方式二: 写在 ``  
+- ![](../../image/)  
+- ![](../../image/)  
+- ![](../../image/)  
 - ![](../../image/)  
 - ![](../../image/)
     
