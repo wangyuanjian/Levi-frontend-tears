@@ -38,6 +38,7 @@
     - [使用代理服务器](#使用代理服务器)
       - [方式一: 写在 `package.json`](#方式一-写在-packagejson)
       - [方式二: 写在 `setupProxy.js` 中](#方式二-写在-setupproxyjs-中)
+      - [消息订阅于发布](#消息订阅于发布)
 
 <!-- /TOC -->
 
@@ -1848,6 +1849,75 @@
       }
     - ![](../../image/)  
 2. 📕注意 `http-proxy-middleware` 版本, 我测试时的版本为 `2.0.6` 按照尚硅谷教程里写的不能工作, 网站打不开.
+#### 消息订阅于发布
+> 修改之前父子组件传值的案例
+1. 安装 `pubsub-js`
+    - ```shell
+      npm i pubsub-js
+2. 订阅消息(父组件)
+    - 首先引入 `PubSub`
+      - ```jsx
+        import PubSub from 'pubsub-js';
+    - 在 `componentDidMount` 中订阅消息, 在 `componentWillUnmount` 中取消订阅
+      - `PubSub.subscribe`: 订阅消息
+        - 第一个参数, 消息名
+        - 第二个参数, 接收消息的回调函数. 这个函数同样接收两个参数
+          - 参数一: 消息名
+          - 参数二: 发布消息时的消息值
+        - 返回订阅 `id`
+      - `PubSub.unsubscribe`: 取消订阅消息
+        - 只接收一个参数, 就是订阅消息的订阅 `id`
+    - ```jsx
+      export default class Father extends Component {
+        state = {
+          fruits: ['apple', 'banana'],
+        }
+        receiveFruit = (_, newFruit) => {
+          const newFruits = [newFruit, ...this.state.fruits];
+          this.setState({
+            fruits: newFruits
+          });
+        }
+        componentDidMount() {
+          this.receiveId = PubSub.subscribe('receive-fruit', this.receiveFruit);
+        }
+        componentWillUnmount() {
+          PubSub.unsubscribe(this.receiveId)
+        }
+        render() {
+          return (
+            <div>
+              <Son></Son>
+              <ul>
+                {
+                  this.state.fruits.map((item, index) => {
+                    return <li key={index}>{item}</li>
+                  })
+                }
+              </ul>
+            </div>
+          )
+        }
+      }
+3. 发布消息: 子组件
+    - `PubSub.publish`: 发布消息
+      - 参数一: 消息名
+      - 参数二: 发布消息的消息值.
+    - ```jsx
+      export default class Son extends Component {
+        inputChanged = (event) => {
+          if (event.key !== 'Enter') return;
+          PubSub.publish('receive-fruit', event.target.value);
+          event.target.value = '';
+        }
+        render() {
+          return (
+            <div>
+              <input type="text" onKeyUp={this.inputChanged} />
+            </div>
+          )
+        }
+      }
 - ![](../../image/)  
 - ![](../../image/)  
 - ![](../../image/)  
