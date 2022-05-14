@@ -1955,6 +1955,7 @@
         </React.StrictMode>,
         document.getElementById('root')
       );
+    - ![](../../image/Snipaste_2022-05-14_09-54-57.png)
     - 在路由导航中, 需要使用 `Link` 组件. 其中 `to` 属性表示要去的路由
       - ```jsx
         <Link to="/home">去HOME</Link>
@@ -1984,6 +1985,8 @@
           document.getElementById('root')
         );
       - ![](../../image/Snipaste_2022-05-14_08-43-16.png)  
+    - 📕我们看看 Link 组件最终被渲染成了什么? `<a>` 标签
+      - ![](../../image/Snipaste_2022-05-14_09-58-33.png)
 ### 路由组件和一般组件
 1. 书写位置不同
     - 路由组件一般写在 `pages` 文件夹下
@@ -1996,7 +1999,32 @@
     - 路由组件: 接收到特定内容
     - ![](../../image/Snipaste_2022-05-14_09-52-31.png)  
 ### `NavLink`
-    - 
+1. 上面的代码中如果选中路由并没有出现对应的路由高亮, 如果想要高亮可以使用 `NavLink` 标签
+    - ```jsx
+      function App() {
+        return (
+          <div className="App">
+            <Header></Header>
+            <div style={{border: '1px solid pink'}}>
+                <NavLink to="/home">去HOME</NavLink>
+                <NavLink to="/about">去ABOUT</NavLink>
+            </div>
+            <div style={{backgroundColor: 'skyblue'}}>
+              <Route path="/home" component={Home}></Route>
+              <Route path="/about" component={About}></Route>
+            </div>
+          </div>
+        );
+      }
+    - `NavLink` 会默认给当前路由添加 `active` 的 `class`
+    - ![](../../image/Snipaste_2022-05-14_10-03-05.png)  
+    - 如果不想要这个名字, 可以通过 `activeClassName`
+    - ```jsx
+      <div style={{border: '1px solid pink'}}>
+        <NavLink activeClassName="hahaha" to="/home">去HOME</NavLink>
+        <NavLink activeClassName="hahaha" to="/about">去ABOUT</NavLink>
+      </div>
+    - ![](../../image/Snipaste_2022-05-14_10-25-53.png)  
 - ![](../../image/)  
 - ![](../../image/)
     
