@@ -12,6 +12,7 @@
       - [setState](#setstate)
       - [state 的简写方式](#state-的简写方式)
     - [Props](#props)
+      - [children](#children)
     - [`Refs`](#refs)
       - [字符串型 `Refs`](#字符串型-refs)
       - [回调型`Refs`](#回调型refs)
@@ -607,6 +608,61 @@
       const p = { name: 'tom' };
       ReactDOM.render(<Person {...p} />, document.getElementById('test'));
     - ![](../../image/Snipaste_2022-04-29_17-40-46.png)
+#### children
+1. 一个组件的书写形式可以写成自闭和, 比如 `<XXX />`; 或者写成开始和结束标签, 比如 `<XXX></XXX>`. 当写成后者时, 如果在开始和结束标签直接有内容, 那么这个内容会作为 `props` 的 `children` 属性出现.
+    - ```jsx
+      class Person extends React.Component {
+        render() {
+          console.log('props', this.props);
+          const { name, age } = this.props;
+          return (
+            <ul>
+              <li>姓名:{name}</li>
+              <li>年龄:{age}</li>
+            </ul>
+          )
+        }
+      }
+      const p = { name: 'tom' };
+      ReactDOM.render(<Person {...p} >大家好</Person>, document.getElementById('test'));
+    - ![](../../image/Snipaste_2022-05-14_15-50-00.png)
+    - 但是, 如果我们把代码改成下面的样子, 会发生什么呢? `<h1>` 页面是空空的吗?
+    - ```jsx
+      class Person extends React.Component {
+        render() {
+          console.log('props', this.props);
+          return (
+            <h1 {...this.props}></h1>
+          )
+        }
+      }
+      const p = { name: 'tom' };
+      ReactDOM.render(<Person {...p} >大家好</Person>, document.getElementById('test'));
+    - 😱当然不是. 也就是说, `children` 内容会被作为被传入 `props` 的标签的子节点(`h1`)的值
+    - ![](../../image/Snipaste_2022-05-14_15-56-05.png)
+2. 如果一定要写成自闭和形式, 还是可以直接通过 `children`. 下面的写法和上面的写法完全等价, 稍后在封装 `NavLink` 路由组件时就会用到这一点
+    - ```jsx
+      // const p = { name: 'tom' };
+      // ReactDOM.render(<Person {...p} >大家好</Person>, document.getElementById('test'));
+
+      const p = { name: 'tom', children: '大家好' };
+      ReactDOM.render(<Person {...p} />, document.getElementById('test'));
+3. 当然 `children` 除了可以是字符串, 还可以是 `HTML` 结构
+    - ```jsx
+      ReactDOM.render(<Person {...p} ><span><i>大家好</i></span></Person>, document.getElementById('test'));
+    - ![](../../image/Snipaste_2022-05-14_16-01-34.png)
+    - 此时, 打印输出的 `props` 就会发生巨大变化
+    - ![](../../image/Snipaste_2022-05-14_16-04-07.png)
+    - 如果你想当然以为自闭合标签可以写成这样, 那你就大错特错了
+      - ```jsx
+        const p = { name: 'tom', children: '<span><i>大家好</i></span>' };
+        ReactDOM.render(<Person {...p} />, document.getElementById('test'));
+      - ![](../../image/Snipaste_2022-05-14_16-06-37.png)
+    - 那应该怎么写呢? 去掉冒号, 因为在 `JSX` 中我们本身就可以写 `JSX` 语句
+      - ```jsx
+        const p = { name: 'tom', children: <span><i>大家好</i></span> };
+        ReactDOM.render(<Person {...p} />, document.getElementById('test'));
+      - ![](../../image/Snipaste_2022-05-14_16-08-05.png)
 ### `Refs`
 > `Refs` 提供了一种方式, 允许我们访问 `DOM` 节点或在 `render` 方法中创建的 `React` 元素
 #### 字符串型 `Refs`
