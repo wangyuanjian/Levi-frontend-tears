@@ -40,6 +40,8 @@
       - [方式二: 写在 `setupProxy.js` 中](#方式二-写在-setupproxyjs-中)
       - [消息订阅于发布](#消息订阅于发布)
   - [`react-router@5.3.0`](#react-router530)
+    - [路由组件和一般组件](#路由组件和一般组件)
+    - [`NavLink`](#navlink)
 
 <!-- /TOC -->
 
@@ -1982,7 +1984,19 @@
           document.getElementById('root')
         );
       - ![](../../image/Snipaste_2022-05-14_08-43-16.png)  
-- ![](../../image/)  
+### 路由组件和一般组件
+1. 书写位置不同
+    - 路由组件一般写在 `pages` 文件夹下
+    - 一般组件一般写在 `components` 文件夹下
+2. 写法不同
+    - 一般组件: `<Header />`
+    - 路由组件: `<Route path="/about" component={About}></Route>`
+3. 接收到的 props 不同
+    - 一般组件: 穿什么接收什么
+    - 路由组件: 接收到特定内容
+    - ![](../../image/Snipaste_2022-05-14_09-52-31.png)  
+### `NavLink`
+    - 
 - ![](../../image/)  
 - ![](../../image/)
     
