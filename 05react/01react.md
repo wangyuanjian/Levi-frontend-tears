@@ -39,6 +39,7 @@
       - [方式一: 写在 `package.json`](#方式一-写在-packagejson)
       - [方式二: 写在 `setupProxy.js` 中](#方式二-写在-setupproxyjs-中)
       - [消息订阅于发布](#消息订阅于发布)
+  - [`react-router@5.3.0`](#react-router530)
 
 <!-- /TOC -->
 
@@ -1918,7 +1919,69 @@
           )
         }
       }
-- ![](../../image/)  
+## `react-router@5.3.0`
+> `react-router` 有三种版本, 分别为 `WEB`, `NATIVE` 和 `ANYWHERE`. 目前只学习 `WEB` 版本
+1. 安装与使用
+    - ```shell
+      npm i react-router-dom
+2. 使用 `demo`
+    - `App.jsx`
+    - ```jsx
+      import { Link, Route } from 'react-router-dom';
+
+      function App() {
+        return (
+          <div className="App">
+            <div style={{border: '1px solid pink'}}>
+                <Link to="/home">去HOME</Link>
+                <Link to="/about">去ABOUT</Link>
+            </div>
+            <div style={{backgroundColor: 'skyblue'}}>
+              <Route path="/home" component={Home}></Route>
+              <Route path="/about" component={About}></Route>
+            </div>
+          </div>
+        );
+      }
+    - `index.js`
+    - ```jsx
+      ReactDOM.render(
+        <React.StrictMode>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </React.StrictMode>,
+        document.getElementById('root')
+      );
+    - 在路由导航中, 需要使用 `Link` 组件. 其中 `to` 属性表示要去的路由
+      - ```jsx
+        <Link to="/home">去HOME</Link>
+    - 在路由显示中, 需要使用 `Route` 组件. 同样, `to` 属性表示该组件匹配的路由, `component` 属性表示如果路由匹配需要显示的组件
+      - ```jsx
+        <Route path="/home" component={Home}></Route>
+    - 同一对的路由导航和路由显示, 必须用用一个 `Router` 组件包裹起来, 我们这里使用 `BrowserRouter` 组件直接包括 `App` 组件即可
+    - 📕这里有一个坑, 就是我使用 `create-react-app` 创建项目的 `react` 版本为 `18.1.0`, 其 `index.js` 中的代码如下
+      - ```jsx
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(
+          <React.StrictMode>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </React.StrictMode>,
+          document.getElementById('root')
+        );
+      - 这个时候, 切换路由并不会真的切换必须刷新才可以. 因此需要将上面的写法改为旧的写法, 这样配合 `react-router-dom@^5` 版本才没有问题. 但是控制台会进行错误提示, 大意就是 `ReactDOM.render()` 这个 `API` 要过期了, 不要再用了😅
+      - ```jsx
+        ReactDOM.render(
+          <React.StrictMode>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </React.StrictMode>,
+          document.getElementById('root')
+        );
+      - ![](../../image/Snipaste_2022-05-14_08-43-16.png)  
 - ![](../../image/)  
 - ![](../../image/)  
 - ![](../../image/)
