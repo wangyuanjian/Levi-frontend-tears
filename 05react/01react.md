@@ -2081,6 +2081,25 @@
         <NavLink activeClassName="hahaha" to="/about">去ABOUT</NavLink>
       </div>
     - ![](../../image/Snipaste_2022-05-14_10-25-53.png)  
+2. 封装 `NavLink`
+    - 上面的 `NavLink` 有很多重复性的内容, 导致一样的内容需要写多边, 现在我们尝试封装 `NavLink` 到 `MyNavLink` 组件
+    - ```jsx
+      import React, { Component } from 'react'
+      import { NavLink } from 'react-router-dom'
+
+      export default class MyNavLink extends Component {
+        render() {
+          return (
+            <NavLink activeClassName="hahaha" {...this.props}></NavLink>
+          )
+        }
+      }
+    - 在 App.jsx 中
+    - ```jsx
+      <div style={{border: '1px solid pink'}}>
+        <MyNavLink to="/home">去HOME</MyNavLink>
+        <MyNavLink to="/about">去ABOUT</MyNavLink>
+      </div>
 - ![](../../image/)  
 - ![](../../image/)
     
