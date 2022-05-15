@@ -43,6 +43,7 @@
   - [`react-router@5.3.0`](#react-router530)
     - [路由组件和一般组件](#路由组件和一般组件)
     - [`NavLink`](#navlink)
+    - [`Switch`](#switch)
 
 <!-- /TOC -->
 
@@ -2100,6 +2101,34 @@
         <MyNavLink to="/home">去HOME</MyNavLink>
         <MyNavLink to="/about">去ABOUT</MyNavLink>
       </div>
-- ![](../../image/)  
+### `Switch`
+1. 让我们再多引入一个组件 Test, 并将其路由同样注册为 `/about`
+    - ```jsx
+      <div style={{backgroundColor: 'skyblue'}}>
+        <Route path="/home" component={Home}></Route>
+        <Route path="/about" component={About}></Route>
+        <Route path="/about" component={Test}></Route>
+      </div>
+    - 当我们真正点击 `/about` 时会同时显示两个组件. 如果想要路由匹配到一个后就不再继续向下匹配, 需要使用 `Switch`
+    - ![](../../image/Snipaste_2022-05-15_09-04-22.png)  
+2. 使用 `Switch`
+    - ```jsx
+      import { Route, Switch } from 'react-router-dom';
+      <div style={{ backgroundColor: 'skyblue' }}>
+        <Switch>
+          <Route path="/home" component={Home}></Route>
+          <Route path="/about" component={About}></Route>
+          <Route path="/about" component={Test}></Route>
+        </Switch>
+      </div>
+    - ![](../../image/Snipaste_2022-05-15_09-06-12.png)
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
 - ![](../../image/)
     
