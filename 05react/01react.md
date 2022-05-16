@@ -44,6 +44,7 @@
     - [路由组件和一般组件](#路由组件和一般组件)
     - [`NavLink`](#navlink)
     - [`Switch`](#switch)
+    - [解决样式丢失的问题](#解决样式丢失的问题)
 
 <!-- /TOC -->
 
@@ -2122,11 +2123,56 @@
         </Switch>
       </div>
     - ![](../../image/Snipaste_2022-05-15_09-06-12.png)
-- ![](../../image/)
-- ![](../../image/)
-- ![](../../image/)
-- ![](../../image/)
-- ![](../../image/)
+### 解决样式丢失的问题
+1. 为了要展示这个问题, 需要做几个修改
+    - 第一: 在 `public` 下创建 `css` 文件夹, 并创建 `index.css`, 且在 `index.html` 中引入该 `css` 文件. 将路由链接的 `active` 类样式写在该 `css` 文件中.
+    - ```css
+      .hahaha {
+        background-color: salmon;
+        color: aliceblue;;
+      }
+    - ```html
+      <link rel="stylesheet" href="./css/index.css">
+    - 然后我们需要将单层路由, 改为双层路由. 即将 `/home` 改为 `/api/home`
+    - ```jsx
+      <div style={{ border: '1px solid pink' }}>
+        <MyNavLink to="/api/home">去HOME</MyNavLink>
+        <MyNavLink to="/api/about">去ABOUT</MyNavLink>
+      </div>
+      <div style={{ backgroundColor: 'skyblue' }}>
+        <Switch>
+          <Route path="/api/home" component={Home}></Route>
+          <Route path="/api/about" component={About}></Route>
+        </Switch>
+      </div>
+    - 如果只是点击路由链接, 跳转没有问题.
+      - ![](../../image/Snipaste_2022-05-15_20-32-32.png)
+      - 但是, 如果刷新之后, 路由链接的 `active` 样式就会消失
+      - ![](../../image/Snipaste_2022-05-15_20-33-16.png)
+2. 为什么会发生这件事? 
+    - 因为 `index.css` 文件找不到了! 如果我们在 `F12` 看这个文件的请求, 就会发现请求路径错了!!!
+    - ![](../../image/Snipaste_2022-05-15_21-31-13.png)
+    - 错误的根本原因在于引入 css 文件时, 不应该采用相对路径写法, 如果采用下面的写法就不会报错
+    - ```html
+      <!-- 丢失样式的写法 -->
+      <link rel="stylesheet" href="./css/index.css">
+      <!-- ✔正确写法1 -->
+      <link rel="stylesheet" href="/css/index.css">
+      <!-- ✔正确写法2 --> 
+    - ![](../../image/Snipaste_2022-05-16_22-00-57.png)
+3. 采用 `hash` 路由导航也可以解决这个问题, 因为 `hash` 路由中路由路径不会成为请求的 path 的一部分, 我猜的...
+    - ```jsx
+      import { HashRouter } from 'react-router-dom'
+
+      ReactDOM.render(
+        <React.StrictMode>
+          <HashRouter>
+            <App />
+          </HashRouter>
+        </React.StrictMode>,
+        document.getElementById('root')
+      );
+    - ![](../../image/Snipaste_2022-05-16_22-08-58.png)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
