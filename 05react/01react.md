@@ -45,6 +45,7 @@
     - [`NavLink`](#navlink)
     - [`Switch`](#switch)
     - [解决样式丢失的问题](#解决样式丢失的问题)
+    - [路由的模糊匹配和严格匹配](#路由的模糊匹配和严格匹配)
 
 <!-- /TOC -->
 
@@ -2173,6 +2174,46 @@
         document.getElementById('root')
       );
     - ![](../../image/Snipaste_2022-05-16_22-08-58.png)
+### 路由的模糊匹配和严格匹配
+1. 看下面的例子
+    - 如果路由导航中的路由为 `/about`, 但是注册路由时的路由为 `/about/a/b`, 实际上是不能显示 `About` 组件的
+    - ```jsx
+      <div style={{ border: '1px solid pink' }}>
+        <MyNavLink to="/home">去HOME</MyNavLink>
+        <MyNavLink to="/about">去ABOUT</MyNavLink>
+      </div>
+      <div style={{ backgroundColor: 'skyblue' }}>
+        <Switch>
+          <Route path="/home" component={Home}></Route>
+          <Route path="/about/a/b" component={About}></Route>
+        </Switch>
+      </div>
+    - ![](../../image/Snipaste_2022-05-17_17-41-31.png)
+2. 但是如果返回来, 导航中的路由为 `/about/a/b`, 注册时路由为 `/about` 就可以正常显示
+    - ```jsx
+      <div style={{ border: '1px solid pink' }}>
+        <MyNavLink to="/home">去HOME</MyNavLink>
+        <MyNavLink to="/about/a/b">去ABOUT</MyNavLink>
+      </div>
+      <div style={{ backgroundColor: 'skyblue' }}>
+        <Switch>
+          <Route path="/home" component={Home}></Route>
+          <Route path="/about" component={About}></Route>
+        </Switch>
+      </div>
+    - ![](../../image/Snipaste_2022-05-17_17-43-45.png)
+    - 也就是说, 注册路由时的路由, 每一级都不能少才能显示, 否则就无法匹配
+3. 为了让避免上面的问题, 需要引入 `Route` 的 `exact` 属性, 使得导航中和注册时得路由必须完全一样才可以匹配
+    - ```jsx
+      <Switch>
+        <Route path="/home" exact component={Home}></Route>
+        <Route path="/about" exact={true} component={About}></Route>
+      </Switch>
+    - ![](../../image/Snipaste_2022-05-17_17-47-54.png)
+    - 📕如果有多层级页面的话, 不能够使用 `exact` 哦~
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
