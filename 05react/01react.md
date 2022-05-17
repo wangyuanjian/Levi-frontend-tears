@@ -39,7 +39,7 @@
     - [使用代理服务器](#使用代理服务器)
       - [方式一: 写在 `package.json`](#方式一-写在-packagejson)
       - [方式二: 写在 `setupProxy.js` 中](#方式二-写在-setupproxyjs-中)
-      - [消息订阅于发布](#消息订阅于发布)
+      - [消息订阅与发布](#消息订阅与发布)
   - [`react-router@5.3.0`](#react-router530)
     - [路由组件和一般组件](#路由组件和一般组件)
     - [`NavLink`](#navlink)
@@ -47,6 +47,7 @@
     - [解决样式丢失的问题](#解决样式丢失的问题)
     - [路由的模糊匹配和严格匹配](#路由的模糊匹配和严格匹配)
     - [`Redirect` 的使用](#redirect-的使用)
+    - [嵌套路由](#嵌套路由)
 
 <!-- /TOC -->
 
@@ -1912,7 +1913,7 @@
       }
     - ![](../../image/)  
 2. 📕注意 `http-proxy-middleware` 版本, 我测试时的版本为 `2.0.6` 按照尚硅谷教程里写的不能工作, 网站打不开.
-#### 消息订阅于发布
+#### 消息订阅与发布
 > 修改之前父子组件传值的案例
 1. 安装 `pubsub-js`
     - ```shell
@@ -2243,8 +2244,58 @@
         </Switch>
       </div>
     - ![](../../image/react_router_redirect.gif)
-- ![](../../image/)
-- ![](../../image/)
+### 嵌套路由
+1. 首先准备数据, 在 `Home` 下创建 `Message` 和 `News` 组件
+    - ![](../../image/Snipaste_2022-05-17_18-18-01.png)
+2. 修改 `Home` 组件
+    - 📕注意此时, 在 `Home` 中无论是用于导航(`to`)的路由, 还是注册(`path`)的路由, 都是多层级结构哦!
+    - ```jsx
+      import React, { Component } from 'react'
+      import { NavLink, Route, Switch } from 'react-router-dom'
+      import News from './News'
+      import Message from './Message'
+
+      export default class Home extends Component {
+        render() {
+          return (
+            <div>
+              <h1>我是Home</h1>
+              <div>
+                <NavLink to="/home/news" activeClassName="hahaha">News</NavLink>
+                <NavLink to="/home/message" activeClassName="hahaha">Message</NavLink>
+              </div>
+              <div>
+                <Switch>
+                  <Route path="/home/news" component={News}></Route>
+                  <Route path="/home/message" component={Message}></Route>
+                </Switch>
+              </div>
+            </div>
+          )
+        }
+      }
+    - `App` 组件不变
+    - ```jsx
+      function App() {
+        return (
+          <div className="App">
+            <Header></Header>
+            <div style={{ border: '1px solid pink' }}>
+              <MyNavLink to="/home">去HOME</MyNavLink>
+              <MyNavLink to="/about">去ABOUT</MyNavLink>
+            </div>
+            <div style={{ backgroundColor: 'skyblue' }}>
+              <Switch>
+                <Route path="/home" component={Home}></Route>
+                <Route path="/about" component={About}></Route>
+                <Redirect to="/about" component={About}></Redirect>
+              </Switch>
+            </div>
+          </div>
+        );
+      }
+    - 展示效果
+    - ![](../../image/Snipaste_2022-05-17_18-22-30.png)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
