@@ -46,6 +46,7 @@
     - [`Switch`](#switch)
     - [解决样式丢失的问题](#解决样式丢失的问题)
     - [路由的模糊匹配和严格匹配](#路由的模糊匹配和严格匹配)
+    - [`Redirect` 的使用](#redirect-的使用)
 
 <!-- /TOC -->
 
@@ -2189,7 +2190,7 @@
         </Switch>
       </div>
     - ![](../../image/Snipaste_2022-05-17_17-41-31.png)
-2. 但是如果返回来, 导航中的路由为 `/about/a/b`, 注册时路由为 `/about` 就可以正常显示
+2. 但是如果返回来, 导航中的路由为 `/about/a/b`, 注册时路由为 `/about` 就可以正常显示.
     - ```jsx
       <div style={{ border: '1px solid pink' }}>
         <MyNavLink to="/home">去HOME</MyNavLink>
@@ -2202,6 +2203,21 @@
         </Switch>
       </div>
     - ![](../../image/Snipaste_2022-05-17_17-43-45.png)
+    - 其实, `/about/a/b` 不仅可以匹配 `/about`, 还可以匹配 `/about/a` 和 `/about/a/b`
+      - 让我们把代码改成下面没有 `Switch` 组件的样子
+      - ```jsx
+        <div style={{ border: '1px solid pink' }}>
+          <MyNavLink to="/home">去HOME</MyNavLink>
+          <MyNavLink to="/about/a/b">去ABOUT</MyNavLink>
+        </div>
+        <div style={{ backgroundColor: 'skyblue' }}>
+          <Route path="/home" component={Home}></Route>
+          <Route path="/about/a" component={Abouta}></Route>
+          <Route path="/about" component={About}></Route>
+          <Route path="/about/a/b" component={Aboutab}></Route>
+        </div>
+      - ![](../../image/Snipaste_2022-05-17_17-58-09.png)
+      - 😱每一层都匹配了!!!
     - 也就是说, 注册路由时的路由, 每一级都不能少才能显示, 否则就无法匹配
 3. 为了让避免上面的问题, 需要引入 `Route` 的 `exact` 属性, 使得导航中和注册时得路由必须完全一样才可以匹配
     - ```jsx
@@ -2211,7 +2227,22 @@
       </Switch>
     - ![](../../image/Snipaste_2022-05-17_17-47-54.png)
     - 📕如果有多层级页面的话, 不能够使用 `exact` 哦~
-- ![](../../image/)
+### `Redirect` 的使用
+1. 默认情况下, 是没有路由匹配根路径 ( `/` ) 的, 我们可以使用 Redirect 匹配无法匹配的路由并将其转移到某个路由
+    - ```jsx
+      import { Route, Switch, Redirect } from 'react-router-dom';
+      <div style={{ border: '1px solid pink' }}>
+        <MyNavLink to="/home">去HOME</MyNavLink>
+        <MyNavLink to="/about">去ABOUT</MyNavLink>
+      </div>
+      <div style={{ backgroundColor: 'skyblue' }}>
+        <Switch>
+          <Route path="/home" component={Home}></Route>
+          <Route path="/about" component={About}></Route>
+          <Redirect to="/about" component={About}></Redirect>
+        </Switch>
+      </div>
+    - ![](../../image/react_router_redirect.gif)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
