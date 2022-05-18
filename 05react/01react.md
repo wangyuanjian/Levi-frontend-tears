@@ -48,6 +48,8 @@
     - [路由的模糊匹配和严格匹配](#路由的模糊匹配和严格匹配)
     - [`Redirect` 的使用](#redirect-的使用)
     - [嵌套路由](#嵌套路由)
+    - [传递路由参数](#传递路由参数)
+      - [`params` 参数](#params-参数)
 
 <!-- /TOC -->
 
@@ -2296,7 +2298,57 @@
       }
     - 展示效果
     - ![](../../image/Snipaste_2022-05-17_18-22-30.png)
-- ![](../../image/)
+### 传递路由参数
+1. 首先创建 `Detail` 组件, 当用户点击 `News` 组件中的某一条消息时, 导航至 `Detail` 组件并携带参数
+#### `params` 参数
+1. `params` 参数就是路由中的参数, 类似 `SpringMVC` 中的 @PathVariable 注解表示的类型.
+    - 首先, 我们改造 `News` 组件. 使其遍历数组创建路由导航.
+    - ```jsx
+      import React, { Component } from 'react';
+      import { NavLink, Route } from 'react-router-dom';
+      import Detail from './Detail';
+
+      export default class News extends Component {
+        render() {
+          const news = [
+            { id: '001', title: 'news1' },
+            { id: '002', title: 'news2' },
+            { id: '003', title: 'news3' },
+          ]
+          return (
+            <div>
+              <ul>
+                {
+                  news.map((newObj) => {
+                    return (
+                      <li key={newObj.id}><NavLink activeClassName='hahaha' to={`/home/news/detail/${newObj.id}/${newObj.title}`}></NavLink>{newObj.title}</li>
+                    )
+                  })
+                }
+              </ul>
+              <Route path="/home/news/detail/:id/:title" component={Detail}></Route>
+            </div>
+          )
+        }
+      }
+    - 下面是 `Detail` 组件, 我们打印其 `props`
+    - ```jsx
+      export default class Detail extends Component {
+        render() {
+          console.log('props in detail', this.props);
+          const { id, title } = this.props.match.params;
+          return (
+            <div>
+              <ul>
+                <li>ID: {id}</li>
+                <li>TITLE: {title}</li>
+              </ul>
+            </div>
+          )
+        }
+      }
+    - 📕当我们接收路由参数时, 使用的是 `/:paramName` 这样的. 在 `Detail` 组件的 `props` 的 `match` 属性, 可以接收到传递来的参数
+    - ![](../../image/Snipaste_2022-05-18_22-13-27.png)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
