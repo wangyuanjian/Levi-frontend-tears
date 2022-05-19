@@ -50,6 +50,7 @@
     - [嵌套路由](#嵌套路由)
     - [传递路由参数](#传递路由参数)
       - [`params` 参数](#params-参数)
+      - [`search` 参数](#search-参数)
 
 <!-- /TOC -->
 
@@ -2349,6 +2350,67 @@
       }
     - 📕当我们接收路由参数时, 使用的是 `/:paramName` 这样的. 在 `Detail` 组件的 `props` 的 `match` 属性, 可以接收到传递来的参数
     - ![](../../image/Snipaste_2022-05-18_22-13-27.png)
+#### `search` 参数
+1. `search` 参数就是在 `url` 的 `?` 通过 `key1=value1&key2=value2` 这样的形式拼接起来的参数
+    - 在路由导航时, 需要手动拼接; 但是在匹配路由时, 无需像 `params` 参数一样指定接收哪些参数
+    - ```jsx
+      export default class News extends Component {
+        render() {
+          const news = [
+            { id: '001', title: 'news1' },
+            { id: '002', title: 'news2' },
+            { id: '003', title: 'news3' },
+          ]
+          return (
+            <div>
+              <ul>
+                {
+                  news.map((newObj) => {
+                    return (
+                      <li key={newObj.id}>
+                        {/* search 参数 */}
+                        <NavLink
+                          activeClassName='hahaha'
+                          to={`/home/news/detail?id=${newObj.id}&title=${newObj.title}`}
+                        >{newObj.title}</NavLink>
+                      </li>
+                    )
+                  })
+                }
+              </ul>
+
+              {/* search 参数 */}
+              <Route path="/home/news/detail" component={Detail}></Route>
+            </div>
+          )
+        }
+      }
+    - 在 `Detail` 组件中可以收到传来的 `search` 参数.
+    - ![](../../image/Snipaste_2022-05-19_22-51-23.png)
+2. 如何把 `?id=001&title=news1` 转成我们需要的样子呢? 使用 node 自带的库 `querystring`
+    - 我使用 `querystring` 报错, 改成 `qs` 之后可以了
+      - 📕使用 `parse` 方法将字符串解析为对象, 同理使用 `stringify` 将对象编码为字符串
+    - ```jsx
+      export default class Detail extends Component {
+        render() {
+          console.log('props in detail', this.props);
+          const search = this.props.location.search.slice(1);
+          const searchObj = qs.parse(search);
+          console.log('searchObj', searchObj);
+          const { id, title } = searchObj;
+          return (
+            <div>
+              <ul>
+                <li>ID: {id}</li>
+                <li>TITLE: {title}</li>
+              </ul>
+            </div>
+          )
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-19_22-59-05.png)
+- ![](../../image/)
+- ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
