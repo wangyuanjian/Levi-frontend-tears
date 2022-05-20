@@ -51,6 +51,7 @@
     - [传递路由参数](#传递路由参数)
       - [`params` 参数](#params-参数)
       - [`search` 参数](#search-参数)
+      - [`state` 参数](#state-参数)
 
 <!-- /TOC -->
 
@@ -2387,7 +2388,7 @@
       }
     - 在 `Detail` 组件中可以收到传来的 `search` 参数.
     - ![](../../image/Snipaste_2022-05-19_22-51-23.png)
-2. 如何把 `?id=001&title=news1` 转成我们需要的样子呢? 使用 node 自带的库 `querystring`
+2. 如何把 `?id=001&title=news1` 转成我们需要的样子呢? 使用 `node` 自带的库 `querystring`
     - 我使用 `querystring` 报错, 改成 `qs` 之后可以了
       - 📕使用 `parse` 方法将字符串解析为对象, 同理使用 `stringify` 将对象编码为字符串
     - ```jsx
@@ -2409,9 +2410,54 @@
         }
       }
     - ![](../../image/Snipaste_2022-05-19_22-59-05.png)
+    - 你看到上面的三个路由都 `active` 但是不要紧, 因为实际开发中如果只是传参不同, 那么这三个路由实际对应的只有一个组件.
+#### `state` 参数
+1. 传递 `state` 参数时, 需要将 `to` 参数写为对象格式, 包含一下属性
+    - `path(字符串)`: 要跳转的路由地址
+    - `state(对象)`: 要传递的参数
+    - ```jsx
+      export default class News extends Component {
+        render() {
+          const news = [
+            { id: '001', title: 'news1' },
+            { id: '002', title: 'news2' },
+            { id: '003', title: 'news3' },
+          ]
+          return (
+            <div>
+              <ul>
+                {
+                  news.map((newObj) => {
+                    return (
+                      <li key={newObj.id}>
+                        <NavLink
+                          activeClassName='hahaha'
+                          to={{
+                            path: "/home/news/detail",
+                            state: { id: newObj.id, title: newObj.title }
+                          }}
+                        >{newObj.title}</NavLink>
+                      </li>
+                    )
+                  })
+                }
+              </ul>
+              <Route path="/home/news/detail" component={Detail}></Route>
+            </div>
+          )
+        }
+      }
+    - 当然在接收参数时, 需要从 `props.location.state` 对象上接收
+    - ![](../../image/Snipaste_2022-05-20_17-40-09.png)
+2. `state` 方式传递参数, 刷新页面不会导致参数丢失哦! 因为 `location` 不仅是 `props` 的一个属性, 也是 `props.history` 的一个属性
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
-    
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
