@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Scroll</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    body {
+      font-family: Helvetica, sans-serif;
+      font-size: 64px;
+      font-weight: bold;
+      overflow-x: hidden;
+    }
+
+    .content {
+      font-size: 72px;
+      color: transparent;
+      background-image: linear-gradient(129deg, #dc79ff, #256bfa);
+      background-clip: text;
+      -webkit-background-clip: text;
+      top: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      opacity: var(--progress);
+      transform: scale(calc(5 - (4 * var(--progress))));
+    }
+
+    .other {
+      width: 80%;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="other" id="header">
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque nemo dolor hic ad corporis minus dolore iure, autem
+    sapiente animi, necessitatibus neque fugiat soluta non! Veritatis inventore consequatur suscipit quibusdam.
+  </div>
+  <div class="content" id="content" style="--progress: 0">Say good­bye to<br> Spinnageddon</div>
+  <div class="other" id="footer">
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque nemo dolor hic ad corporis minus dolore iure, autem
+    sapiente animi, necessitatibus neque fugiat soluta non! Veritatis inventore consequatur suscipit quibusdam.
+  </div>
+  <script>
+    let content = document.getElementById('content');
+    let header = document.getElementById('header');
+    let footer = document.getElementById('footer');
+    const html = document.documentElement;
+
+    let headerObserver = new IntersectionObserver((entries, b) => {
+      if (!entries[0].isIntersecting) {
+        content.style.position = 'sticky';
+        return;
+      }
+    });
+    let footerObserver = new IntersectionObserver((entries, b) => {
+      if (entries[0].isIntersecting) {
+        content.style.position = 'static';
+        return;
+      }
+    });
+    headerObserver.observe(header);
+    footerObserver.observe(footer);
+
+    document.addEventListener('scroll', () => {
+      let result = html.scrollTop / (html.scrollHeight - html.clientHeight);
+      result *= 2;
+      console.log('result', result);
+      if (result > 1) {
+        result = 1;
+        content.style.position = 'static';
+      }
+      if (result < 0) result = 0;
+      content.style.setProperty('--progress', result);
+    });
+  </script>
+</body>
+
+</html>

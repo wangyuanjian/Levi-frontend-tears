@@ -1,0 +1,29 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+body {
+  font-family: Helvetica, sans-serif;
+  font-size: 64px;
+  font-weight: bold;
+  overflow-x: hidden;
+}
+.content {
+  font-size: 72px;
+  color: transparent;
+  background-image: linear-gradient(129deg,#dc79ff,#256bfa);
+  background-clip: text;
+  -webkit-background-clip: text;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  opacity: var(--progress);
+  transform: scale(calc(5 - (4 * var(--progress))));
+}
+.other {
+  width: 80%;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+}
