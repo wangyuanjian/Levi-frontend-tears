@@ -52,6 +52,7 @@
       - [`params` 参数](#params-参数)
       - [`search` 参数](#search-参数)
       - [`state` 参数](#state-参数)
+    - [`push` 和 `replace` 模式](#push-和-replace-模式)
 
 <!-- /TOC -->
 
@@ -2433,7 +2434,7 @@
                         <NavLink
                           activeClassName='hahaha'
                           to={{
-                            path: "/home/news/detail",
+                            pathname: "/home/news/detail",
                             state: { id: newObj.id, title: newObj.title }
                           }}
                         >{newObj.title}</NavLink>
@@ -2448,8 +2449,31 @@
         }
       }
     - 当然在接收参数时, 需要从 `props.location.state` 对象上接收
-    - ![](../../image/Snipaste_2022-05-20_17-40-09.png)
+    - ![](../../image/Snipaste_2022-05-21_08-11-49.png)
 2. `state` 方式传递参数, 刷新页面不会导致参数丢失哦! 因为 `location` 不仅是 `props` 的一个属性, 也是 `props.history` 的一个属性
+### `push` 和 `replace` 模式
+1. 路由默认 push 模式, 如果想要开启 replace 模式, 需要在 Link 或 NavLink 指定 replace 属性为 true.
+    - ```jsx
+      export default class Home extends Component {
+        render() {
+          return (
+            <div>
+              <h1>我是Home</h1>
+              <div>
+                <NavLink replace to="/home/news" activeClassName="hahaha">News</NavLink>
+                <NavLink replace to="/home/message" activeClassName="hahaha">Message</NavLink>
+              </div>
+              <div>
+                <Switch>
+                  <Route path="/home/news" component={News}></Route>
+                  <Route path="/home/message" component={Message}></Route>
+                </Switch>
+              </div>
+            </div>
+          )
+        }
+      }
+2. 如果我们先点击 `/about`, 然后点击 `/home` 再点击 `/news`, 之后点击浏览器的后退, 此时会回到 `/about`. 因为跳转到 `/news` 的路由取代(`replace`) 了 `/home`.
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
