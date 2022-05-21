@@ -53,6 +53,7 @@
       - [`search` 参数](#search-参数)
       - [`state` 参数](#state-参数)
     - [`push` 和 `replace` 模式](#push-和-replace-模式)
+    - [编程式路由导航](#编程式路由导航)
 
 <!-- /TOC -->
 
@@ -2481,8 +2482,129 @@
         }
       }
 2. 如果我们先点击 `/about`, 然后点击 `/home` 再点击 `/news`, 之后点击浏览器的后退, 此时会回到 `/about`. 因为跳转到 `/news` 的路由取代(`replace`) 了 `/home`.
-- ![](../../image/)
-- ![](../../image/)
+### 编程式路由导航
+> 即不是 `Link` 或 `NavLink` 等注册路由因为有些情况没办法使用它们, 比如点击图片跳转或者延时跳转等.
+1. `API`
+    - 主要的 `API` 为 `props.history` 对象的属性
+    - ![](../../image/Snipaste_2022-05-21_09-13-05.png)
+2. `params` 参数
+    - 增加两个按钮, 分别进行 `push` 和 `replace` 的编程式路由跳转. 
+      - 📕即便采用了编程式路由跳转, 仍然要使用 `Route` 并采用对应的参数接收方式, 对应的组件(`Detail`) 也要同步修改接收参数方式
+    - ```jsx
+      export default class News extends Component {
+        pushRoute(id, title) {
+          this.props.history.push(`/home/news/detail/${id}/${title}`)
+        }
+        replcaeRoute(id, title) {
+          this.props.history.replace(`/home/news/detail/${id}/${title}`)
+        }
+        render() {
+          const news = [
+            { id: '001', title: 'news1' },
+            { id: '002', title: 'news2' },
+            { id: '003', title: 'news3' },
+          ]
+          return (
+            <div>
+              <ul>
+                {
+                  news.map((newObj) => {
+                    return (
+                      <li key={newObj.id}>
+                        <span>{newObj.title}</span>
+                        &nbsp; <button onClick={() => this.pushRoute(newObj.id, newObj.title)}>push</button>
+                        &nbsp; <button onClick={() => this.replcaeRoute(newObj.id, newObj.title)}>replace</button>
+                      </li>
+                    )
+                  })
+                }
+              </ul>
+              <Route path="/home/news/detail/:id/:title" component={Detail}></Route>
+            </div>
+          )
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-21_09-20-30.png)
+3. `search` 参数
+    - ```jsx
+      export default class News extends Component {
+        pushRoute(id, title) {
+          this.props.history.push(`/home/news/detail?id=${id}&title=${title}`)
+        }
+        replcaeRoute(id, title) {
+          this.props.history.replace(`/home/news/detail?id=${id}&title=${title}`)
+        }
+        render() {
+          const news = [
+            { id: '001', title: 'news1' },
+            { id: '002', title: 'news2' },
+            { id: '003', title: 'news3' },
+          ]
+          return (
+            <div>
+              <ul>
+                {
+                  news.map((newObj) => {
+                    return (
+                      <li key={newObj.id}>
+                        <span>{newObj.title}</span>
+                        &nbsp; <button onClick={() => this.pushRoute(newObj.id, newObj.title)}>push</button>
+                        &nbsp; <button onClick={() => this.replcaeRoute(newObj.id, newObj.title)}>replace</button>
+                      </li>
+                    )
+                  })
+                }
+              </ul>
+              {/* search 参数 */}
+              <Route path="/home/news/detail" component={Detail}></Route>
+            </div>
+          )
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-21_09-24-26.png)
+4. `state` 参数
+    - ```jsx
+      export default class News extends Component {
+        pushRoute(id, title) {
+          this.props.history.push(`/home/news/detail`, {
+            id,
+            title,
+          });
+        }
+        replcaeRoute(id, title) {
+          this.props.history.replace(`/home/news/detail`, {
+            id,
+            title,
+          });
+        }
+        render() {
+          const news = [
+            { id: '001', title: 'news1' },
+            { id: '002', title: 'news2' },
+            { id: '003', title: 'news3' },
+          ]
+          return (
+            <div>
+              <ul>
+                {
+                  news.map((newObj) => {
+                    return (
+                      <li key={newObj.id}>
+                        <span>{newObj.title}</span>
+                        &nbsp; <button onClick={() => this.pushRoute(newObj.id, newObj.title)}>push</button>
+                        &nbsp; <button onClick={() => this.replcaeRoute(newObj.id, newObj.title)}>replace</button>
+                      </li>
+                    )
+                  })
+                }
+              </ul>
+              {/* state 参数 */}
+              <Route path="/home/news/detail" component={Detail}></Route>
+            </div>
+          )
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-21_09-26-56.png)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
