@@ -54,6 +54,7 @@
       - [`state` 参数](#state-参数)
     - [`push` 和 `replace` 模式](#push-和-replace-模式)
     - [编程式路由导航](#编程式路由导航)
+    - [`withRouter`](#withrouter)
 
 <!-- /TOC -->
 
@@ -2605,8 +2606,52 @@
         }
       }
     - ![](../../image/Snipaste_2022-05-21_09-26-56.png)
-- ![](../../image/)
-- ![](../../image/)
+### `withRouter`
+1. 📕注意上述的路由 `API` 都只能在路由组件上使用, 对于一般组件, 是没有这些 `API` 的, 因此使用都会报错
+    - 例如我们在 Header 组件上增加前进和后退按钮
+    - ```jsx
+      export default class Header extends Component {
+        goBack1 = () => {
+          this.props.history.goBack();
+        }
+        goForward1 = () => {
+          this.props.history.goForward();
+        }
+        render() {
+          return (
+            <div>
+              <h1>React Router DOM</h1>
+              <button onClick={this.goBack1}>后退</button>
+              <button onClick={this.goForward1}>前进</button>
+            </div>
+          )
+        }
+      }
+    - ![](../../image/Snipaste_2022-05-21_09-59-45.png)
+2. 如果想要在一般组件上使用路由的 `API`, 需要引入 `withRouter` 函数. 该函数接收一个组件为参数, 返回一个组件
+    - ```jsx
+      import { withRouter } from 'react-router-dom';
+
+      class Header extends Component {
+        goBack1 = () => {
+          this.props.history.goBack();
+        }
+        goForward1 = () => {
+          console.log('props', this.props);
+          this.props.history.goForward();
+        }
+        render() {
+          return (
+            <div>
+              <h1>React Router DOM</h1>
+              <button onClick={this.goBack1}>后退</button>
+              <button onClick={this.goForward1}>前进</button>
+            </div>
+          )
+        }
+      }
+      export default withRouter(Header)
+    - ![](../../image/Snipaste_2022-05-21_10-02-24.png)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
