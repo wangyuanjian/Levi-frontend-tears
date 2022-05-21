@@ -2451,6 +2451,13 @@
     - 当然在接收参数时, 需要从 `props.location.state` 对象上接收
     - ![](../../image/Snipaste_2022-05-21_08-11-49.png)
 2. `state` 方式传递参数, 刷新页面不会导致参数丢失哦! 因为 `location` 不仅是 `props` 的一个属性, 也是 `props.history` 的一个属性
+3. 一个 `bug`: 如果我们存储了浏览器 `url`, 但是清除了浏览器记录, 恰好这个 `url` 使用 `state` 传递参数. 那么就会出现下面的报错
+    - 比如, 我用浏览器的无痕模式打开 `http://localhost:3000/home/news/detail`
+    - ![](../../image/Snipaste_2022-05-21_09-00-40.png)
+    - 报错是因为尝试从 `props.location.state` 对象身上解耦出 `id` 和 `title`, 但是 `props.location.state` 是 `undefined`, 因此解耦失败. 所以我们需要修改代码, 如果 `props.location.state` 为 `undefined`, 就返回空对象作为替代
+    - ```jsx
+      const { id, title } = this.props.location.state || {};
+    - ![](../../image/Snipaste_2022-05-21_09-03-51.png)
 ### `push` 和 `replace` 模式
 1. 路由默认 push 模式, 如果想要开启 replace 模式, 需要在 Link 或 NavLink 指定 replace 属性为 true.
     - ```jsx
