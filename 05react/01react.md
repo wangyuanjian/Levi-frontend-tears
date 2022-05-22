@@ -55,6 +55,7 @@
     - [`push` 和 `replace` 模式](#push-和-replace-模式)
     - [编程式路由导航](#编程式路由导航)
     - [`withRouter`](#withrouter)
+  - [Ant Design@4.8.2](#ant-design482)
 
 <!-- /TOC -->
 
@@ -2652,6 +2653,23 @@
       }
       export default withRouter(Header)
     - ![](../../image/Snipaste_2022-05-21_10-02-24.png)
+## Ant Design@4.8.2
+1. 安装
+    - ```shell
+      npm i antd@4.8.2
+    - 引入组件和样式
+    - ```jsx
+      import { Button } from 'antd'
+      import 'antd/dist/antd.css'
+
+      function App() {
+        return (
+          <div className="App">
+            <Button type='primary'>Primary</Button>
+          </div>
+        );
+      }
+2. 其余按需引入组件或者自定义样式[请访问](https://3x.ant.design/docs/react/use-with-create-react-app-cn). 虽然我们是 `4.8.2` 版本, 但是也可以按照 `3.x` 的进行配置. 如果你安装的是最新版的 `antd`, [请访问](https://ant.design/docs/react/use-with-create-react-app-cn)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
