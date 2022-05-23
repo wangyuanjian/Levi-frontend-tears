@@ -92,3 +92,53 @@
           transform: scale(0);
         }
       }
+5. `css` 完整代码
+```css
+body {
+  padding: 0;
+  margin: 0;
+  background-color: salmon;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading {
+  width: 150px;
+  height: 150px;
+  position: relative;
+}
+
+.loading>span {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform: rotate(calc(var(--i) * 18deg));
+}
+
+.loading > span::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #fff;
+  animation: breath 2s linear infinite;
+  animation-delay: calc(var(--i) * 0.1s);
+}
+
+@keyframes breath {
+  0% {
+    transform: scale(0);
+  }
+  10% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+```
