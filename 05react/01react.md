@@ -56,6 +56,9 @@
     - [编程式路由导航](#编程式路由导航)
     - [`withRouter`](#withrouter)
   - [Ant Design@4.8.2](#ant-design482)
+  - [`Redux`](#redux)
+    - [基础](#基础)
+    - [简易版求和案例](#简易版求和案例)
 
 <!-- /TOC -->
 
@@ -754,7 +757,7 @@
           }
         }
       - ![](../../image/Snipaste_2022-04-30_19-56-31.png)
-    - 如果想要解决这个问题, 官网建议使用 class 绑定的函数方式
+    - 如果想要解决这个问题, 官网建议使用 `class` 绑定的函数方式
       - ```jsx
         class Person extends React.Component {
           state = { isHot: true }
@@ -785,9 +788,9 @@
         }
       - 点击切换按钮时, 控制台不会再输出内容.
 #### `createRef()`
-1. `createRef()` 是 React 目前推荐的创建 ref 的方式
+1. `createRef()` 是 `React` 目前推荐的创建 `ref` 的方式
     - 使用 `React.createRef()` 创建 `refs`, 并通过 `ref` 属性附加到 `React` 元素. 
-    - 当 `ref` 被传递给 `render` 中的元素时, 对该节点的引用可以在 ref 的 `current` 属性中被访问
+    - 当 `ref` 被传递给 `render` 中的元素时, 对该节点的引用可以在 r`ef 的 `current` 属性中被访问
     - 如果要创建多个 `ref` 引用, 就必须多次调用 `React.createRef()`, 每个 `React.createRef()` 只能创建一个 `ref` 引用.
     - ```jsx
       class Person extends React.Component {
@@ -2670,7 +2673,42 @@
         );
       }
 2. 其余按需引入组件或者自定义样式[请访问](https://3x.ant.design/docs/react/use-with-create-react-app-cn). 虽然我们是 `4.8.2` 版本, 但是也可以按照 `3.x` 的进行配置. 如果你安装的是最新版的 `antd`, [请访问](https://ant.design/docs/react/use-with-create-react-app-cn)
-- ![](../../image/)
+## `Redux`
+### 基础
+1. `redux` 是一个专用用于状态管理的 `js` 库, 不是 `react` 插件库
+2. 作用: 集中式管理 `react` 应用中多个组件`共享`的状态
+3. 什么情况下使用 `redux`
+    - 某个组件的状态需要其他状态访问(共享)
+    - 一个组件可以改变另一个组件的状态(通信)
+    - 总体元素: 能不用就不用, 如果不用比较吃力才考虑使用
+4. 原理图
+    - ![](../../image/redux原理图.png)
+5. 核心概念
+    - `action`
+      - 动作的对象
+      - 包含两个属性
+        - `type`: 标识属性, 字符串且需要唯一
+        - `data`: 数据属性, 值可以是任意类型, 可选
+      - 举例: 
+        - ```jsx
+          {
+            type: 'addStudent', 
+            data: {
+              name: 'tom', 
+              age: '18' 
+            }
+          }
+    - `reducer`
+      - 用于初始化状态, 加工状态. 加工时, 根据旧的 `state` 和 `action` 产生新的 `state` 的纯函数.
+    - `store`
+      - 将 `state`, `action` 和 `reducer` 联系在一起的对象
+      - 如果得到这个对象: `createStore()` 函数返回一个 `store` 对象
+      - 作用
+        - `getState()`: 得到 `state`
+        - `dispatch(action)`: 分发 `action`, 触发 `reducer`, 产生新的 `state`
+        - `subscribe(listener)`: 注册监听, 当产生了新的 `state` 后自动调用回调函数
+### 简易版求和案例
+1. 
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
