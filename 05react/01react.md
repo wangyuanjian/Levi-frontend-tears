@@ -2708,9 +2708,88 @@
         - `dispatch(action)`: 分发 `action`, 触发 `reducer`, 产生新的 `state`
         - `subscribe(listener)`: 注册监听, 当产生了新的 `state` 后自动调用回调函数
 ### 简易版求和案例
-1. 
-- ![](../../image/)
-- ![](../../image/)
+1. 文件结构
+    - ```shell
+      - src
+        - components
+          - Count
+            - index.jsx
+        - redux
+          - store.js
+          - count_reducer.js
+2. `count_reducer.js`
+    - 暴露一个函数, 这个函数接收两个参数 `preState` 和 `action`.
+    - 之前我们提到在 `reducer` 中初始化状态, 在首次执行这个函数时的返回值, 就是初始化的状态, 下面的例子中, 初始化的状态为 `0`
+    - ```jsx
+      export default function countReducer(preState, action) {
+        console.log('countReducer', preState, action);
+        const {type, data} = action;
+        switch (type) {
+          case 'add':
+            preState += data;
+            break;
+          case 'minus':
+            preState -= data;
+            break;
+          default:
+            preState = 0;
+            break;
+        }
+        return preState;
+      }
+    - 很好奇地时, 如果首次执行这个函数, 那么这两个参数会是什么呢? 🧐
+      - 哈哈, `preState` 是 `undefined`, `action` 只有 `type` 而没有 `data`, 而且 `type` 是 `Redux` 自己组装的和我们自己写的绝不会冲突的 `string`.
+      - ![](../../image/Snipaste_2022-05-25_22-06-41.png)
+      - 接着提问: 什么时候首次执行了这个函数呢? 就是在 Count 组件中使用 `store.getState()` 时
+    - 如果非首次调用, 比如执行 `+1` 操作时
+      - `preState` 是上一次的值, `0`. `action` 是代码中传的值. 这一部分需要结合 `Count` 组件的代码
+      - ![](../../image/Snipaste_2022-05-25_22-13-34.png)
+2. `store.js`
+    - ```jsx
+      import countReducer from './count_reducer';
+      import {createStore} from 'redux';
+
+      export default createStore(countReducer);
+    - 引入 `createStore` 函数, 接收一个 `reducer`, 返回一个 `store`
+3. `Count` 组件
+    - ```jsx
+      export default class Count extends Component {
+        selectRef = React.createRef();
+        add = () => {
+        }
+        minus = () => {
+        }
+        render() {
+          return (
+            <div>
+              <h2>当前求和为:{store.getState()}</h2>
+              <select name="num" id="num" ref={this.selectRef}>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>&nbsp;
+              <button onClick={this.add}>+</button>&nbsp;
+              <button onClick={this.minus}>-</button>&nbsp;
+            </div>
+          )
+        }
+      }
+    - 在组件中, 使用 `store.getState()` 获取 `state`. 
+    - 如何在加法和减法中真正修改 `state` 的值? 使用 `dispatch API`
+      - ```jsx
+        add = () => {
+          store.dispatch({
+            type: 'add',
+            data: +this.selectRef.current.value
+          });
+        }
+        minus = () => {
+          store.dispatch({
+            type: 'minus',
+            data: +this.selectRef.current.value
+          })
+        }
+    - 但是这么做的问题是什么? 页面不会发生更新. `Redux` 只维护状态, 并不会在状态发生改变时重新帮我们渲染组件
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
