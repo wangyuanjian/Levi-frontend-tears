@@ -60,6 +60,7 @@
     - [基础](#基础)
     - [简易版求和案例](#简易版求和案例)
     - [完整版求和案例](#完整版求和案例)
+    - [异步 `action`](#异步-action)
 
 <!-- /TOC -->
 
@@ -2857,6 +2858,56 @@
         store.dispatch(createDecrementAction(+this.selectRef.current.value))
       }
 3. 📕注意一下, 我们只是创建了 `action_creator`, 真正的 `reducer` 和 `store` 的关联还是在 `createStore(reducer)` 这个函数中体现的.
+### 异步 `action`
+1. 在实现异步是我们可以有两种方法
+    - 第一, 在 `setTimeout` 中调用 `dispatch`, 
+    - ```jsx
+       addAsync = () => {
+        setTimeout(() => {
+          store.dispatch(createIncrementAction(+this.selectRef.current.value))
+        }, 3000);
+      }
+    - 这种方式就像去饭店点餐, 自己先看菜单 `3` 秒, 然后告诉服务员上菜. 而异步 `action` 则是到了饭店就告诉服务员 `3` 秒后上菜.
+2. 编写异步 `action`
+    - > 异步的 `action` 是函数, 而不是之前介绍的对象
+    - 首先要安装插件 `redux-thunk@2.3.0`
+    - 第二, 修改 `store.js`, 引入插件来支持异步 `action`
+    - ```jsx
+      import countReducer from './count_reducer';
+      import {createStore, applyMiddleware} from 'redux';
+      // 引入 redux-thunk, 支持异步 action
+      import thunk from 'redux-thunk';
+
+      export default createStore(countReducer, applyMiddleware(thunk));
+    - 第三, 修改 `count_store_creator.js`
+    - ```jsx
+      export const createIncrementAsyncAction = (data, delay) => {
+        // 下面的返回的函数就是异步的 action
+        return (dispatch) => {
+          setTimeout(() => {
+            dispatch(createIncrementAction(data));
+          }, delay);
+        }
+      }
+    - 最后, 在 `Count` 组件中调用
+    - ```jsx
+      addAsync = () => {
+        store.dispatch(createIncrementAsyncAction(+this.selectRef.current.value, 1000));
+      }
+3. 我们来缕一缕思路
+    - ```jsx
+      addAsync = () => {
+        store.dispatch(createIncrementAsyncAction(+this.selectRef.current.value, 1000));
+      }
+    - 上面的 `createIncrementAsyncAction` 执行后, 其实就是
+    - ```jsx
+      addAsync = () => {
+        store.dispatch((dispatch) => {
+          setTimeout(() => {
+            dispatch(createIncrementAction(data));
+          }, 1000);
+        });
+      }
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
