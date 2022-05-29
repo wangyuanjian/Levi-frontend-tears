@@ -1,0 +1,36 @@
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: #34495e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.info {
+  height: 400px;
+  width: 400px;
+  border: 1px solid #eee;
+  position: relative;
+  border-radius: 50%;
+}
+.info .info-avatar {
+  position: absolute;
+  height: 80%;
+  width: 80%;
+  object-fit: cover;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+.info span {
+  position: absolute;
+  height: 100%;
+  left: 50%;
+  top: 0;
+  font-size: 2rem;
+  color: #eee;
+  transform-origin: left;
+  transform: rotate(calc(var(--i) * 40deg));
+}
