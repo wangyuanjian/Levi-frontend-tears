@@ -59,6 +59,7 @@
   - [`Redux`](#redux)
     - [基础](#基础)
     - [简易版求和案例](#简易版求和案例)
+    - [完整版求和案例](#完整版求和案例)
 
 <!-- /TOC -->
 
@@ -2790,6 +2791,72 @@
           })
         }
     - 但是这么做的问题是什么? 页面不会发生更新. `Redux` 只维护状态, 并不会在状态发生改变时重新帮我们渲染组件
+4. 如何在 `state` 发生改变时修改页面?
+    - 第一, 手动调用 `setState`
+      - 📕这里说的 `state` 是 `Redux` 维护的数据, 而 `setState` 是类组件实例的 `API`
+      - ```jsx
+         add = () => {
+            store.dispatch({
+              type: 'add',
+              data: +this.selectRef.current.value
+            });
+            this.setState({})
+          }
+          minus = () => {
+            store.dispatch({
+              type: 'minus',
+              data: +this.selectRef.current.value
+            })
+            this.setState({})
+          }
+      - 因为调用 `this.setState({})` 会重新渲染组件
+    - 第二, 监听事件 `subscribe(()=>{})`
+      - 上面的代码问题在于, 如果有很多函数修改了 `state` 的值, 那么就会触发 `Redux` 的回调, 在这个回调中, 再次更新 `state`
+      - ```jsx
+        componentDidMount() {
+          store.subscribe(() => {
+            this.setState({})
+          })
+        }
+    - 第三, 重新调用 `React.render`
+      - 上面的问题同样在与, 如果有很多组件都使用了 state, 那么需要在每个组件中都写一遍上面的方法. 一劳永逸的方法是修改 `index.js`
+      - ```jsx
+        store.subscribe(() => {
+          ReactDOM.render(
+            <React.StrictMode>
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+            </React.StrictMode>,
+            document.getElementById('root')
+          );
+        })
+### 完整版求和案例
+> 不同于简易版手动创建 store, 完整版不会手动创建
+1. 创建  `redux/count_action_creator.js`, 该文件专门为 `Count` 组件创建 `action` 对象.
+    - ```jsx
+      /**  专门为Count组件创建action */
+      export function createIncrementAction(data) {
+        return {
+          type: 'add',
+          data,
+        }
+      }
+      // 使用箭头函数的写法
+      export const createDecrementAction = data => ({type: 'minus', data})
+2. 修改 `Count` 组件
+    - ```jsx
+      add = () => {
+        // store.dispatch({
+        //   type: 'add',
+        //   data: +this.selectRef.current.value
+        // });
+        store.dispatch(createIncrementAction(+this.selectRef.current.value))
+      }
+      minus = () => {
+        store.dispatch(createDecrementAction(+this.selectRef.current.value))
+      }
+3. 📕注意一下, 我们只是创建了 `action_creator`, 真正的 `reducer` 和 `store` 的关联还是在 `createStore(reducer)` 这个函数中体现的.
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
