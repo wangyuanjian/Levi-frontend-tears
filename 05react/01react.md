@@ -61,6 +61,7 @@
     - [简易版求和案例](#简易版求和案例)
     - [完整版求和案例](#完整版求和案例)
     - [异步 `action`](#异步-action)
+    - [`react-redux`](#react-redux)
 
 <!-- /TOC -->
 
@@ -2908,7 +2909,78 @@
           }, 1000);
         });
       }
-- ![](../../image/)
+### `react-redux`
+> `react` 官方出品整合 `redux`
+1. [👉官网👈](https://react-redux.js.org/)
+    - 原理
+      - 组件被分为`容器组件`和 `UI 组件`
+      - 所有的 `UI 组件`都应该包裹在`容器组件`中, 他们是父子关系
+      - `容器组件`是真正和 `redux` 打交道的, 可以使用 `redux` 的 `API`
+      - `UI 组件`中不能使用任何 `redux` 的 `API`
+      - `容器组件`会将 `redux` 中的状态和用于操作状态的方法传给给 `UI 组件`(均通过 `props`)
+    - ![](../../image/react-redux.png)
+2. 安装
+    - ```shell
+       npm i react-redux@7.2.2
+3. 创建 `UI 组件`
+    - `src/component/Count/index.jsx`
+    - 从下面的代码,` UI 组件`中没有任何 `redux` 的 `API`
+    - ```jsx
+      import React, { Component } from 'react';
+
+      export default class Count extends Component {
+        selectRef = React.createRef();
+        add = () => {
+        }
+        minus = () => {
+        }
+        addAsync = () => {
+        }
+        render() {
+          return (
+            <div>
+              <h2>当前求和为:???</h2>
+              <select name="num" id="num" ref={this.selectRef}>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>&nbsp;
+              <button onClick={this.add}>+</button>&nbsp;
+              <button onClick={this.minus}>-</button>&nbsp;
+              <button onClick={this.addAsync}>异步+</button>&nbsp;
+            </div>
+          )
+        }
+      }
+4. 创建`容器组件`
+    - `src/container/Count/index.jsx`
+    - 容器组件不能使用类式组件, 因为容器组件要和 `redux` 打交道, 应由 `react-redux` 提供的 `API` 生成.
+    - 第一步, 在引入的内容上, 因为容器组件子组件是 UI 组件, 因此需要引入 `UI 组件`;
+    - ```jsx
+      import CountUI from '../../components/Count'
+    - 因为容器组件使用 redux, 因此需要引入核心的 `store`. 但是需要不能直接引入, 而是在 `App` 组件中传入 `store`. 下面是 `App` 组件的代码
+    - ```jsx
+      import './App.css';
+      import Count from './container/Count'
+      import store from './redux/store'
+
+      function App() {
+        return (
+          <div className="App">
+            <Count store={store}></Count>
+          </div>
+        );
+      }
+
+      export default App;
+    - 第三, 上面的问题在于, 我们并没有创建并暴露`容器组件`, 所以下面就要通过 `react-redux` 的 `connect` 函数创建容器组件
+    - ```jsx
+      import CountUI from '../../components/Count';
+      import { connect } from 'react-redux';
+
+      const CountContainer = connect()(CountUI);
+      export default CountContainer;
+    - 
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
