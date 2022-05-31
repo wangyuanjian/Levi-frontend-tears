@@ -2952,7 +2952,7 @@
           )
         }
       }
-4. 创建`容器组件`
+4. 创建`容器组件`(一)
     - `src/container/Count/index.jsx`
     - 容器组件不能使用类式组件, 因为容器组件要和 `redux` 打交道, 应由 `react-redux` 提供的 `API` 生成.
     - 第一步, 在引入的内容上, 因为容器组件子组件是 UI 组件, 因此需要引入 `UI 组件`;
@@ -2980,7 +2980,77 @@
 
       const CountContainer = connect()(CountUI);
       export default CountContainer;
-    - 
+5. 创建`容器组件`(二)
+    - 为了将状态和操作状态的方法从`容器组件`传递给 `UI 组件`, 需要在调用 `connect()` 时传递两个函数
+      - 第一个函数返回的对象将作为 `状态` 通过 `props` 的形式传递给 `UI 组件`; 第一个函数接收 `redux` 中的 `state` 作为参数
+      - 第二个函数返回的对象将作为 `操作函数的方法` 通过 props 的形式传递给`UI 组件`; 第二个函数接收 `redux` 中的 `dispatch` 作为参数
+    - ```jsx
+      function mapStateToProps(state) {
+        return {
+          count: state
+        }
+      }
+      function mapDispatchToProps(dispatch) {
+        return {
+          add: (number) => {
+            dispatch({ type: 'add', data: number})
+          }
+        }
+      }
+
+      const CountContainer = connect(mapStateToProps, mapDispatchToProps)(CountUI);
+      export default CountContainer;
+    - 从下面的截图可以看到, `UI` 组件已经成功接收到了 `状态`和`操作状态的函数` 的 `props`
+    - ![](../../image/Snipaste_2022-05-31_21-29-06.png)
+    - 在接收到容器组件传来的`状态`和`状态修改函数`后, 就可以使用 `UI 组件`啦.
+    - ```jsx
+      import React, { Component } from 'react';
+
+      export default class Count extends Component {
+        selectRef = React.createRef();
+        add = () => {
+          // 这里!!!!
+          this.props.add(+this.selectRef.current.value)
+        }
+        minus = () => {
+        }
+        addAsync = () => {
+        }
+        render() {
+          console.log('props in CountUI', this.props);
+          return (
+            <div>
+              <!-- 这里!!!! -->
+              <h2>当前求和为:{this.props.count}</h2>
+              <select name="num" id="num" ref={this.selectRef}>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>&nbsp;
+              <button onClick={this.add}>+</button>&nbsp;
+              <button onClick={this.minus}>-</button>&nbsp;
+              <button onClick={this.addAsync}>异步+</button>&nbsp;
+            </div>
+          )
+        }
+      }
+    - 优化一下`容器组件`代码: 不能手动创建 `action` 哦
+    - ```jsx
+      import { createIncrementAction } from '../../redux/count_action_creator';
+
+      function mapDispatchToProps(dispatch) {
+        return {
+          add: (number) => {
+            // dispatch({ type: 'add', data: number})
+            dispatch(createIncrementAction(number))
+          }
+        }
+      }
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
