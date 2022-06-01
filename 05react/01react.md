@@ -62,6 +62,8 @@
     - [完整版求和案例](#完整版求和案例)
     - [异步 `action`](#异步-action)
     - [`react-redux`](#react-redux)
+      - [基础](#基础-1)
+      - [优化](#优化)
 
 <!-- /TOC -->
 
@@ -2911,6 +2913,7 @@
       }
 ### `react-redux`
 > `react` 官方出品整合 `redux`
+#### 基础
 1. [👉官网👈](https://react-redux.js.org/)
     - 原理
       - 组件被分为`容器组件`和 `UI 组件`
@@ -3046,7 +3049,32 @@
           }
         }
       }
-- ![](../../image/)
+6. 来看看打印出来的容器组件到底是什么
+    - ![](../../image/Snipaste_2022-06-01_21-29-29.png)
+#### 优化
+1. 改写 `mapDispatchToProps` 函数
+    - 由函数写法变成了对象写法. 
+    
+    - ```jsx
+      // function mapDispatchToProps(dispatch) {
+      //   return {
+      //     add: (number) => {
+      //       dispatch(createIncrementAction(number))
+      //     }
+      //   }
+      // }
+
+      const mapDispatchToProps = {
+        add: createIncrementAction
+      }
+    - 📕 `createIncrementAction` 也是函数哦, 其接收 `data` 作为参数, 返回一个 `action`
+    - ```jsx
+      function createIncrementAction(data) {
+        return {
+          type: 'add',
+          data,
+        }
+      }
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
