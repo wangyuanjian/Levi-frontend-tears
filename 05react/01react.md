@@ -3054,7 +3054,6 @@
 #### 优化
 1. 改写 `mapDispatchToProps` 函数
     - 由函数写法变成了对象写法. 
-    
     - ```jsx
       // function mapDispatchToProps(dispatch) {
       //   return {
@@ -3074,6 +3073,35 @@
           type: 'add',
           data,
         }
+      }
+2. 取消 `subscribe` 回调
+    - 在使用 `redux` 时, 需要订阅 `subscribe` 回调来更行整个页面, 因为 `redux` 只负责状态管理. 但是 `connect` 函数在
+    - ```jsx
+      // react-redux 检测更听
+      // store.subscribe(() => {
+      //   ReactDOM.render(
+      //     <React.StrictMode>
+      //       <BrowserRouter>
+      //         <App />
+      //       </BrowserRouter>
+      //     </React.StrictMode>,
+      //     document.getElementById('root')
+      //   );
+      // })
+3. 使用 `Provider`
+    - 之前传递 `store` 是通过给容器组件手动注入 `store` `props`, 这样写的问题在于如果有很多个容器组件就要写很多遍 `props`. 使用 `<Provider>` 包裹容器组件可以只写一处而传递多处.
+    - 下面是 `App,js`
+    - ```jsx
+      import { Provider } from 'react-redux';
+
+      function App() {
+        return (
+          <div className="App">
+            <Provider store={store}>
+              <Count></Count>
+            </Provider>
+          </div>
+        );
       }
 - ![](../../image/)
 - ![](../../image/)
