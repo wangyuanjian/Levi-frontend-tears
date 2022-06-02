@@ -3075,7 +3075,7 @@
         }
       }
 2. 取消 `subscribe` 回调
-    - 在使用 `redux` 时, 需要订阅 `subscribe` 回调来更行整个页面, 因为 `redux` 只负责状态管理. 但是 `connect` 函数在
+    - 在使用 `redux` 时, 需要订阅 `subscribe` 回调来更行整个页面, 因为 `redux` 只负责状态管理. 但是 `connect` 函数帮我们做了检测和更新, 这也是我们不手写类式组件所有容器组件的原因, 因为自己写的没有监听和更新的功能.
     - ```jsx
       // react-redux 检测更听
       // store.subscribe(() => {
@@ -3103,7 +3103,22 @@
           </div>
         );
       }
-- ![](../../image/)
+4. 合并容器组件和`UI 组件`
+    - 分开写的弊端就是会导致组件太多. 合并写的话, 仍然保留 `container/Count/index.jsx` 这个容器组件, 但是把 UI 组建的定义移到容器组件中
+    - ```jsx
+      // UI 组件, 不需要暴露
+      class Count extends Component {
+      }
+
+      function mapStateToProps(state) {
+      }
+      const mapDispatchToProps = {
+      }
+      // 只暴露容器组件
+      export default connect(mapStateToProps, mapDispatchToProps)(Count);
+5. 同样的优化在 `reducer` 和 `action creator` 一样, 因为只有一份 `state`, 而这个 `state` 保存很多数据, 就只能不同的通过 `reducer` 来操作. 
+    - 在 `redux` 文件夹下创建 `actions` 文件夹和 `reducers` 文件夹
+    - ![](../../image/Snipaste_2022-06-02_22-20-26.png)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
