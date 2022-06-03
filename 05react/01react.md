@@ -61,6 +61,7 @@
     - [简易版求和案例](#简易版求和案例)
     - [完整版求和案例](#完整版求和案例)
     - [`combineReducers`](#combinereducers)
+    - [纯函数](#纯函数)
     - [异步 `action`](#异步-action)
     - [`react-redux`](#react-redux)
       - [基础](#基础-1)
@@ -2897,6 +2898,79 @@
     - 上面的代码中, `combineReducers` 的对象参数, 就是唯一的 `state`, 如果我们要访问 `redux` 中管理的数据, 就需要多加上 `state` 中的 `key` 了. 因此需要修改 `Count` 组件, 因为之前是通过 `store.getState()` 访问的
     - ```jsx
       <h2>当前求和为:{store.getState().count}</h2>
+### 纯函数
+> [👉reducer 基础👈](https://www.redux.org.cn/docs/recipes/reducers/PrerequisiteConcepts.html), [👉还有这里👈](https://www.redux.org.cn/docs/recipes/reducers/ImmutableUpdatePatterns.html)
+1. 我们继续完成 `combineReducers` 部分的案例
+    - 编写 peopleList 组件
+    - ```jsx
+      import React, { Component } from 'react'
+      import store from '../../redux/store'
+
+      export default class PeopleList extends Component {
+        nameRef = React.createRef();
+        ageRef = React.createRef();
+        addPerson = () => {
+          store.dispatch({
+            type: 'ADD_PERSON',
+            data: {
+              name: this.nameRef.current.value,
+              age: this.ageRef.current.value,
+            }
+          });
+        }
+        render() {
+          return (
+            <div>
+              <input type="text" ref={this.nameRef} name="name" />
+              <input type="text" ref={this.ageRef} name="age" />
+              <button onClick={this.addPerson}>添加</button>
+              <hr />
+              {
+                store.getState().personlist.map(people => {
+                  return <li key={people.id}>{people.name}---{people.age}</li>
+                })
+              }
+            </div>
+          )
+        }
+      }
+    - 之前写的 `personlist_reducer` 是这样的
+    - ```jsx
+      export default function personlistReducer(preState, action) {
+        const {type, data} = action;
+        switch (type) {
+          case 'ADD_PERSON':
+            console.log('ADD_PERSON 执行了');
+            preState.push({
+              id: Math.random(),
+              name: data.name,
+              age: data.age
+            });
+            return preState;
+          default:
+            return [];
+        }
+      }
+    - 视频里说, 上面的代码直接修改了 `preState` 这个入参, 但是 `redux` 在判断状态是否发生变化时, 使用的是浅比较, 因此 `preState` 的地址没变故更新失败. 官网也是这么说的, 但是我自己测试的是可以的😅
+2. 总结就是 `reducer` 应该是纯函数
+    - 定义: 只要是相同的输入, 必定得到相同的输出.
+    - 官网建议 `reducer` 遵守一下的约定
+      - 不直接修改 `preState`
+      - 不产生任何副作用, 比如网络请求, 输入和输出设备;
+      - 不调用 `Date.now()` 和 `Math.random()` 等非纯函数;
+    - 按照上面的要求改写 `reducer` 为纯函数
+    - ```jsx
+      // preState.push({
+      //   id: Math.random(),
+      //   name: data.name,
+      //   age: data.age
+      // });
+      // return preState;
+      return [...preState, {
+        id: Math.random(),
+        name: data.name,
+        age: data.age
+      }]
 ### 异步 `action`
 1. 在实现异步是我们可以有两种方法
     - 第一, 在 `setTimeout` 中调用 `dispatch`, 
