@@ -43,6 +43,7 @@
   - [`react-router@5.3.0`](#react-router530)
     - [路由组件和一般组件](#路由组件和一般组件)
     - [`NavLink`](#navlink)
+    - [懒加载`lazy`](#懒加载lazy)
     - [`Switch`](#switch)
     - [解决样式丢失的问题](#解决样式丢失的问题)
     - [路由的模糊匹配和严格匹配](#路由的模糊匹配和严格匹配)
@@ -2124,6 +2125,61 @@
         <MyNavLink to="/home">去HOME</MyNavLink>
         <MyNavLink to="/about">去ABOUT</MyNavLink>
       </div>
+### 懒加载`lazy`
+1. 如果不懒加载, 那么页面的所有路由组件在页面加载完成时也就加载完成了, 这很影响首页加载速度, 因此需要使用懒加载. 懒加载的意思就是只有使用组件 `A` 时才加载组件 `A`
+    - 修改之前的代码. 懒加载 `Home` 和 `About` 组件, 引入 `lazy` 函数
+    - ```jsx
+      const Home = lazy(() => import('./component/Home'))
+      const About = lazy(() => import('./component/About'))
+    - 引入 `Suspense` 组件, 指定 `fallback` 作为懒加载组件因为网络等原因等待过长的"加载中"组件, 当然我们可以写一个 `jsx` 表达式
+    - ```jsx
+       <Suspense fallback={ <h1>Loading....</h1>   }>
+        <Route path="/home" component={Home}></Route>
+        <Route path="/about" component={About}></Route>
+      </Suspense>
+    - 效果:
+      - 网速被设置为 `fast 3G` 后, 在懒加载 `Home` 之前先加载了 `loading`
+      - `Home` 组件并没有在整个页面被加载完成时完成加载, 而是在路由生效时菜价在, 体现在 `js` 文件的网络请求.
+    - ![](../../image/react-router-lazy.gif)
+    - 完整代码(`App.jsx`)
+    - ```jsx
+      import './App.css';
+      import {lazy, Suspense} from 'react';
+      import { Link, Route } from 'react-router-dom';
+
+      const Home = lazy(() => import('./component/Home'))
+      const About = lazy(() => import('./component/About'))
+
+      function App() {
+        return (
+          <div className="App">
+            <div style={{border: '1px solid pink'}}>
+                <Link to="/home">去HOME</Link>
+                <Link to="/about">去ABOUT</Link>
+            </div>
+            <div style={{backgroundColor: 'skyblue'}}>
+              <Suspense fallback={ <h1>Loading....</h1>   }>
+                <Route path="/home" component={Home}></Route>
+                <Route path="/about" component={About}></Route>
+              </Suspense>
+            </div>
+          </div>
+        );
+      }
+
+      export default App;
+2. 编写自己的 `Loading` 组件
+    - 如果上面的简单的 `loading` 无法满足业务需要, 可以自己写一个 `loading` 组件.
+    - 📕一定不要将 Loading 组件也写成懒加载的形式!!!! 因为它就是在懒加载请求过程中起作用的
+    - ```jsx
+      import Loading from './component/Loading';
+      // 下面的写法是错误的
+      // <Suspense fallback={ Loading }>
+      <Suspense fallback={ <Loading /> }>
+          <Route path="/home" component={Home}></Route>
+          <Route path="/about" component={About}></Route>
+      </Suspense>
+    - ![](../../image/react-router-lazy-loading.gif)
 ### `Switch`
 1. 让我们再多引入一个组件 Test, 并将其路由同样注册为 `/about`
     - ```jsx
