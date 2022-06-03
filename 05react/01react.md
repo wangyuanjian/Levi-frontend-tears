@@ -60,6 +60,7 @@
     - [基础](#基础)
     - [简易版求和案例](#简易版求和案例)
     - [完整版求和案例](#完整版求和案例)
+    - [`combineReducers`](#combinereducers)
     - [异步 `action`](#异步-action)
     - [`react-redux`](#react-redux)
       - [基础](#基础-1)
@@ -2861,6 +2862,41 @@
         store.dispatch(createDecrementAction(+this.selectRef.current.value))
       }
 3. 📕注意一下, 我们只是创建了 `action_creator`, 真正的 `reducer` 和 `store` 的关联还是在 `createStore(reducer)` 这个函数中体现的.
+### `combineReducers`
+1. 之前的案例从始至终 `redux` 保存的 `state` 都只有 `count:0` 这一个, 但是实际开发中需要的不仅一个状态; 但是 `redux` 只允许有一个 `state`, 因此唯一的 `state` 应该是个对象, 其中的一组组 `key` 和 `value` 才是不同的状态.
+2. `state` 中有不同的状态, 因此也需要不同的 `reducer` 单独管理对应的状态, 而 `combineReducers` 的作用是, 把一个由多个不同 `reducer` 函数作为 `value` 的 `object` 合并成一个最终的 `reducer` 函数, 再对合并和的 `reducer` 调用 `createStore` 方法.
+3. 案例
+    - 首先创建一个 `personList` 的 reducer
+    - ```jsx
+      export default function personlistReducer(preState, action) {
+      const {type, data} = action;
+      switch (type) {
+        case 'ADD_PERSON':
+          preState.push({
+            id: Math.random(),
+            name: data.name,
+            age: data.age
+          });
+          return preState;
+        default:
+          return [];
+      }
+    }
+    - 下面修改 `store.js`
+    - ```jsx
+      import countReducer from './count_reducer';
+      import personlistReducer from './personlist_reducer';
+      import {createStore, combineReducers} from 'redux';
+
+      const rootReducer = combineReducers({
+        count: countReducer,
+        personlist: personlistReducer
+      });
+
+      export default createStore(rootReducer);
+    - 上面的代码中, `combineReducers` 的对象参数, 就是唯一的 `state`, 如果我们要访问 `redux` 中管理的数据, 就需要多加上 `state` 中的 `key` 了. 因此需要修改 `Count` 组件, 因为之前是通过 `store.getState()` 访问的
+    - ```jsx
+      <h2>当前求和为:{store.getState().count}</h2>
 ### 异步 `action`
 1. 在实现异步是我们可以有两种方法
     - 第一, 在 `setTimeout` 中调用 `dispatch`, 
