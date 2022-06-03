@@ -68,6 +68,8 @@
     - [`react-redux`](#react-redux)
       - [基础](#基础-1)
       - [优化](#优化)
+  - [`Hooks`](#hooks)
+    - [`useState`](#usestate)
 
 <!-- /TOC -->
 
@@ -3300,8 +3302,57 @@
 5. 同样的优化在 `reducer` 和 `action creator` 一样, 因为只有一份 `state`, 而这个 `state` 保存很多数据, 就只能不同的通过 `reducer` 来操作. 
     - 在 `redux` 文件夹下创建 `actions` 文件夹和 `reducers` 文件夹
     - ![](../../image/Snipaste_2022-06-02_22-20-26.png)
-- ![](../../image/)
-- ![](../../image/)
+## `Hooks`
+> [👉中文官网👈](https://zh-hans.reactjs.org/docs/hooks-intro.html) `Hook` 是 `React 16.8` 的新增特性. 它可以让你在不编写 `class` 的情况下使用 `state` 以及其他的 `React` 特性.
+### `useState`
+1. 先看案例
+    - ```jsx
+      import { useState } from "react";
+
+      export default function Count() {
+        const [count, setCount] = useState(0);
+
+        function add() {
+          console.log('this in add', this, Count);
+          setCount(count + 1);
+        }
+        return (
+          <div>
+            <h2>当前求和为: {count}</h2>
+            <button onClick={add}>点我+1</button>
+          </div>
+        )
+      }
+    - 仅使用这个案例, 就可以完成显示数字并自动加一的效果
+2. `Hook` 是什么
+    - `Hook` 是一个特殊的函数. `useState` 同样是一个函数, 它接收一个初始的 `state`, 返回包含这个 `state` 和修改这个 `state` 的数组. 因此我们可以通过解构赋值的方式拿到.
+    - ```jsx
+      /**
+       * Returns a stateful value, and a function to update it.
+      *
+      * @version 16.8.0
+      * @see https://reactjs.org/docs/hooks-reference.html#usestate
+      */
+      function useState<S>(initialState: S | (() => S)): [S, Dispatch<SetStateAction<S>>];
+    - ![](../../image/Snipaste_2022-06-03_18-11-31.png)
+    - 关于初始的 `state`, 不同于 `class` 的是, 我们可以按照需要使用数字或字符串对其进行赋值, 而不一定是对象.
+    - 如果想要创建多个 `state`, 只需多次调用 `useState` 即可.
+    - ```jsx
+      const [count, setCount] = useState(0);
+      const [name, setName] = useState('tom');
+3. 为什么叫 `useState` 而不是 `createState`
+    - 因为 `create` 不准确, `state` 只在组件首次渲染的时候被创建. 下一次重新渲染时, `useState` 会返回给我们当前的 `state`.
+4. `setCount`
+    - 在修改 `count` 这个 `state` 时, 除了直接写 `setCount(count + 1);` 外, 还可以传入一个函数, 函数的参数是之前的 `state`
+    - ```jsx
+      function add() {
+        // setCount(count + 1);
+        setCount(prevValue => {
+          console.log('before count is', prevValue);
+          return prevValue + 1;
+        })
+      }
+    - ![](../../image/Snipaste_2022-06-03_19-29-16.png)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
