@@ -62,6 +62,7 @@
     - [完整版求和案例](#完整版求和案例)
     - [`combineReducers`](#combinereducers)
     - [纯函数](#纯函数)
+    - [`redux` 开发者工具](#redux-开发者工具)
     - [异步 `action`](#异步-action)
     - [`react-redux`](#react-redux)
       - [基础](#基础-1)
@@ -2971,6 +2972,20 @@
         name: data.name,
         age: data.age
       }]
+### `redux` 开发者工具
+1. 现在应用商店安装对应插件
+2. 安装对应依赖
+    - ```shell
+      npm i redux-devtools-extension@2.13.8 
+3. 在 `store.js` 中引入
+    - ```js
+      import { composeWithDevTools } from 'redux-devtools-extension'
+
+      // 不需要异步 action 
+      // export default createStore(countReducer, composeWithDevTools());
+      // 需要异步action
+      export default createStore(countReducer, composeWithDevTools(applyMiddleware(thunk)));
+    - ![](../../image/Snipaste_2022-06-03_14-35-24.png)
 ### 异步 `action`
 1. 在实现异步是我们可以有两种方法
     - 第一, 在 `setTimeout` 中调用 `dispatch`, 
