@@ -2079,6 +2079,7 @@
         import { createContext } from "react";
         export default createContext();
       - 文件进引入并调用 `createContext`() 函数, 其返回一个 `Context` 对象.
+      - 其实 `createContext` 可以接收一个参数, 作为 `context` 的默认值.
     - `GrandFather`
       - ```jsx
         import React, { Component } from 'react'
@@ -2141,6 +2142,29 @@
       - ![](../../image/Snipaste_2022-06-04_18-17-08.png)
     - 最后的效果
     - ![](../../image/react-context.gif)
+3. 上面的代码因为使用了 `static` 所以只能在类式组件中用, 如果函数式组件也需要 `Context` 怎么办呢? 使用 `Consumer API`
+    - ```jsx
+      export default function Me() {
+        return (
+          <div style={{ backgroundColor: 'pink', paddingBottom: '1rem' }}>
+            <h2>我是孙子组件</h2>
+            <h2>Context传来的值是 
+              <ThemeContext.Consumer >
+                {
+                  // 下面是一个函数, 参数 value 就是类式组件的 context
+                  value => `->>> ${value.theme}`
+                }
+              </ThemeContext.Consumer>
+              哈哈哈哈
+            </h2>
+          </div>
+        )
+      }
+    - ![](../../image/Snipaste_2022-06-04_20-04-23.png)
+    - `Consumer` 需要一个函数作为子元素, 函数接收当前的 `context` 值作为参数并返回一个 React 节点.
+    - ![](../../image/)
+    - ![](../../image/)
+    - ![](../../image/)
     - ![](../../image/)
     - ![](../../image/)
 ## `react-router@5.3.0`
