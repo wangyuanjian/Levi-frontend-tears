@@ -71,6 +71,7 @@
   - [`Hooks`](#hooks)
     - [`useState`](#usestate)
     - [`useEffect`](#useeffect)
+    - [`useRef`](#useref)
 
 <!-- /TOC -->
 
@@ -3522,7 +3523,7 @@
           console.log('第一次渲染执行, 之后byebye');
         }, []);
       - ![](../../image/Snipaste_2022-06-04_11-10-14.png)
-    - 如果数组中含有变量, `React` 在组件渲染时会比较这个变量, 只有其发生了改变才会重新执行 `effect`. 但是首次渲染也会执行哦!
+    - 如果数组中含有变量, `React` 在组件渲染时会比较这个变量, 只有其发生了改变才会重新执行 `effect`. 但是首次渲染也会执行哦! 
       - ```jsx
         useEffect(() => {
           console.log('count 改变了');
@@ -3533,7 +3534,23 @@
       - 📕看下面的截图, 两个 `effect` 在首次渲染时都执行了, 但是只有第一个 `effect` 在 `count` 发生改变时执行了, 而实际代码中父组件没有传给子组件 `name`, `name` 始终为 `undefined`, 因此子组件重新渲染时, 第二个 `effect` 永远不会执行.
       - ![](../../image/Snipaste_2022-06-04_11-15-58.png)
     - 当然, 不论第二个参数传递什么, 只要 `effect` 有返回值, 都会在组件卸载时执行.
-- ![](../../image/)
+### `useRef`
+1. `useRef` 返回一个可变的 `ref` 对象, 其 `.current` 属性被初始化为传入的参数(`initialValue`), 返回的 `ref` 对象在组件的整个生命周期内持续存在
+    - ```jsx
+      import { useRef } from "react"
+
+      export default function Show() {
+        const usernameRef = useRef();
+        const ageRef = useRef();
+        return (
+          <div>
+            <input type="text" name="username" ref={usernameRef} />&nbsp;
+            <input type="text" name="age" ref={ageRef} />&nbsp;
+            <button onClick={() => console.log(usernameRef.current.value, ageRef.current.value) }>点我展示输入</button>
+          </div>
+        )
+      }
+    - ![](../../image/Snipaste_2022-06-04_14-18-05.png)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
