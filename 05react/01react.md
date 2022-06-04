@@ -70,6 +70,7 @@
       - [优化](#优化)
   - [`Hooks`](#hooks)
     - [`useState`](#usestate)
+    - [`useEffect`](#useeffect)
 
 <!-- /TOC -->
 
@@ -3353,7 +3354,73 @@
         })
       }
     - ![](../../image/Snipaste_2022-06-03_19-29-16.png)
-- ![](../../image/)
+### `useEffect`
+> 可以让你在函数组件中执行副作用操作
+1. 数据获取, 设置订阅和手动修改 `DOM` 都属于副作用, `React` 中有两种常见的副作用操作: 需要清除的和不需要清除的.
+    - 不需要清除的副作用
+      - 比如想在更新 `DOM` 之后额外运行一些代码, 比如发送网络请求, 手动更改 `DOM`, 或者记录日志, 这些都是无需清除的操作, 无需清除的意思就是执行操作后, 就可以忽略它们了.
+    - 需要清除的副作用
+      - 必须订阅了消息, 或者设置了定时器, 在组件销毁时, 取消订阅和取消定时器是非常重要的, 可以防止内存泄漏.
+2. 我们可以把 `useEffect` 看作 `componentDidMount`, `componentDidUpdate` 和 `compoenentWillUnmount` 三个函数的组合. 在类式组件中, 关于副作用都是在这三个钩子中实现的.
+3. 不需要清除的副作用
+    - 案例: 设置一个点击事件, 并在点击事情发生后更新页面的 `title`
+    - ```jsx
+      import { useState, useEffect } from "react";
+
+      export default function Title() {
+        const [count, setCount] = useState(0);
+
+        useEffect(() => {
+          document.title = `点击了 ${count} 次`;
+        })
+
+        return (
+          <div>
+            <h2>点击了: {count}</h2>
+            <button onClick={() => setCount(count + 1)}>CLICK ME!</button>
+          </div>
+        )
+      }
+    - ![](../../image/Snipaste_2022-06-04_09-27-10.png)
+    - `useEffect` 做了什么?
+      - 通过 `useEffect` 我们向 `React` 传递了一个函数, 我们称之为 `effect`. `React` 会保存这个函数并在 `DOM` 更新之后调用它.
+    - `useEffect` 会在每次选然后都执行吗?
+      - 使得, 默认情况下(useEffect只有一个参数), 它在`第一次渲染后`和`每次更新后`都会执行, 相当于 `componentDidMount` 和 `componentDidUpdate` 这两个钩子. `React` 保证每次运行 `effect` 的时候, `DOM` 都已经更新完毕.
+      - 但是不同于 `componentDidMount` 和 `componentDidUpdate` 的是, `useEffect` 调度的 `effect` 不会阻塞浏览器更新屏幕, 这让应用看起来响应更快, 大多数情况下, `effect` 不需要同步执行.
+3. 需要清除的副作用
+    - 你可能觉得需要单独的 `effect` 来清除副作用, 但是由于订阅与取消订阅, 设置定时器和取消定时器等代码的紧密行, `useEffect` 的设计是在同一个地方执行. 
+    - 如果 `effect` 返回了一个函数, `React` 将会在执行清除时调用它.
+    - ```jsx
+      import { useState, useEffect } from "react";
+      import { ReactDOM } from "react";
+
+      export default function Timer() {
+        const [count, setCount] = useState(0);
+
+        useEffect(() => {
+          // 设置定时器
+          let timer = setInterval(() => {
+            setCount(count + 1);
+          }, 1000);
+          // 取消定时器
+          return () => {
+            clearInterval(timer);
+          }
+        })
+
+        function destroy() {
+          ReactDOM.unmountComponentAtNode('root')
+        }
+
+        return (
+          <div>
+            <h2>当前是:{count}</h2>
+            <button onClick={destroy}>销毁组件</button>
+          </div>
+        )
+      }
+    - 上面的代码没问题, 不过我装的是 `React 18`, 已经废了 `unmountComponentAtNode` 这个 `API`
+    
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
