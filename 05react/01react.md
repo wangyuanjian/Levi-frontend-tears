@@ -3420,7 +3420,123 @@
         )
       }
     - 上面的代码没问题, 不过我装的是 `React 18`, 已经废了 `unmountComponentAtNode` 这个 `API`
-    
+    - 每个 `effect` 都可以返回一个清除函数. `React` 会在组件卸载时执行清除操作, `React` 会在执行当前 `effect` 之前对上一个 `effect` 进行清除.
+3. 使用多个 `Effect` 实现关注点分离
+    - 使用 `Hook` 的一个目的就是解决 class 生命周期函数中经常包含不相关的逻辑但, 又想把相关的逻辑分离到不同方法中的问题.
+    - 实际上我们可以写多个 `useEffect`, 每一个 `useEffect` 只实现相关的逻辑, 多个 `useEffect` 将按照书写顺序依次执行.
+4. 为什么每次更新的时候都要运行 `Effect`
+    - 还记得在 `effect` 中返回函数会在组件卸载时调用吗? 实际上 `effect` 的清除阶段在每次重新渲染时都会执行, 而不是只在卸载组件时执行一次.
+    - 修改之前的案例: `点击+1`, 将按钮移动到父组件, 然后通过 `props` 传入子组件. 
+    - 首先是子组件
+    - ```jsx
+      import { useEffect } from "react";
+
+      export default function Count(props) {
+
+        useEffect(() => {
+          console.log('组件更新了');
+          return () => {
+            console.log('我被销毁了');
+          }
+        })
+        return (
+          <div>
+            <h2>当前求和为: {props.count}</h2>
+          </div>
+        )
+      }
+    - 然后是父组件
+    - ```jsx
+      import './App.css';
+      import Count2 from './component/Count2'
+      import { useState } from 'react';
+
+      function App() {
+        const [count, setCount] = useState(0);
+        function add() {
+          setCount(count+1);
+        }
+        return (
+          <div className="App">
+            {/* <Timer></Timer> */}
+            <Count2 count={count}></Count2>
+            <button onClick={add}>点我+1</button>
+          </div>
+        );
+      }
+      export default App;
+    - 📕注意下面的顺序, 在 `props` 发生改变后调用 `effect` 前, 调用了 `effect` 的返回值函数哦!(即打印输出的 `我被销毁了`)
+    - ![](../../image/Snipaste_2022-06-04_10-54-57.png)
+    - 这样做可以避免类式组件 `bug`, 比如官网的例子, 子组件订阅某用户在线专改, 但是该用户信息是 `props` 中传来的
+    - ```jsx
+       componentDidMount() {
+        ChatAPI.subscribeToFriendStatus(
+          this.props.friend.id,
+          this.handleStatusChange
+        );
+      }
+
+      componentWillUnmount() {
+        ChatAPI.unsubscribeFromFriendStatus(
+          this.props.friend.id,
+          this.handleStatusChange
+        );
+      }
+    - 如果父组件传来的 `props` 发生了改变, 上面的写法就会导致显示的仍是之前用户的状态, 为了避免这个问题, 必须先在 `componentDidUpdate` 组件中取消订阅之前用户的状态然后订阅新的用户状态
+    - ```jsx
+      componentDidUpdate(prevProps) {
+      // 取消订阅之前的 friend.id
+      ChatAPI.unsubscribeFromFriendStatus(
+        prevProps.friend.id,
+        this.handleStatusChange
+      );
+      // 订阅新的 friend.id
+      ChatAPI.subscribeToFriendStatus(
+        this.props.friend.id,
+        this.handleStatusChange
+      );
+    }
+    - 如果使用 useEffect, 就可以完全避免这样的重复写法
+    - ```jsx
+      useEffect(() => {
+        // 订阅新的 API
+        ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);
+
+        // props 发生改变, 取消订阅
+        return () => {
+          ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);
+        };
+      });
+5. `useEffect` 的第二个参数
+    - 第二个参数是一个数组, 可以用于指定仅在某些变量发生更改时调用 `effect`
+    - 之前的写法是没有传递第二个参数, 因此会在组件第一次渲染后和组件更新后调用 `effect`.
+    - 如果传递空数组`[]`, 表示只在第一次渲染后执行.
+      - ```jsx
+        useEffect(() => {
+          console.log('组件更新了');
+          return () => {
+            console.log('我被销毁了');
+          }
+        })
+        useEffect(() => {
+          console.log('第一次渲染执行, 之后byebye');
+        }, []);
+      - ![](../../image/Snipaste_2022-06-04_11-10-14.png)
+    - 如果数组中含有变量, `React` 在组件渲染时会比较这个变量, 只有其发生了改变才会重新执行 `effect`. 但是首次渲染也会执行哦!
+      - ```jsx
+        useEffect(() => {
+          console.log('count 改变了');
+        }, [props.count]);
+        useEffect(() => {
+          console.log('name因为是 undefined, 永远不会变');
+        }, [props.name])
+      - 📕看下面的截图, 两个 `effect` 在首次渲染时都执行了, 但是只有第一个 `effect` 在 `count` 发生改变时执行了, 而实际代码中父组件没有传给子组件 `name`, `name` 始终为 `undefined`, 因此子组件重新渲染时, 第二个 `effect` 永远不会执行.
+      - ![](../../image/Snipaste_2022-06-04_11-15-58.png)
+    - 当然, 不论第二个参数传递什么, 只要 `effect` 有返回值, 都会在组件卸载时执行.
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
+- ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
