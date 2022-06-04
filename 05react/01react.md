@@ -41,6 +41,7 @@
       - [方式二: 写在 `setupProxy.js` 中](#方式二-写在-setupproxyjs-中)
       - [消息订阅与发布](#消息订阅与发布)
     - [`<Fragment>`](#fragment)
+    - [`Context`](#context)
   - [`react-router@5.3.0`](#react-router530)
     - [路由组件和一般组件](#路由组件和一般组件)
     - [`NavLink`](#navlink)
@@ -2067,6 +2068,81 @@
         )
       }
     - 空白节点同样不会被渲染.
+### `Context`
+>  `Context` 提供了一个无需为每层组件手动添加 `props`, 就能在组件树间进行数据传递的方法
+1. 在一个典型的 `React` 应用中, 数据是通过 `props` 属性自上而下(由父及子)进行传递的, 但此种用法对于某些类型的属性而言是极其繁琐的(例如: 地区偏好, `UI` 主题), 这些属性是应用程序中许多组件都需要的. `Context` 提供了一种在组件之间共享此类值的方式, 而不必显式地通过组件树的逐层传递 `props`
+2. 案例
+    - 项目结构: 📕注意我们创建 `context` 应该在所有组件中都可以访问, 因此我单独写了一个文件
+      - ![](../../image/Snipaste_2022-06-04_18-03-47.png)
+    - `context.js`
+      - ```jsx
+        import { createContext } from "react";
+        export default createContext();
+      - 文件进引入并调用 `createContext`() 函数, 其返回一个 `Context` 对象.
+    - `GrandFather`
+      - ```jsx
+        import React, { Component } from 'react'
+        import Father from '../Father'
+        import ThemeContext from '../../context';
+
+        export default class GrandFather extends Component {
+          state = { theme: 'light' }
+          render() {
+            return (
+              <div style={{backgroundColor: 'skyblue', paddingBottom: '1rem'}}>
+                <h2>我是爷爷组件</h2>
+                <button onClick={() => this.setState({theme: 'dark'})}>修改传给孙子的值</button>
+                <ThemeContext.Provider value={{theme: this.state.theme }}>
+                  <Father />
+                </ThemeContext.Provider>
+              </div>
+            )
+          }
+        }
+      - 首先引入了 `ThemeContext`, 并调用其 `Provider` `API`, 使用该组件包裹需要接收 `Context` 的后代组件, 并使用 `value` 传递了 `Context` 的值(这里是一个对象).
+      - 当 `Provider` 的 `value` 值发生变化时, `Provider` 内部的素有消费组件都将被重新渲染.
+      - 如果项目中有多个 `Context`, 因此也就相应的有多个 `Provider`, 多个 `Provider` 可以嵌套使用. 
+    - `Father`
+      - ```jsx
+        import React, { Component } from 'react'
+        import Me from '../Me'
+
+        export default class Father extends Component {
+          render() {
+            return (
+              <div style={{backgroundColor: 'orange', paddingBottom: '1rem'}}>
+                <h2>我是父亲组件</h2>
+                <Me />
+              </div>
+            )
+          }
+        }
+      - 中间的组件就比较简单了, 仅仅为了创建三层组件结构而存在
+    - `Me`
+      - ```jsx
+        import React, { Component } from 'react'
+        import ThemeContext from '../../context';
+
+        export default class index extends Component {
+          // 声明接收
+          static contextType = ThemeContext;
+          render() {
+            console.log('context in me', this.context);
+            return (
+              <div style={{backgroundColor: 'pink', paddingBottom: '1rem'}}>
+                <h2>我是孙子组件</h2>
+                <h2>Context传来的值是 {this.context.theme}</h2>
+              </div>
+            )
+          }
+        }
+      - 孙子组件中, 同样引入了 `ThemeContext` 并且通过 ` static contextType = ThemeContext;` 声明接收这个 Context.
+      - 因此孙子组件可以从其自身 `context API` 上拿到爷爷传来的值
+      - ![](../../image/Snipaste_2022-06-04_18-17-08.png)
+    - 最后的效果
+    - ![](../../image/react-context.gif)
+    - ![](../../image/)
+    - ![](../../image/)
 ## `react-router@5.3.0`
 > `react-router` 有三种版本, 分别为 `WEB`, `NATIVE` 和 `ANYWHERE`. 目前只学习 `WEB` 版本
 1. 安装与使用
