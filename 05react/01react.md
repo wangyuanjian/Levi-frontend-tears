@@ -40,6 +40,7 @@
       - [方式一: 写在 `package.json`](#方式一-写在-packagejson)
       - [方式二: 写在 `setupProxy.js` 中](#方式二-写在-setupproxyjs-中)
       - [消息订阅与发布](#消息订阅与发布)
+    - [`<Fragment>`](#fragment)
   - [`react-router@5.3.0`](#react-router530)
     - [路由组件和一般组件](#路由组件和一般组件)
     - [`NavLink`](#navlink)
@@ -2006,6 +2007,66 @@
           )
         }
       }
+### `<Fragment>`
+1. `React` 中的一个常见模式是一个组件返回多个元素.`Fragments` 允许你将子列表分组, 而无需向 `DOM` 添加额外节点
+    - 大白话就是, 不需要每个组件最外面用 `<div>` 包了.
+    - ```jsx
+      import { Fragment, useRef } from "react"
+
+      export default function Show() {
+        const usernameRef = useRef();
+        const ageRef = useRef();
+        return (
+          <Fragment>
+            <input type="text" name="username" ref={usernameRef} />&nbsp;
+            <input type="text" name="age" ref={ageRef} />&nbsp;
+            <button onClick={() => console.log(usernameRef.current.value, ageRef.current.value) }>点我展示输入</button>
+          </Fragment>
+        )
+      }
+    - ![](../../image/Snipaste_2022-06-04_14-33-31.png)
+2. `key`
+    - `Fragment` 可能具有 `key`. 一个使用场景是将一个集合映射到一个 `Fragments` 数组
+    - ```jsx
+      import React, { Fragment } from 'react'
+
+      export default function Fruit() {
+        const fruitList = ['apple', 'banana'];
+        return (
+          <Fragment>
+            {
+              fruitList.map(fruit => {
+                return (
+                  <Fragment key={fruit}>
+                    <h2>{fruit}</h2>
+                  </Fragment>
+                )
+              })
+            }
+          </Fragment>
+        )
+      }
+    - ![](../../image/Snipaste_2022-06-04_14-46-14.png)
+3. 更短的新语法
+    - 如果只是因为每个组件都只能有一个父组件而使用 `Fragment` 的话, 可以试试新的语法 `<>` 空组件
+    - ```jsx
+      export default function Fruit() {
+        const fruitList = ['apple', 'banana'];
+        return (
+          <>
+            {
+              fruitList.map(fruit => {
+                return (
+                  <Fragment key={fruit}>
+                    <h2>{fruit}</h2>
+                  </Fragment>
+                )
+              })
+            }
+          </>
+        )
+      }
+    - 空白节点同样不会被渲染.
 ## `react-router@5.3.0`
 > `react-router` 有三种版本, 分别为 `WEB`, `NATIVE` 和 `ANYWHERE`. 目前只学习 `WEB` 版本
 1. 安装与使用
