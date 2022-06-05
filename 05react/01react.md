@@ -42,6 +42,7 @@
       - [消息订阅与发布](#消息订阅与发布)
     - [`<Fragment>`](#fragment)
     - [`Context`](#context)
+    - [`PureComponent`](#purecomponent)
   - [`react-router@5.3.0`](#react-router530)
     - [路由组件和一般组件](#路由组件和一般组件)
     - [`NavLink`](#navlink)
@@ -2161,8 +2162,31 @@
         )
       }
     - ![](../../image/Snipaste_2022-06-04_20-04-23.png)
-    - `Consumer` 需要一个函数作为子元素, 函数接收当前的 `context` 值作为参数并返回一个 React 节点.
-    - ![](../../image/)
+    - `Consumer` 需要一个函数作为子元素, 函数接收当前的 `context` 值作为参数并返回一个 `React` 节点.
+### `PureComponent`
+1. 现在有如下的父子组件
+    - ```jsx
+      export default function Father() {
+        console.log('Father---');
+        const [car, setCar] = useState('BMW');
+        return (
+          <div style={{backgroundColor: 'skyblue', paddingBottom: '1rem'}}>
+            <h1>Father: {car}</h1>
+            <button onClick={() => setCar('BENZ')}>换车</button>
+            <Son carName="www" />
+          </div>
+        )
+      }
+
+      function Son() {
+        console.log('Son---');
+        return (
+          <div style={{backgroundColor: 'pink'}}>Son</div>
+        )
+      }
+    - 如果此时我们点击换车按钮, 子组件也会重新渲染, 这就造成了性能上的一些损失, 因为子组件并没有任何东西发生变化, 传给子组件的始终是字符串值(`www`)
+    - ![](../../image/react-son-changed.gif)
+2. 其实我们可以在子组件中编写 
     - ![](../../image/)
     - ![](../../image/)
     - ![](../../image/)
