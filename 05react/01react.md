@@ -2166,29 +2166,86 @@
 ### `PureComponent`
 1. 现在有如下的父子组件
     - ```jsx
-      export default function Father() {
-        console.log('Father---');
-        const [car, setCar] = useState('BMW');
-        return (
-          <div style={{backgroundColor: 'skyblue', paddingBottom: '1rem'}}>
-            <h1>Father: {car}</h1>
-            <button onClick={() => setCar('BENZ')}>换车</button>
-            <Son carName="www" />
-          </div>
-        )
+      export default class Father extends Component {
+        state = {car: 'BMW'}
+        render() {
+          console.log('Father---');
+          return (
+            <div style={{backgroundColor: 'skyblue', paddingBottom: '1rem'}}>
+              <h1>Father: {this.state.car}</h1>
+              <button onClick={() => this.setState({car: 'BENZ'})}>换车</button>
+              <Son carName="www" />
+            </div>
+          )
+        }
       }
 
-      function Son() {
-        console.log('Son---');
-        return (
-          <div style={{backgroundColor: 'pink'}}>Son</div>
-        )
+      class Son extends Component {
+        render() {
+          console.log('Son---');
+          return (
+            <div style={{backgroundColor: 'pink'}}>Son</div>
+          )
+        }
       }
     - 如果此时我们点击换车按钮, 子组件也会重新渲染, 这就造成了性能上的一些损失, 因为子组件并没有任何东西发生变化, 传给子组件的始终是字符串值(`www`)
     - ![](../../image/react-son-changed.gif)
-2. 其实我们可以在子组件中编写 
-    - ![](../../image/)
-    - ![](../../image/)
+2. 其实我们可以在子组件中编写 `shouldComponentUpdate` 来手动判断子组件是否应该更新
+    - `shouldComponentUpdate` 接收三个参数, 分别是 `nextProps`, `nextState`, `nextContext`, 我们通过比较 `nextProps` 和 `this.props` 的 `carName` 是否相同来决定组件是否应该更新, 如果相同, 就不更新; 不相同才更新.
+    - ```jsx
+      class Son extends Component {
+        shouldComponentUpdate(nextProps, nextState, nextContext) {
+          if (nextProps.carName === this.props.carName) {
+            return false;
+          }
+          return true;
+        }
+        render() {
+          console.log('Son---');
+          return (
+            <div style={{backgroundColor: 'pink'}}>Son</div>
+          )
+        }
+      }
+    - ![](../../image/Snipaste_2022-06-06_22-07-18.png)
+3. `PureComponent`
+    - 上面的问题在于, 如果一个组件的 `props` 或 `state` 很多, 判断组件是否应该更新的逻辑就会很复杂.
+    - 使用 `PureComponent` 它为我们重写了 `shouldComponentUpdate` 钩子, 如果赋予 `React` 组件相同的 `props` 和 `state`, `render()` 函数会渲染相同的内容, 那么在某些情况下使用 `React.PureComponent` 可提高性能
+    - ```jsx
+      import React, { Component, PureComponent } from 'react'
+      class Son extends PureComponent {
+        render() {
+          console.log('Son---');
+          return (
+            <div style={{backgroundColor: 'pink'}}>Son</div>
+          )
+        }
+      }
+4. 浅比较
+    - `React.PureComponent` 中的 `shouldComponentUpdate()` 仅作对象的浅层比较. 如果对象中包含复杂的数据结构, 则有可能因为无法检查深层的差别, 产生错误的比对结果. 仅在你的 `props` 和 `state` 较为简单时, 才使用 `React.PureComponent`
+    - ```jsx
+      import React, { PureComponent } from 'react'
+
+      export default class Father extends PureComponent {
+        state = {car: 'BMW'}
+        changeCar = () => {
+          console.log('我的点击了');
+          const temp = this.state;
+          temp.car = 'BENZ';
+          this.setState(this.state);
+        }
+        render() {
+          console.log('Father---');
+          return (
+            <div style={{backgroundColor: 'skyblue', paddingBottom: '1rem'}}>
+              <h1>Father: {this.state.car}</h1>
+              <button onClick={this.changeCar}>换车</button>
+            </div>
+          )
+        }
+      }
+    - 从下图可以直接看到结果, 页面并没有更新. 因为传递给 `setState` 的 `temp` 和 `this.state` 是相同的地址, 这样就饶过了浅比较的逻辑, 导致更新失败.
+    - ![](../../image/Snipaste_2022-06-06_22-19-16.png)
     - ![](../../image/)
     - ![](../../image/)
 ## `react-router@5.3.0`
