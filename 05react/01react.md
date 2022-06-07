@@ -43,6 +43,8 @@
     - [`<Fragment>`](#fragment)
     - [`Context`](#context)
     - [`PureComponent`](#purecomponent)
+    - [`Render Props`](#render-props)
+    - [`Error Boundary`](#error-boundary)
   - [`react-router@5.3.0`](#react-router530)
     - [路由组件和一般组件](#路由组件和一般组件)
     - [`NavLink`](#navlink)
@@ -2246,8 +2248,105 @@
       }
     - 从下图可以直接看到结果, 页面并没有更新. 因为传递给 `setState` 的 `temp` 和 `this.state` 是相同的地址, 这样就饶过了浅比较的逻辑, 导致更新失败.
     - ![](../../image/Snipaste_2022-06-06_22-19-16.png)
+### `Render Props`
+1. 先看一段代码, 有两个组件 `Father` 和 `Son`, 需求是在 `Father` 中展示两个 `Son`, 一个 `Son` 中展示图片, 另一个展示一段文字, 但是图片的地址都保存在 `Son` 组件中
+    - `Father` 组件
+    - ```jsx
+      export default function Father() {
+        return (
+          <div style={{backgroundColor: 'skyblue', paddingBottom: '1rem'}}>
+            <h3>Father</h3>
+            <Son></Son>
+            <Son></Son>
+          </div>
+        );
+      }
+    - `Son` 组件
+    - ```jsx
+      function Son() {
+        return (
+          <div style={{backgroundColor: 'pink', paddingBottom: '1rem'}}>
+            <h4>Son</h4>
+          </div>
+        );
+      }
+2. `Render Props` 是一种在组件间通过一个值为函数的 `prop` 共享代码的技术. 按照前面的案例, 就是 `Father` 组件在使用 `Son` 时, 传递一个函数的 `prop`
+    - `Father` 组件
+    - ```jsx
+      export default function Father() {
+        return (
+          <div style={{backgroundColor: 'skyblue', paddingBottom: '1rem'}}>
+            <h3>Father</h3>
+
+            {/* 渲染一个图片 */}
+            <Son render={(imgUrl) => {
+              return <img src={imgUrl} alt="logo" />
+            }}></Son>
+
+            {/* 渲染一个文字 */}
+            <Son render={(text) => <h5>{text}</h5> }></Son>
+          </div>
+        );
+      }
+    - `Son` 组件
+    - ```jsx
+      function Son(props) {
+        const content = 'logo192.png';
+        return (
+          <div style={{backgroundColor: 'pink', paddingBottom: '1rem'}}>
+            <h4>Son</h4>
+            {
+              props.render(content)
+            }
+          </div>
+        );
+      }
+    - ![](../../image/Snipaste_2022-06-07_17-54-38.png)
+    - 📕 `Father` 给每个 `Son` 都传递了一个名为 `render` 的函数 `prop`, 这个函数接收一个参数. 将来在 `Son` 组件中通过 `props.render()` 的方式调用并传入 `Son` 组件自己的数据, 效果如下.
+      - 一点点问题时, 如果我们真的想渲染不同类型的 `DOM`(比如图片和文本), 可以多传几个参数给 `render` 来判断究竟传什么值
+    - 从某点来说, `Render Props` 和 `Vue` 中的 `<slot>` 插槽很像
+3. 作为函数传递的 `prop` 名不一定为 `render`, 还可以用其他名字. 下面演示使用 `children` 传递这个函数的例子
+    - ```jsx
+      export default function Father() {
+        return (
+          <div style={{backgroundColor: 'skyblue', paddingBottom: '1rem'}}>
+            <h3>Father</h3>
+            {/* 渲染一个图片 */}
+            <Son>
+              {
+                imgUrl => <img src={imgUrl} alt="logo" />
+              }
+            </Son>
+            {/* 渲染一个文字 */}
+            <Son>
+              {
+                text => <h5>{text}</h5>
+              }
+            </Son>
+          </div>
+        );
+      }
+
+      function Son(props) {
+        console.log('props in Son', props);
+        const content = 'logo192.png';
+        return (
+          <div style={{backgroundColor: 'pink', paddingBottom: '1rem'}}>
+            <h4>Son</h4>
+            {
+              props.children(content)
+            }
+          </div>
+        );
+      }
+    - 因为 children 时函数, 因此可以直接通过 `props.children()` 的方式调用
+    - ![](../../image/Snipaste_2022-06-07_18-06-29.png)
+### `Error Boundary`
     - ![](../../image/)
     - ![](../../image/)
+    - ![](../../image/)
+    - ![](../../image/)
+=
 ## `react-router@5.3.0`
 > `react-router` 有三种版本, 分别为 `WEB`, `NATIVE` 和 `ANYWHERE`. 目前只学习 `WEB` 版本
 1. 安装与使用
