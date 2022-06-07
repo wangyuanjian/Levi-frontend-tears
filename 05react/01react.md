@@ -44,7 +44,7 @@
     - [`Context`](#context)
     - [`PureComponent`](#purecomponent)
     - [`Render Props`](#render-props)
-    - [`Error Boundary`](#error-boundary)
+    - [`Error Boundaries`](#error-boundaries)
   - [`react-router@5.3.0`](#react-router530)
     - [路由组件和一般组件](#路由组件和一般组件)
     - [`NavLink`](#navlink)
@@ -2341,9 +2341,69 @@
       }
     - 因为 children 时函数, 因此可以直接通过 `props.children()` 的方式调用
     - ![](../../image/Snipaste_2022-06-07_18-06-29.png)
-### `Error Boundary`
-    - ![](../../image/)
-    - ![](../../image/)
+### `Error Boundaries`
+1. 部分 `UI` 的 `JavaScript` 错误不应该导致整个应用崩溃, 为了解决这个问题, `React 16` 引入了一个新的概念 —— `错误边界`
+    - 错误边界是一种 `React` 组件, 这种组件可以捕获发生在其子组件树`任何位置`的 `JavaScript` 错误, 并打印这些错误, 同时展示降级 `UI`, 而并不会渲染那些发生崩溃的子组件树. 错误边界可以捕获发生在整个子组件树的渲染期间、生命周期方法以及构造函数中的错误.
+2. 如果一个 `class` 组件中定义了 `static getDerivedStateFromError()` 或 `componentDidCatch()` 这两个生命周期方法中的任意一个(或两个)时, 那么它就变成一个错误边界. 当抛出错误后, 请使用 `static getDerivedStateFromError()` 渲染备用 `UI`,使用 `componentDidCatch()` 打印错误信息.
+    - 首先先写一个报错的案例: 子组件调用了字符串没有的方法
+    - ```jsx
+      // 父组件
+      export default class Test extends Component {
+        state = {
+          hasError: false, // 定义错误
+          uses: '',
+        }
+        render() {
+          return (
+            <div>
+              <h2>Test</h2>
+              <Son uses={this.state.uses} />
+            </div>
+          )
+        }
+      }
+      // 子组件
+      class Son extends Component {
+        render() {
+          return (
+            <div>
+              {
+                this.props.uses.map()
+              }
+            </div>
+          )
+        }
+      }
+    - ![](../../image/Snipaste_2022-06-07_20-57-14.png)
+    - 接下来编写错误处理部分
+    - ```jsx
+      export default class Test extends Component {
+        state = {
+          hasError: false, // 定义错误
+          uses: '',
+        }
+        static getDerivedStateFromError(error) {
+          // 更新 state，使得下一次渲染时能显示降级后的 UI
+          return {
+            hasError: true,
+          }
+        }
+        componentDidCatch(error, errorInfo) {
+          // 同样上报错误日志
+          console.log(':(', error, errorInfo)
+        }
+        render() {
+          return (
+            <div>
+              <h2>Test</h2>
+              {
+                this.state.hasError ? <h2>:( 糟糕了</h2> : <Son uses={this.state.uses} />
+              }
+            </div>
+          )
+        }
+      }
+    - ![](../../image/Snipaste_2022-06-07_21-06-07.png)
     - ![](../../image/)
     - ![](../../image/)
 =
