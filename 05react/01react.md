@@ -3951,9 +3951,65 @@
       }
     - ![](../../image/Snipaste_2022-06-04_14-18-05.png)
 ### `useContext`
-1. 
-- ![](../../image/)
-- ![](../../image/)
+1. 接收一个 `context` 对象(`React.createContext` 的返回值)并返回该 `context` 的当前值. 当前的 `context` 值由上层组件中距离当前组件最近的 `<MyContext.Provider>` 的 `value` `prop` 决定
+    - 首先看一下项目结构
+    - ![](../../image/Snipaste_2022-06-09_08-14-01.png)
+    - `context.js`: 创建并默认暴露一个 `context` 对象.
+    - ```jsx
+      import { createContext } from "react";
+
+      export default createContext({
+        theme: 'pink',
+      });
+    - `GrandFather.jsx`: 引入 `ThemeContext` 并使用 `Provider` 通过 value prop 将 `{theme: 'pink'}` 传递所有的后代自诉案
+    - ```jsx
+      import React from 'react'
+      import ThemeContext from '../../context/context'
+      import Father from '../Father'
+
+      export default function GrandFather() {
+        return (
+          <div>
+            <h3>GrandFather</h3>
+            <ThemeContext.Provider value={{theme: 'pink'}}>
+              <Father />
+            </ThemeContext.Provider>
+          </div>
+        )
+      }
+    - `Father.jsx`: 仅仅引入子组件
+    - ```jsx
+      import React from 'react'
+      import Son from '../Son'
+
+      export default function Father() {
+        return (
+          <div>
+            <h3>Father</h3>
+            <Son />
+          </div>
+        )
+      }
+    - `Son.jsx`: 引入 `ThemeContext` 和 `useContext` 这个 `hook`
+    - ```jsx
+      import React from 'react'
+      import ThemeContext from '../../context/context'
+      import { useContext } from 'react'
+
+      export default function Son() {
+        const context = useContext(ThemeContext);
+        console.log('context in son', context);
+        return (
+          <div style={{backgroundColor: context.theme}}>
+            <h3>Son</h3>
+          </div>
+        )
+      }
+    - ![](../../image/Snipaste_2022-06-09_08-26-20.png)
+2. 当组件上层最近的 `<MyContext.Provider>` 更新时, 该 `Hook` 会触发重渲染, 并使用最新传递给 `MyContext provider` 的 `context` `value` 值. 即使祖先使用 `React.memo` 或 `shouldComponentUpdate`, 也会在组件本身使用 `useContext` 时重新渲染
+3. 调用了 `useContext` 的组件总会在 `context` 值变化时重新渲染. 如果重渲染组件的开销较大, 你可以通过使用 `memoization` 来优化.
+4. 💡如果你在接触 `Hook` 前已经对 `context` `API` 比较熟悉, 那应该可以理解, `useContext(MyContext)` 相当于 `class` 组件中的 `static contextType = MyContext` 或者 `<MyContext.Consumer>`.
+    - `useContext(MyContext)` 只是让你能够读取 `context` 的值以及订阅 `context` 的变化. 你仍然需要在上层组件树中使用 `<MyContext.Provider>` 来为下层组件提供 `context`
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
