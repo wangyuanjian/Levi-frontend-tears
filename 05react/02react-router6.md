@@ -37,6 +37,31 @@
     ![](../../image/Snipaste_2022-06-11_10-26-14.png)
     - 📕对比下, `v6` 使用 `element={ <About/> }` 的方式取代 `component={Home}`
     - 📕`<Routes>` 包含了 `<Switch>` 的功能, 多个相同 `path` 的 `<Route>` 只会匹配第一个.
+3. 实现 `NavLink` 高亮
+    - `v5` 通过 `activeClassName` 实现, 但是 `v6` 中 `className` 接收一个函数, 这个函数接收只包含一个属性 `isActive` 的对象作为参数, 当对应的 `NavLink` 有效时, `isActive` 为 `true`
+    - ```css
+      .peiqi {
+        background-color: salmon;
+        color: #f0f0f0;
+      }
+    - ```jsx
+      function App() {
+        function computeClassName({isActive}) {
+          return isActive ? 'peiqi' : '';
+        }
+        return (
+          <div className="App">
+            <NavLink className={computeClassName} to="/home">Home</NavLink>|
+            <NavLink className={computeClassName} to="/about">About</NavLink>
+            <hr/>
+            <Routes>
+              <Route path="/home" element={ <Home/> } ></Route>
+              <Route path="/about" element={ <About/> } ></Route>
+              <Route path="/" element={ <Navigate to="/home" /> } ></Route>
+            </Routes>
+          </div>
+        );
+      }
 ### `<Navigate>`
 1. 看一个报错 
     - ![](../../image/Snipaste_2022-06-11_10-46-49.png)
