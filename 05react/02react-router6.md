@@ -37,8 +37,32 @@
     ![](../../image/Snipaste_2022-06-11_10-26-14.png)
     - 📕对比下, `v6` 使用 `element={ <About/> }` 的方式取代 `component={Home}`
     - 📕`<Routes>` 包含了 `<Switch>` 的功能, 多个相同 `path` 的 `<Route>` 只会匹配第一个.
-![](../../image/)
-![](../../image/)
+### `<Navigate>`
+1. 看一个报错 
+    - ![](../../image/Snipaste_2022-06-11_10-46-49.png)
+    - 这个报错是说, 没有组件匹配 `/` 路由, 在 `v5` 版本中时使用 `Redirect` 配合 `Switch` 进行匹配的, 在 `v6` 中改用 `<Navigate>`
+    - ```jsx
+      <Routes>
+        <Route path="/home" element={ <Home/> } ></Route>
+        <Route path="/about" element={ <About/> } ></Route>
+        <Route path="/" element={ <Navigate to="/home" /> } ></Route>
+      </Routes>
+2. `<Navigate>` 只要渲染, 就会引起视图的切换, 也就是改变浏览器的地址
+    - 实现一个小功能: 在 `Home` 组件点击按钮去 `About` 否则显示其他文字
+    - ```jsx
+      export default function Home() {
+        const [count, setCount] = useState(0)
+        return (
+          <div>
+            <span>Home</span>
+            { count > 0 ? <Navigate to="/about" /> : 'Hello, World' }
+            <button onClick={() => setCount(count+1)}>Count+1</button>
+          </div>
+        )
+      }
+    - ![](../../image/react-router-navigate.gif)
+    - 可以看到, 当点击按钮, 页面从 `0` 变为 `1` 导致 `<Navigate>` 渲染时, 整个页面发生了改变
+3. 支持 `replace` 取消 `push` 而是用 `replace` 模式
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
