@@ -103,5 +103,21 @@
 ```
 如图所示, `counter-set` 成功将第三个 `<h3>` 中计数器的值修改为 `0`, 这个和递增计数器中的效果相同, 但是使用 `counter-set` 之前元素的计数器的值因此发生了改变. 在 `counter-reset` 中提到过, 递减计数器的值是根据使用该计数器的元素个数计算的, 大胆猜测 `counter-set` 影响了浏览器计算递减计数器初始值的方式.
 ![](../../image/Snipaste_2022-06-11_08-58-52.png)
+哦, 还有一个, 第三个 `<h3>` 中 `counter-set` 设置了一个不存在的计数器的值, 这就会创建一个新的计数器. 最后一个还是 `8` 因为 `counter-increment: myCounterD 2;` 仍然有效.
+```css
+.start5 {
+  counter-reset: myCounterD;
+}
+.start5 h3::before {
+  counter-increment: myCounterD 2;
+  content: counter(myCounterD) '.';
+}
+.start5 h3:nth-child(3)::before {
+  counter-set: myCounterE;
+  counter-increment: myCounterD 2;
+  content: counter(myCounterE) '.';
+}
+```
+![](../../image/Snipaste_2022-06-11_09-16-39.png)
 
 谢谢你看到这里 😀
