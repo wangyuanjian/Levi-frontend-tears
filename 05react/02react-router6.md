@@ -143,6 +143,47 @@
       }
     - 打印一下看看 elements 究竟是什么
     - ![](../../image/Snipaste_2022-06-12_09-56-37.png)
+### 嵌套路由
+1. 创建两个子页面作为 `Home` 的二级页面
+    - ![](../../image/Snipaste_2022-06-12_10-06-41.png)
+    - 修改路由表, 引入二级组件: `children`
+    - ```jsx
+      {
+        path: '/home',
+        element: <Home />,
+        children: [
+          {
+            path: 'news',
+            element: <News />
+          },
+          {
+            path: 'message',
+            element: <Messages />
+          }
+        ]
+      },
+    - 接下来修改 `Home` 组件: 注册路由, 展示路由组件 `<Outlet>`
+      - 在 `v5` 版本中, 展示子组件是靠着 `Route`, 但是现在使用了路由表, 就得告诉 `React` 在父组件的哪个位置(槽位)展示子组件
+    - ```jsx
+      import React from 'react'
+      import { Outlet, NavLink } from 'react-router-dom';
+
+      export default function Home() {
+        function computeClassName({isActive}) {
+          return isActive ? 'peiqi' : '';
+        }
+        return (
+          <div>
+            <h4>Home</h4>
+            <NavLink className={computeClassName} to="news">news</NavLink>|
+            <NavLink className={computeClassName} to="/home/message">message</NavLink>
+            <hr />
+            <Outlet></Outlet>
+          </div>
+        )
+      }
+![](../../image/)
+![](../../image/)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
