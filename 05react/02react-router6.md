@@ -88,8 +88,61 @@
     - ![](../../image/react-router-navigate.gif)
     - 可以看到, 当点击按钮, 页面从 `0` 变为 `1` 导致 `<Navigate>` 渲染时, 整个页面发生了改变
 3. 支持 `replace` 取消 `push` 而是用 `replace` 模式
-![](../../image/)
-![](../../image/)
+### `useRoutes`
+1. 下面代码中是重复的模式,
+    - ```jsx
+      <Routes>
+        <Route path="/home" element={ <Home/> } ></Route>
+        <Route path="/about" element={ <About/> } ></Route>
+        <Route path="/" element={ <Navigate to="/home" /> } ></Route>
+      </Routes>
+    - 可以使用 `useRoutes` 这个 `Hook` 来配置路由信息
+    - 首先创建一个文件, 单独配置路由信息
+    - ![](../../image/Snipaste_2022-06-12_09-47-33.png)
+    - `routes/index.jsx`
+    - ```jsx
+      import About from　'../pages/About'
+      import Home from　'../pages/Home'
+      import {  Navigate } from 'react-router-dom';
+
+      export default [
+        {
+          path: '/about',
+          element: <About />
+        },
+        {
+          path: '/home',
+          element: <Home />
+        },
+        {
+          path: '/',
+          element: <Navigate to="/home" />
+        },
+      ]
+    - `app.js`
+    - ```jsx
+      import './App.css';
+      import routes from './routes'
+      import { NavLink, useRoutes } from 'react-router-dom';
+
+      function App() {
+        function computeClassName({isActive}) {
+          return isActive ? 'peiqi' : '';
+        }
+        const elements = useRoutes(routes)
+        return (
+          <div className="App">
+            <NavLink className={computeClassName} to="/home">Home</NavLink>|
+            <NavLink className={computeClassName} to="/about">About</NavLink>
+            <hr/>
+            {
+              elements
+            }
+          </div>
+        );
+      }
+    - 打印一下看看 elements 究竟是什么
+    - ![](../../image/Snipaste_2022-06-12_09-56-37.png)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
