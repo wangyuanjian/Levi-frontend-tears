@@ -315,6 +315,47 @@
         )
       }
     - ![](../../image/Snipaste_2022-06-14_15-44-52.png)
+4. 如果某一个路由组件只需要参数呢, 比如微博 `https://www.weibo.com/232429834`, 后面的 `232429834` 就是用户`id`, 这个时候该怎么传递呢? 其实和前面的一样,
+    - `Message.jsx`
+      - ```jsx
+        export default function Messages() {
+          return (
+            <div>
+              <ul>
+                <Link to="123">Messages1</Link>
+                <Link to="456">Messages2</Link>
+                <Link to="789">Messages3</Link>
+              </ul>
+              <hr />
+              <Outlet></Outlet>
+            </div>
+          )
+        }
+    - `路由 index.jsx`
+      - ```jsx
+        {
+          path: 'message',
+          element: <Messages />,
+          children: [
+            {
+              path: ':id',
+              element: <Profile />
+            }
+          ]
+        }
+    - 使用参数 `Profile.jsx`
+      - ```jsx
+        import React from 'react'
+        import { useParams } from 'react-router-dom'
+
+        export default function Profile() {
+          const { id } = useParams();
+          console.log('id', id); 
+          return (
+            <div>Profile</div>
+          )
+        }
+    - 这样就可以了, 只是写法有些怪, 会让人担心这样的写法究竟对不对.
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
