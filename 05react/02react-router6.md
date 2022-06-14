@@ -13,6 +13,7 @@
       - [`params` 参数](#params-参数)
       - [`search` 参数](#search-参数)
       - [`state` 参数](#state-参数)
+    - [编程式路由导航 `useNavigate()`](#编程式路由导航-usenavigate)
 
 <!-- /TOC -->
 ### `BrowserRouter`
@@ -450,8 +451,75 @@
         )
       }
     - ![](../../image/Snipaste_2022-06-14_17-41-16.png)
-![](../../image/)
-![](../../image/)
+### 编程式路由导航 `useNavigate()`
+1. 编程式路由导航需要使用 `useNavigate` 钩子, 返回一个函数 `NavigateFunction`. 通过调用这个函数, 实现导航.
+    - 这个函数接收两个参数
+      - `to`: 表示要去的路由地址, 如果需要传递 `params` 或 `query` 参数, 也得把参数拼好赋值给 `to`
+      - `NavigateOptions`: 是个对象
+        - `replace`: 是否开启路由的 `replace` 模式
+        - `state`: 用来传递 `state` 参数
+    - 修改 `News` 组件
+    - ```jsx
+      import React from 'react';
+      import { Link, Outlet, useNavigate } from 'react-router-dom';
+
+      export default function News() {
+        const newsList = [
+          { id: '001', title: 'News1' },
+          { id: '002', title: 'News2' },
+          { id: '003', title: 'News3' },
+        ]
+        const navigate = useNavigate();
+        function goDetail(news) {
+          navigate('detail', {
+            replace: false,
+            state: {
+              id: news.id,
+              title: news.title,
+            }
+          });
+        }
+        return (
+          <div>
+            <ul>
+              {
+                newsList.map(news => {
+                  return (
+                    <li key={news.id}>
+                      <Link to='detail' state={{ id: news.id, title: news.title }}>{news.title}</Link>
+                      
+                      <button onClick={() => goDetail(news)}>去Detail</button>
+                    </li>
+                  ) 
+                })
+              }
+            </ul>
+            <hr />
+            <Outlet />
+          </div>
+        )
+      }
+    - ![](../../image/Snipaste_2022-06-14_18-06-57.png)
+2. 实现前进或后退
+    - 同样使用 `useNavigate` 钩子, 但是在调用时, 要传递 `number` 类型
+      - `-1`: 后退 `1` 步
+      - `0`: 刷新当前页面
+      - `1`: 前进 `1` 步
+    - ```jsx
+      const navigate = useNavigate();
+      function back() {
+        navigate(-2);
+      }
+      function refresh() {
+        navigate(0);
+      }
+      function forward() {
+        navigate(1);
+      }
+      <button onClick={back}>后退</button>
+      <button onClick={refresh}>刷新</button>
+      <button onClick={forward}>前进</button>
+    - ![](../../image/Snipaste_2022-06-14_18-13-52.png)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
