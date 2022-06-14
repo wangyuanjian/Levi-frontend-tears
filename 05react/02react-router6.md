@@ -11,6 +11,7 @@
     - [嵌套路由](#嵌套路由)
     - [路由传参](#路由传参)
       - [`params` 参数](#params-参数)
+      - [`search` 参数](#search-参数)
 
 <!-- /TOC -->
 ### `BrowserRouter`
@@ -356,7 +357,66 @@
           )
         }
     - 这样就可以了, 只是写法有些怪, 会让人担心这样的写法究竟对不对.
-![](../../image/)
-![](../../image/)
+#### `search` 参数
+1. 使用 `search` 参数的形式 `/detail?id=001&title=hello`
+    - `News.jsx`
+    - ```jsx
+      newsList.map(news => {
+        return (
+          <li key={news.id}>
+            <Link to={`detail?id=${news.id}&title=${news.title}`}>{news.title}</Link>
+          </li>
+        ) 
+      })
+    - `路由: 直接写路由, 不需要提前准备好参数`
+    - ```jsx
+      {
+        path: '/home',
+        element: <Home />,
+        children: [
+          {
+            path: 'news',
+            element: <News />,
+            children: [
+              {
+                path: 'detail',
+                element: <Detail />
+              }
+            ]
+          },
+          {
+            path: 'message',
+            element: <Messages />
+          }
+        ]
+      },
+    - `Detail.jsx`: 使用 `useSearchParams` 钩子
+    - ```jsx
+      import React from 'react'
+      import { useSearchParams } from 'react-router-dom'
+
+      export default function Detail() {
+        const [ searchParams, setSearchParams ]= useSearchParams();
+        console.log('searchParams', searchParams);
+        console.log('setSearchParams', setSearchParams);
+        const id = searchParams.get('id');
+        const title = searchParams.get('title');
+        return (
+          <div>
+            <ol>
+              <li>ID: {id}</li>
+              <li>TITLE: {title}</li>
+            </ol>
+          </div>
+        )
+      }
+    - 从下图中可以看到 `searchParams` 就是要传来的参数, 但是不能直接获取, 需要使用其原型链上的 `get` 方法.
+
+    - ![](../../image/Snipaste_2022-06-14_16-46-15.png)
+2. `setSearchParams`
+    - 这个函数用来修改 `search` 参数的值. 下面增加一个按钮
+    - ```jsx
+      <button onClick={() => setSearchParams(`id=999&title=blahblah`)}>更新search参数</button> 
+    - ![](../../image/react-router-setSearchParams.gif)
 ![](../../image/)
 ![](../../image/)
