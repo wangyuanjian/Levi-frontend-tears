@@ -12,6 +12,7 @@
     - [路由传参](#路由传参)
       - [`params` 参数](#params-参数)
       - [`search` 参数](#search-参数)
+      - [`state` 参数](#state-参数)
 
 <!-- /TOC -->
 ### `BrowserRouter`
@@ -418,5 +419,42 @@
     - ```jsx
       <button onClick={() => setSearchParams(`id=999&title=blahblah`)}>更新search参数</button> 
     - ![](../../image/react-router-setSearchParams.gif)
+#### `state` 参数
+1. 修改 `News` 组件. 将 `state` 这个 `prop` 写成对象形式.
+    - ```jsx
+      {
+        newsList.map(news => {
+          return (
+            <li key={news.id}>
+              <Link to='detail' state={{ id: news.id, title: news.title }}>{news.title}</Link>
+            </li>
+          ) 
+        })
+      }
+    - 使用 `useLocation` 钩子接收 state 参数
+    - ```jsx
+      import React from 'react'
+      import { useLocation } from 'react-router-dom'
+
+      export default function Detail() {
+        const location = useLocation();
+        console.log('location', location);
+        const { id, title } = location.state;
+        return (
+          <div>
+            <ol>
+              <li>ID: {id}</li>
+              <li>TITLE: {title}</li>
+            </ol>
+          </div>
+        )
+      }
+    - ![](../../image/Snipaste_2022-06-14_17-41-16.png)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
 ![](../../image/)
 ![](../../image/)
