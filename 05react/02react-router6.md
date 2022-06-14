@@ -2,7 +2,17 @@
 > [https://reactrouterdotcom.fly.dev/docs/en/v6](https://reactrouterdotcom.fly.dev/docs/en/v6) \
 > 官方推荐使用`函数式组件`
 
-## 一级路由
+<!-- TOC -->
+
+- [`react-router-6`](#react-router-6)
+    - [`BrowserRouter`](#browserrouter)
+    - [`<Navigate>`](#navigate)
+    - [`useRoutes`](#useroutes)
+    - [嵌套路由](#嵌套路由)
+    - [路由传参](#路由传参)
+      - [`params` 参数](#params-参数)
+
+<!-- /TOC -->
 ### `BrowserRouter`
 1. 使用 `BrowserRouter` 包裹 `<App />`
     - `index.js`
@@ -182,7 +192,129 @@
           </div>
         )
       }
-![](../../image/)
+### 路由传参
+1. 创建 `Detail` 组件用来展示 `News` 传来的参数
+    - ```jsx
+      import React from 'react'
+
+      export default function Detail() {
+        return (
+          <div>
+            Detail
+          </div>
+        )
+      }
+2. 首先修改 `News` 组件. 将每条 `News` 用 `Link` 包裹, 并使用 `Outlet` 展示 `Detail` 组件.
+    - ```jsx
+      import React from 'react';
+      import { Link, Outlet } from 'react-router-dom';
+
+      export default function News() {
+        const newsList = [
+          { id: '001', title: 'News1' },
+          { id: '002', title: 'News2' },
+          { id: '003', title: 'News3' },
+        ]
+        return (
+          <div>
+            <ul>
+              {
+                newsList.map(news => {
+                  return (
+                    <li key={news.id}>
+                      <Link to="detail">{news.title}</Link>
+                    </li>
+                  ) 
+                })
+              }
+            </ul>
+            <hr />
+            <Outlet />
+          </div>
+        )
+      }
+3. 增加路由表中 `Detail` 路由的位置
+    - ```jsx
+      {
+        path: '/home',
+        element: <Home />,
+        children: [
+          {
+            path: 'news',
+            element: <News />,
+            children: [
+              {
+                path: 'detail',
+                element: <Detail />
+              }
+            ]
+          },
+          {
+            path: 'message',
+            element: <Messages />
+          }
+        ]
+      },
+#### `params` 参数
+1. 使用 `/detail/:id/:title` 使用这种形式, 传递 `params` 参数. 首先修改 `News` 组件
+    - ```jsx
+      return (
+        <div>
+          <ul>
+            {
+              newsList.map(news => {
+                return (
+                  <li key={news.id}>
+                    <Link to={`detail/${news.id}/${news.title}`}>{news.title}</Link>
+                  </li>
+                ) 
+              })
+            }
+          </ul>
+          <hr />
+          <Outlet />
+        </div>
+      )
+2. 修改路由表, 在路由后面指定需要的参数
+    - ```jsx
+      {
+        path: '/home',
+        element: <Home />,
+        children: [
+          {
+            path: 'news',
+            element: <News />,
+            children: [
+              {
+                path: 'detail/:id/:title',
+                element: <Detail />
+              }
+            ]
+          },
+          {
+            path: 'message',
+            element: <Messages />
+          }
+        ]
+      },
+3. 使用 `useParams` 钩子, 获得传来的 `params` 参数
+    - ```jsx
+      import React from 'react'
+      import { useParams } from 'react-router-dom'
+
+      export default function Detail() {
+        const params = useParams();
+        console.log('params', params);
+        return (
+          <div>
+            <ol>
+              <li>ID: {params.id}</li>
+              <li>TITLE: {params.title}</li>
+            </ol>
+          </div>
+        )
+      }
+    - ![](../../image/Snipaste_2022-06-14_15-44-52.png)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
