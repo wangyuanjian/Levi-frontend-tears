@@ -14,6 +14,10 @@
       - [`search` 参数](#search-参数)
       - [`state` 参数](#state-参数)
     - [编程式路由导航 `useNavigate()`](#编程式路由导航-usenavigate)
+    - [`useInRouterContext()`](#useinroutercontext)
+    - [`useNavigationType`](#usenavigationtype)
+    - [`useOutlet`](#useoutlet)
+    - [`useResolvedPath`](#useresolvedpath)
 
 <!-- /TOC -->
 ### `BrowserRouter`
@@ -520,9 +524,77 @@
       <button onClick={refresh}>刷新</button>
       <button onClick={forward}>前进</button>
     - ![](../../image/Snipaste_2022-06-14_18-13-52.png)
-![](../../image/)
-![](../../image/)
-![](../../image/)
-![](../../image/)
-![](../../image/)
+### `useInRouterContext()`
+1. 这个钩子返回 `true` 如果组件在路由环境被渲染, 否则返回 `false`. 主要是第三方组件来用, 一般情况下, 如果 `App` 组件被包含在 `BrowserRouter` 中, 那么 `App` 及其下面的组件都会返回 `true`
+    - 首先创建 `Demo` 组件, 并在 `index.js` 中引入 `Demo`
+    - ```jsx
+      import React from 'react'
+      import { useInRouterContext } from 'react-router-dom'
+
+      export default function Demo() {
+        console.log('Demo', useInRouterContext());
+        return (
+          <div>
+            Demo
+            <hr />
+          </div>
+        )
+      }
+    - ```jsx
+      root.render(
+        <React.StrictMode>
+          <Demo />
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </React.StrictMode>
+      );
+    - ![](../../image/Snipaste_2022-06-15_19-32-56.png)
+### `useNavigationType`
+1. 这个钩子返回导航的类型, 或者说用户式如何进入当前页面的.
+    - `pop`: 刷新浏览器
+    - `push`: `push` 路由
+    - `replace`: `replace` 路由
+2. 将按照下面过程验证
+    - 刷新进入 `About`
+    - `replace` 进入 `Home`
+    - `push` 进入 `About`
+    - ```jsx
+      <NavLink className={computeClassName} replace={true} to="/home">Home</NavLink>|
+      <NavLink className={computeClassName} replace={false} to="/about">About</NavLink>
+    - ```jsx
+      import React from 'react'
+      import { useNavigationType } from 'react-router-dom'
+
+      export default function About() {
+        console.log('About', useNavigationType());
+        return (
+          <div>About</div>
+        )
+      }
+    - ![](../../image/react-router-useNavigationType.gif)
+### `useOutlet`
+1. 返回当前路由层级的子层级的元素. 如果当前路由当前组件, 就返回 `null`. 这个组件用在 `<Outlet />` 组件内部渲染子路由的
+    - 我们在 `Home` 组件中打印
+    - ```jsx
+      import { useOutlet } from 'react-router-dom';
+      console.log('Home', useOutlet());
+    - 当前路由为 `/home` 时进匹配 `Home` 组件, 输出 `null`
+    - ![](../../image/Snipaste_2022-06-15_19-50-57.png)
+    - 当前路由为 `/home/news` 时, 输出具体内容
+    - ![](../../image/Snipaste_2022-06-15_19-53-05.png)
+### `useResolvedPath`
+1. 解析浏览器 `location` 的 `pathname`
+    - ```jsx
+      import React from 'react'
+      import { useResolvedPath } from 'react-router-dom'
+
+      export default function About() {
+        console.log('About', useResolvedPath('/about?id=1&name=hello#world'));
+
+        return (
+          <div>About</div>
+        )
+      }
+    - ![](../../image/Snipaste_2022-06-15_19-57-02.png)
 ![](../../image/)
