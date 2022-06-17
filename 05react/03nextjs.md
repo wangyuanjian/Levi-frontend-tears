@@ -10,6 +10,8 @@
       - [`有 data`](#有-data)
       - [何时使用 `Static Generation(SG)`](#何时使用-static-generationsg)
     - [`Server-side Rendering(SSR)`](#server-side-renderingssr)
+  - [数据获取(`Data Fetching`)](#数据获取data-fetching)
+    - [`getServerSideProps`](#getserversideprops)
 
 <!-- /TOC -->
 # `Next.js`
@@ -193,7 +195,45 @@
     - 使用 `Server-side Rendering(SSR)`: 在每次 `URL` 请求时预渲染页面. 这笔 CDN 缓存稍慢一些但是预渲染的页面总是最新的. 
 ### `Server-side Rendering(SSR)`
 > 也叫做 `SSR` 或 `Dynamic Rendering`
-1. HTML 在 **`每次请求`** 时生成.
+1. HTML 在 **`每次请求`** 时生成. 如果要使用 `Server-side Rendering`, 需要 `export` 一个名为 `getServerSideProps` 的 `async` 函数. 这个函数在每次请求时都会被调用.
+    - 首先先写服务器端代码
+    - ```js
+      app.get('/userInfo', (req, res) => {
+        res.json({
+          name: 'tom',
+          age: '19',
+          job: 'Front-end Engineer'
+        })
+      });
+    - ```jsx
+      export default function Info({ name, age, job }) {
+        return (
+          <div>
+            <section>
+              <h1>{name}</h1>
+              <small>{age}</small> -
+              <span>{job}</span>
+            </section>
+          </div>
+        )
+      }
+
+      export async function getServerSideProps() {
+        const res = await fetch(`http://localhost:5000/userInfo`);
+        const user = await res.json();
+        console.log('user', user);
+        return {
+          props: {
+            name: user.name,
+            age: user.age,
+            job: user.job,
+          }
+        }
+      }
+    - ![](../../image/Snipaste_2022-06-17_15-59-54.png)
+## 数据获取(`Data Fetching`)
+### `getServerSideProps`
+1. 
 ![](../../image/)
 ![](../../image/)
 `Next.js`
