@@ -1,7 +1,10 @@
+# `Next.js@12.1.6`
+> 要求 `Node(12.22+)` 版本
+
 
 <!-- TOC -->
 
-- [`Next.js`](#nextjs)
+- [`Next.js@12.1.6`](#nextjs1216)
   - [安装与简介](#安装与简介)
   - [页面(`Pages`)](#页面pages)
   - [预渲染(`Pre-rendering`)](#预渲染pre-rendering)
@@ -14,8 +17,6 @@
     - [`getServerSideProps`](#getserversideprops)
 
 <!-- /TOC -->
-# `Next.js`
-> 要求 `Node(12.22+)` 版本
 
 ## 安装与简介
 1. 访问[👉官网这个页面👈](https://nextjs.org/learn/basics/create-nextjs-app/setup) 执行后快速搭建一个 `Next.js` 环境
@@ -233,7 +234,64 @@
     - ![](../../image/Snipaste_2022-06-17_15-59-54.png)
 ## 数据获取(`Data Fetching`)
 ### `getServerSideProps`
-1. 
+> `Next.js` 在每次请求时使用 `getServerSideProps` 返回的数据进行预渲染.
+1. 什么时候 `getServerSideProps` 运行. 永远只在服务端运行而不会在浏览器运行.
+    - 如果直接通过 `URL` 访问这个页面, 那么 `getServerSideProps` 每次都会运行并且其返回值作为 `props`
+    - 如果通过客户端的链接比如 `next/link` 或 `next/router` 跳转, `Next.js` 就会给服务器发送一个 API 请求, 此时运行 `getServerSideProps`
+2. `getServerSideProps` 返回 `JSON` 用来渲染页面, 所有着一些都由 `Next.js` 自动完成我们不需要做任何事情只需要定义 `getServerSideProps` 函数
+    - `getServerSideProps` 只能在 `page`(就是目录`pages`下的文件) 被暴露, 其他非 `page` 的文件不能暴露 `getServerSideProps`
+    - `getServerSideProps` 暴露是必须作为一个独立的函数, 不能作为组件的属性等.
+3. `getServerSideProps` 可以接收哪些参数?
+    - ```jsx
+      export type GetServerSidePropsContext<
+        Q extends ParsedUrlQuery = ParsedUrlQuery,
+        D extends PreviewData = PreviewData
+      > = {
+        req: IncomingMessage & {
+          cookies: NextApiRequestCookies
+        }
+        res: ServerResponse
+        params?: Q
+        query: ParsedUrlQuery
+        preview?: boolean
+        previewData?: D
+        resolvedUrl: string
+        locale?: string
+        locales?: string[]
+        defaultLocale?: string
+      }
+    - 来看下每个参数都是什么意思
+      - `req`: `Incom ingMessage` 对象;
+      - `res`: `response` 对象;
+      - `params`: 如果这个页面使用动态路由, 那么 `params` 就包含路由参数. 比如页面的名字是 `[id].jsx`, 那么 `params` 就像 `{ id: ... }`;
+      - `query`: 表示 `query` 的对象;
+      - `preview`: 如果页面处在 `Preview Mode` 为 `true` 否则为 `false`;
+      - `previewData`: 由 `setPreviewData` 设置的 `data`
+      - `resolvedUrl`: 
+      - `locale`: 
+      - `locales`: 
+      - `defaultLocale`: 
+4. `getServerSideProps` 可以返回哪些参数?
+    - 可以返回包含任意一个以下属性的对象
+    - `props`
+      - `props` 对象是 `key-value` 对, 每个值都可以被页面组件接收. 这个对象应该是一个可序列化的对象即可以被 `JSON.stringify` 序列化的对象.
+      - ```jsx
+        export async function getServerSideProps() {
+          const res = await fetch(`http://localhost:5000/userInfo`);
+          const user = await res.json();
+          console.log('user', user);
+          return {
+            props: {
+              name: user.name,
+              age: user.age,
+              job: user.job,
+            }
+          }
+        }
+    - `notFound`
+      - `notFound` 是一个 boolean 值, 允许页面返回 `404 HTTP` 状态码和 `404` 页面.
+    - `redirect`
+      - 
 ![](../../image/)
 ![](../../image/)
 `Next.js`
