@@ -273,7 +273,7 @@
       - `defaultLocale`: 
 4. `getServerSideProps` 可以返回哪些参数?
     - 可以返回包含任意一个以下属性的对象
-    - `props`
+    - **`props`**
       - `props` 对象是 `key-value` 对, 每个值都可以被页面组件接收. 这个对象应该是一个可序列化的对象即可以被 `JSON.stringify` 序列化的对象.
       - ```jsx
         export async function getServerSideProps() {
@@ -288,10 +288,56 @@
             }
           }
         }
-    - `notFound`
-      - `notFound` 是一个 boolean 值, 允许页面返回 `404 HTTP` 状态码和 `404` 页面.
-    - `redirect`
-      - 
+    - **`notFound`**
+      - `notFound` 是一个 `boolean` 值, 允许页面返回 `404 HTTP` 状态码和 `404` 页面. 通常的使用场景是用户生成的内容但是被用户自己删除了.
+      - ```jsx
+        export async function getServerSideProps() {
+          const res = await fetch(`http://localhost:5000/userInfo`);
+          const user = await res.json();
+          console.log('user', user);
+          if (true) {
+            return {
+              notFound: true,
+            };
+          }
+        }
+      - ![](../../image/Snipaste_2022-06-18_07-22-23.png)
+    - **`redirect`**
+      - `redirect` 对象允许重定向至内部或外部资源. 下面是 `TypeScript` 中对返回对象的类型定义. [👉也可以访问这里查看定义👈](https://nextjs.org/docs/api-reference/next.config.js/redirects)
+        - `basePath`: false 或 undefined, 如果为 false 表示 `basePath` 不会被抱恨
+        - `destination`: 想要路由的地址
+        - `permanent`: 如果为 `true`, 将返回 `308` 状态码(`Permanent Redirect`), 这个状态码将告诉客户端或搜索引擎缓存这个重定向; 如果为 `false`, 将返回 `307` 状态码(`Temporary Redirect`), 表示重定向是临时的, 不需要缓存.
+        - `307 VS 308`: 传统来说, `302` 表示临时重定向, `301` 表示永久重定向. 但是许多浏览器不管原来的请求方法是什么, 都将重定向的请求方法改为 `GET`. 例如, 如果浏览器请求 `POST /v1/users`, 服务器返回 `302` 并重定向到 `/v2/users` 那么这个重定向的可能是 `GET /v2/users`. `Next.js` 使用 `307` 和 `308` 明确地指出要保留原来请求的请求方法.
+      - ```jsx
+        export type Redirect =
+        | {
+            statusCode: 301 | 302 | 303 | 307 | 308
+            destination: string
+            basePath?: false
+          }
+        | {
+            permanent: boolean
+            destination: string
+            basePath?: false
+          }
+        ```
+      - 看看不同的返回值
+        - 下面这个是区分 `307` 和 `308` 的
+        - ```jsx
+          return {
+            redirect: {
+              destination: '/',
+              permanent: false,
+            }
+          }
+        - ![](../../image/Snipaste_2022-06-18_09-12-14.png)
+        - ![](../../image/next-getServerSideProps-redirect.gif)
+5. 
+
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
 ![](../../image/)
 ![](../../image/)
 `Next.js`
