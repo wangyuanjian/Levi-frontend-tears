@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Putting</title>
+  <style>
+    body,
+    h1 {
+      padding: 0;
+      margin: 0;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      background-color: orange;
+    }
+
+    .rotate {
+      display: inline-block;
+      vertical-align: bottom;
+      width: 2em;
+      height: 43px;
+      overflow: hidden;
+      background-color: skyblue;
+      padding: 0 .3rem;
+    }
+    .goUp {
+      transition: transform .5s ease-in-out;
+      transform: translateY(-50%);
+    }
+  </style>
+</head>
+
+<body>
+  <h1>
+    <span>欢迎来到</span><div class="rotate"><div class="wrapper">
+        <span>中国</span>
+        <span>北京</span>
+      </div>
+    </div>
+  </h1>
+  <button onclick="toggleUpClass()">goUp</button>
+  <script>
+    let wrapper = document.querySelector('.wrapper');
+    function toggleUpClass() {
+      wrapper.classList.toggle('goUp');
+      const firstSpanHtml = wrapper.lastElementChild.innerHTML;
+      setTimeout(() => {
+        wrapper.classList.toggle('goUp');
+        wrapper.innerHTML = `
+          <span>${firstSpanHtml}</span>
+          <span>${Math.random().toString().substr(2,3)}</span>
+        `;
+      }, 500);
+    }
+  </script>
+</body>
+
+</html>
