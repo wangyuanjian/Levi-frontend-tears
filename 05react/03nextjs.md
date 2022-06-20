@@ -332,10 +332,46 @@
           }
         - ![](../../image/Snipaste_2022-06-18_09-12-14.png)
         - ![](../../image/next-getServerSideProps-redirect.gif)
-5. 
-
-![](../../image/)
-![](../../image/)
+5. `getServerSideProps VS API Route`
+    - `API Route` 是 `Next.js` 构建 `API` 的一个方式. 比如你可以创建一个 `API Route` 然后再其中写请求后台或数据库的方法.
+    - 这个 `VS` 的意思是我们打算在 `API Route` 中送服务器获取数据然后在 `getServerSideProps` 中调用 `API Route`. 这是不必要且低效的做法. ❎
+    - 官网推荐的是将写在 `API Route` 中的逻辑写在 `getServerSideProps` 中.
+6. 在客户端获取数据
+    - 如果页面包含很多经常更新的数据而且不需要预渲染, 可以在客户端发送数据请求.
+    - 这种模式在用户仪表盘页面, 因为仪表盘是私有的, 每一个用户不同的, `SEO` 不感冒的.
+    - ```jsx
+      export default function InfoClient() {
+        const [name, setName] = useState('');
+        const [age, setAge] = useState(0);
+        useEffect(async () => {
+          const res = await fetch(`http://localhost:5000/userInfo`);
+          const user = await res.json();
+          console.log('user', user);
+          setName(user.name);
+          setAge(user.age);
+        }, []);
+        // (async function(){
+        //   const res = await fetch(`http://localhost:5000/userInfo`);
+        //   const user = await res.json();
+        //   console.log('user', user);
+        //   setName(user.name);
+        //   setAge(user.age);
+        // })();
+        return (
+          <div>
+            <section>
+              <h1>{name}</h1>
+              <small>{age}</small> -
+            </section>
+          </div>
+        )
+      }
+    - 可以看到, 我们将客户端请求的代码写在 `useEffect` 中, 浏览器也发出了请求
+    - ![](../../image/Snipaste_2022-06-20_21-23-46.png)
+    - 📕注意📕我注释掉了代码中立即执行表达式的部分, 因为这样会导致发不止一个请求, 很奇怪, 还不知道为什么.
+7. `500`
+    - 如果某个异常在 `getServerSideProps` 中被抛出, 那么会展示 `pages/500.js` 文件. 在开发模式下, `500.js` 不会使用而会展示对应的 `开发模式提示`, 如下图.
+    - ![](../../image/Snipaste_2022-06-20_21-38-27.png)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
