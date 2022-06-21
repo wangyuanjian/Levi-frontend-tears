@@ -279,6 +279,112 @@
     - 执行构建
       - ![](../../image/Snipaste_2022-06-21_12-23-33.png)
       - ![](../../image/Snipaste_2022-06-21_12-24-32.png)
+7. 实际开发中的还可能处理其他资源, 比如音视频或者文档类, 这时候, 我们只需要将处理字体的配置加上其他资源的就可以了, 因为这些资源都不需要转化只要原封不动的保留
+    - ```js
+      {
+          test: /\.(ttf|woff2?|mp3|mp4|doc|ppt)$/i,
+          type: 'asset/resource',
+          generator: {
+            filename: "media/[hash][ext][query]"
+          }
+        }
+## 处理 `js` 资源
+### `ESLint`
+> 可组装的 `JavaScript` 或 `JSX` 检查工具
+1. 使用 `ESLint` 关键是写 `ESLint` 配置文件, 配置为文件里写各种 `rules` 规则, 作为代码检查的依据
+2. 配置文件
+    - 位于项目根目录
+    - 配置文件有很多种写法: `.eslintrc.*`
+      - `.eslintrc`
+      - `.eslintrc.js`
+      - `.eslintrc.json`
+      - 这些不同的写法仅在语法上不同
+    - 在 `package.json` 中通过 `eslintConfig` 可以指定不需要配置文件而在 `package.json` 中写
+    - `ESLint` 会查找和读取配置文件, 所以上述配置文件只需存在一个
+3. 安装与使用
+    - ```
+      npm i eslint@8.14.0 eslint-webpack-plugin@3.1.1 -D
+    - 引入, 修改 `webpack.config.js`
+      - ```js
+        const ESLintPlugin = require('eslint-webpack-plugin');
+
+        plugins: [
+          // plugin 的配置
+          new ESLintPlugin({
+            context: path.resolve(__dirname, 'src')
+          })
+        ],
+      - `context`: 指定文件根目录
+4. 具体配置(以`.eslintrc.js`配置文件为例)
+    - 总体看一下
+    - ```js
+      module.exports = {
+        // 解析选项
+        parserOptions: {},
+        // 具体规则检查
+        rules: {},
+        // 继承其他规则
+        extends: [],
+        // 环境变量相关
+        env: {}
+      }
+    - `parserOptions`: 解析选项
+      - ```js
+        parserOptions: {
+          ecmaVersion: 6, // es6
+          sourceType: 'module', // es 模块化
+          ecmaFeatures: {
+            jsx: true // 如果是 react 需要开启 jsx
+          }
+        },
+    - `rules`: 具体规则
+      - 采用 `key-value` 的形式. 其中 key 是规则, value 是触发对应规则的报警级别
+        - `off` 或 `0`: 关闭规则, 即规则不生效
+        - `warn` 或 `1`: 开启规则, 使用告警级别的错误, 不会导致程序退出
+        - `error` 或 `2`: 开启规则, 使用错误级别的错误, 程序会退出
+      - ```js
+        rules: {
+          "no-var": 'error',
+          "semi": 2
+        },
+    - `extends`: 开发中手写所有规则太费劲, 可以继承以下比较有名的规则
+      - `eslint:recommended`: `ESLint` 官方的规则
+      - `plugin:vue/essential`: `Vue Cli` 官方规则
+      - `react-app`: `React Cli` 官方规则
+      - ```js
+        extends: ['eslint:recommended'],
+    - `env`: 允许使用 node 或浏览器中的全局变量
+      - ```js
+        env: {
+          node: true, // 启用node中的全局变量
+          browser: true, // 启用浏览器中的全局变量, 比如 console
+        }
+    - 完整的配置文件
+      - ```js
+        module.exports = {
+          // 解析选项
+          parserOptions: {
+            ecmaVersion: 6, // es6
+            sourceType: 'module', // es 模块化
+            ecmaFeatures: {
+              jsx: true // 如果是 react 需要开启 jsx
+            }
+          },
+          // 具体规则检查
+          rules: {
+            "no-var": 'error'
+          },
+          // 继承其他规则
+          extends: ['eslint:recommended'],
+          // 环境变量相关
+          env: {
+            node: true, // 启用node中的全局变量
+            browser: true, // 启用浏览器中的全局变量, 比如 console
+          }
+        }
+    - 手动写一个错误然后执行 `npx webpack` 看看报错
+    - ![](../../image/Snipaste_2022-06-21_16-03-50.png)
+### `Babel`
 ## 输出 `output`
 1. 自动删除上次打包的内容
     - 在 `webpack 4` 还需要安装插件.
