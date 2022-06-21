@@ -384,7 +384,42 @@
         }
     - 手动写一个错误然后执行 `npx webpack` 看看报错
     - ![](../../image/Snipaste_2022-06-21_16-03-50.png)
+5. 老师推荐了 `ESLint` 这个 `VS Code` 插件, 但是这个插件会检查 `dist` 目录下的代码, 为此需要在根目录下创建 `.eslintignore` 文件, 指出不需要检查 `dist` 文件夹下的文件
+    - ```js
+      dist
 ### `Babel`
+> `JavaScript` 编译器
+1. 配置文件
+    - 配置文件有很多中写法, 都需要在项目根目录下
+    - 写法一: `babel.config.*`
+      - `babel.config.js`
+      - `babel.config.json`
+    - 写法二: `.babelrc.*`
+      - `.babelrc`
+      - `.babelrc.js`
+      - `.babelrc.json`
+    - 在 `package.json` 中 `babel`: 不需要创建文件在原有基础上写
+2. 安装与配置
+    - ```shell
+      npm i @babel/core@7.17.10 @babel/preset-env@7.17.10 babel-loader@8.2.5 -D
+    - 在 `webpack.config.js` 中配置 `loader`
+      - ```js
+        {
+          test: /\.js$/,
+          exclude: /node_modules/, // 排除 node_modules中的js文件
+          loader: 'babel-loader'
+        }
+3. 具体内容
+    - `presets` 预设: 简单来说, 就是一组 Babel 插件, 用来扩展 Bebel 功能
+      - `@babel/preset-env`: 智能预设, 允许使用最新 `Javascript` 语法
+      - `@babel/preset-react`: 用来编译 `React JSX` 语法的预设
+      - `@babel/preset-typescript`: 用来编译 `TypeScript` 语法的预设
+    - 下面就是 `babel.config.js` 的全部内容
+    - ```js
+      module.exports = {
+        presets: ['@babel/preset-env']
+      }
+    - 执行 `npx webpack` 打包构建
 ## 输出 `output`
 1. 自动删除上次打包的内容
     - 在 `webpack 4` 还需要安装插件.
