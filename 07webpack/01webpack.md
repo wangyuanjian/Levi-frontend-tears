@@ -195,8 +195,55 @@
         }
     - 再次执行构建
     - ![](../../image/Snipaste_2022-06-21_09-25-27.png)
-![](../../image/)
-![](../../image/)
+## 处理模块资源
+> 资源模块(`asset module`)是一种模块类型, 它允许使用资源文件（字体, 图标等）而无需配置额外的 `loader`.
+1. 在 `webpack 5` 之前, 通常使用
+    - `raw-loader`: 将文件导入为字符串;
+    - `url-loader`: 将文件作为 `data URI`(默认是呈现为使用 `Base64` 算法编码的文件内容) 内联到 `bundle` 中;
+    - `file-loader`: 将文件发送到输出目录
+2. 资源模块类型(`asset module type`), 通过添加四种新的模块类型来替换上面的 `loader`
+    - `asset/resource`: 发送一个单独的文件并导出 `URL`.
+    - `asset/inline`: 带出一个资源的 `data URI`
+    - `asset/source`: 导出资源的源代码
+    - `asset`: 在导出一个 `data URI` 和发送一个单独的文件之间自动选择
+3. 过程与步骤
+    - 首先增加几张图片到 `src/asset`, 其中 `1.jpg` 大小为 `5kb`, `2.png` 和 `3.gif` 的大小超过 `100kb`
+    - 增加 `css` 代码, 修改 `src/css/index.css`
+      - ```css
+        .box3 {
+          width: 100px;
+          height: 100px;
+          background-image: url(../assets/1.jpeg);
+          background-size: cover;
+        }
+        .box4 {
+          width: 100px;
+          height: 100px;
+          background-image: url(../assets/2.png);
+          background-size: cover;
+        }
+        .box5 {
+          width: 100px;
+          height: 100px;
+          background-image: url(../assets/3.gif);
+          background-size: cover;
+        }
+    - 修改 `webpack.config.js` 配置 `loader`
+      - 📕`type: 'asset'` 就是将资源声明为 `asset` 类型并通过 `dataUrlCondition` 里的条件, 如果图片大小小于 `10kb` 就转成 `data URI`(`Base64`) 否则仍单独文件.
+      - ```js
+        {
+          test: /\.(png|jpe?g|gif|webp)$/i,
+          type: 'asset',
+          parser: {
+            dataUrlCondition: {
+              maxSize: 10 * 1024 // 10kb
+            }
+          }
+        }
+    - 重新执行打包
+    - ![](../../image/Snipaste_2022-06-21_10-23-54.png)
+    - 实际打包完成 `dist` 目录下也只有 `2` 张图片
+    - ![](../../image/Snipaste_2022-06-21_10-24-54.png)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
