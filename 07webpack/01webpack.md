@@ -83,9 +83,118 @@
       - 代码质量检查和编码风格
 2. 生产模式
     - 111
-![](../../image/)
-![](../../image/)
-![](../../image/)
+## 处理样式资源
+1. 先看报错
+    - 创建 `src/css/index.css`
+    - ```css
+      body {
+        padding: 0;
+        margin: 0;
+        background-color: salmon;
+      }
+    - 在 `main.js` 中引入该资源(📕不引入就不会被编译)
+    - ```js 
+      import './css/index.css'
+    - 执行 `npx webpack`
+    - ![](../../image/Snipaste_2022-06-21_07-48-37.png)
+### 处理 `CSS` 资源
+1. 过程与步骤
+    - 安装 `loader`
+      - ```shell
+        npm i css-loader@6.7.1 style-loader@3.3.1 -D
+    - 在 `main.js` 中引入 `CSS` 资源
+      - ```js
+        import './css/index.css'
+    - 修改 `webpack.config.js` 配置 `loader`
+      - ```js
+        module: {
+          rules: [
+            // loader 的配置
+            {
+              test: /\.css$/i,
+              use: ['style-loader', 'css-loader']
+            }
+          ]
+        }
+    - 再次执行打包. 可以看到 `CSS` 已经生效
+    - ![](../../image/Snipaste_2022-06-21_08-11-13.png)
+2. 一些规则
+    - ```js
+      {
+        test: /\.css$/i,
+        // loader: 'css-loader' // 只能使用一个 loader
+        use: ['style-loader', 'css-loader'] // use 使用多个 loader
+      }
+    - 📕`test`: 表示哪些文件需要使用 `loader`.
+    - 📕`use`: 表示使用哪些 `loader`, 使用顺序从右到左.
+      - `css-loader`: 将 `CSS` 资源编译成 `commonJS` 的模块到 `js` 文件中
+      - `style-loader`: 将 `js` 中的 `CSS` 通过创建 `<style>` 标签的形式添加到 `HTML` 中.
+    - 📕`loader`: 该配置项只能使用 `1` 个 `loader`, `use` 则可以使用多个 `loader`
+### 处理 `LESS` 资源
+1. 过程与步骤
+    - 创建 `src/less/index.less` 文件
+      - ```less
+        @width: 10px;
+        @height: @width + 10px;
+
+        .box {
+          width: @width;
+          height: @height;
+          background-color: cornflowerblue;
+        }
+    - 在 `main.js` 中引入 `less` 资源
+      - ```js
+        import './less/index.less'
+    - 安装 `loader`
+      - ```shell
+        npm i less@4.1.2 less-loader@10.2.0 -D
+    - 修改 `webpack.config.js` 配置 `loader`
+      - ```js
+        module: {
+          rules: [
+            {
+              test: /\.less$/i,
+              use: ['style-loader', 'css-loader', 'less-loader']
+            }
+          ]
+        }
+    - 再次执行构建
+    - ![](../../image/Snipaste_2022-06-21_09-08-55.png)
+### 处理 `SASS/SCSS` 资源
+1. 过程与步骤
+    - 创建 `src/sass/index.sass` 和 `src/sass/index.scss` 文件
+      - 📕`.sass` 只能缩进, 不能写分号
+      - ```sass
+        .box2
+          width: 100px
+          height: 100px
+          background-color: red
+      - ```scss
+        $width: 100px;
+        .box1 {
+          width: $width;
+          height: $width;
+          background-color: bisque;
+        }
+    - 在 `main.js` 中引入 `sass` 资源
+      - ```js
+        import './sass/index.scss'
+        import './sass/index.sass'
+    - 安装 `loader`
+      - ```shell
+        npm i sass@1.51.0 sass-loader@12.6.0 -D
+    - 修改 `webpack.config.js` 配置 `loader`
+      - ```js
+        module: {
+          rules: [
+            {
+              test: /\.s[ac]ss$/i,
+              use: ['style-loader', 'css-loader', 'sass-loader']
+            }
+          ]
+        }
+    - 再次执行构建
+    - ![](../../image/Snipaste_2022-06-21_09-25-27.png)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
