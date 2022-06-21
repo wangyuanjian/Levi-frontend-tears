@@ -420,6 +420,23 @@
         presets: ['@babel/preset-env']
       }
     - 执行 `npx webpack` 打包构建
+## 处理 `HTML` 资源
+1. 目前在 `HTML` 目录中的 `js` 是我们手动加入的, 如果以后有很多`js` 或者需要维护, 就比较麻烦. 可以使用 HtmlWebpackPlugin 更加简便
+    - 安装
+      - ```shell
+        npm install --save-dev html-webpack-plugin@5.5.0
+    - 引入并配置
+      - `webpack.config.js`
+      - ```js
+        const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+        plugins: [
+          new HtmlWebpackPlugin({
+            template: path.resolve(__dirname, 'public/index.html')
+          })
+        ],
+    - 执行 `npx webpack` 打包构建
+    - ![](../../image/Snipaste_2022-06-21_17-08-18.png)
 ## 输出 `output`
 1. 自动删除上次打包的内容
     - 在 `webpack 4` 还需要安装插件.
