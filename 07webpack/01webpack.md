@@ -24,6 +24,8 @@
   - [处理 `HTML` 资源](#处理-html-资源)
   - [输出 `output`](#输出-output)
   - [搭建开发服务器](#搭建开发服务器)
+  - [`SourceMap`](#sourcemap)
+  - [`HMR(hot module replacement)`](#hmrhot-module-replacement)
 
 <!-- /TOC -->
 
@@ -656,9 +658,35 @@
       "webpack-dev-server": "^4.8.1"
     - 报错解决, 服务启动成功
     - ![](../../image/Snipaste_2022-06-21_20-03-44.png)
-![](../../image/)
-![](../../image/)
-![](../../image/)
+## `SourceMap`
+> [就是编译后的代码如何与源代码映射, 从而快速定位到源代码](https://webpack.docschina.org/configuration/devtool/#root)
+1. 我们手动在代码中添加错误
+    - ```js
+      export default function sumArray(...args) {
+      return args.reduce((prev, cur) => prev + cur, 0)();
+    }
+    - ![](../../image/Snipaste_2022-06-22_17-34-57.png)
+    - 如果点进去, 看到的编译后的代码报错位置
+    - ![](../../image/Snipaste_2022-06-22_17-35-32.png)
+    - 这样对于生产上排查错误不友好.
+2. `SourceMap` 是一个用来生成源代码与构建后代码一一映射的文件的方案. 
+    - 它会生成一个 `.map` 文件, 里面包含源代码和构建后代码每一行每一列的关系. 当构建后代码出错时就会通过 `.map` 文件从构建后代码出错位置找到源代码出错位置.
+3. 使用
+    - 修改 `webpack.config.js` 增加 `devtool` 配置项
+    - 开发模式
+      - ```js
+        devtool: 'cheap-module-source-map',
+      - 优点: 打包编译速度快, 只包含行映射
+      - 缺点: 没有列映射
+    - 生产模式
+      - ```js
+        devtool: 'source-map',
+      - 优点: 包含行/列映射
+      - 缺点: 打包编译速度更慢
+    - 下面使用生产配置重新打包, 可以看到 `main.js` 多了对应的 `main.js.map` 而且浏览器找到了源代码文件
+    - ![](../../image/Snipaste_2022-06-22_17-45-35.png)
+    - ![](../../image/Snipaste_2022-06-22_17-46-33.png)
+## `HMR(hot module replacement)`
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
