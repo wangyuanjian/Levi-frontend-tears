@@ -14,6 +14,7 @@
     - [处理 `LESS` 资源](#处理-less-资源)
     - [处理 `SASS/SCSS` 资源](#处理-sassscss-资源)
     - [处理 `CSS` 资源为单独的文件](#处理-css-资源为单独的文件)
+    - [处理样式兼容性问题](#处理样式兼容性问题)
   - [处理模块资源](#处理模块资源)
   - [处理 `js` 资源](#处理-js-资源)
     - [`ESLint`](#eslint)
@@ -263,6 +264,70 @@
         filename: 'css/main.css'
       }),
     - ![](../../image/Snipaste_2022-06-22_12-43-42.png)
+### 处理样式兼容性问题
+1. 兼容性问题大概就是 CSS 中的某些语法在不同浏览器不同, 比如 `-webkit-` 前缀啦这些. 使用 PostCSS 会自动添加这些语法.
+2. 安装与配置
+    - 安装
+      - ```shell
+        npm i postcss@8.4.13 postcss-loader@6.2.1 postcss-preset-env@7.5.0 -D
+    - 配置: 修改 `webpack.config.js`
+      - 需要将 `postcss-loader` 配置在 `css-loader` 之后, `less/sass` 等预处理器之前
+      - ```js
+        {
+          test: /\.css$/i,
+          // loader: 'css-loader' // 只能使用一个 loader
+          // use: ['style-loader', 'css-loader']
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader',
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  plugins: [
+                    'postcss-preset-env' // 能解决大多数样式兼容性问题
+                  ]
+                }
+              }
+            }
+          ] // use 使用多个 loader
+        },
+        {
+          test: /\.less$/i,
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader', 
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  plugins: [
+                    'postcss-preset-env' // 能解决大多数样式兼容性问题
+                  ]
+                }
+              }
+            },
+            'less-loader'
+          ]
+        },
+    - 配置: `package.json` 中说明究竟腰兼容到哪些浏览器的什么版本
+      - ```json
+        "browserslist": [
+          "ie >= 8"
+        ]
+    - 重新打包 `npx webpack`. 可以看到, 代码中的 `display: flex` 被兼容性处理后增加了 `display: -ms-flexbox;`
+    - ![](../../image/Snipaste_2022-06-22_15-18-08.png)
+3. 真实的兼容性配置
+    - ```json
+      "browserslist": [
+        "last 2 version",
+        "> 1%",
+        "not dead"
+      ]
+    - `"last 2 version"`: 所有浏览器最新的两个版本
+    - `"> 1%"`: 支持 `99%` 的浏览器
+    - `"not dead"`: 仍然被浏览器厂商支持的版本.
+    - 使用 **`,`** 连接表示以上条件为并集
 ## 处理模块资源
 > 资源模块(`asset module`)是一种模块类型, 它允许使用资源文件（字体, 图标等）而无需配置额外的 `loader`.
 1. 在 `webpack 5` 之前, 通常使用
