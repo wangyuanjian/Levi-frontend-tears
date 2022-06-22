@@ -15,6 +15,8 @@
     - [处理 `SASS/SCSS` 资源](#处理-sassscss-资源)
     - [处理 `CSS` 资源为单独的文件](#处理-css-资源为单独的文件)
     - [处理样式兼容性问题](#处理样式兼容性问题)
+    - [代码优化](#代码优化)
+    - [`CSS` 压缩](#css-压缩)
   - [处理模块资源](#处理模块资源)
   - [处理 `js` 资源](#处理-js-资源)
     - [`ESLint`](#eslint)
@@ -328,6 +330,54 @@
     - `"> 1%"`: 支持 `99%` 的浏览器
     - `"not dead"`: 仍然被浏览器厂商支持的版本.
     - 使用 **`,`** 连接表示以上条件为并集
+### 代码优化
+1. 之前的 `loader` 都写在一起, 没有代码复用
+    - 首先定义重复的 `loader` 数组
+    - ```js
+      const styleLoaders = [
+        MiniCssExtractPlugin.loader,
+        'css-loader',
+        {
+          loader: 'postcss-loader',
+          options: {
+            postcssOptions: {
+              plugins: [
+                'postcss-preset-env' // 能解决大多数样式兼容性问题
+              ]
+            }
+          }
+        }
+      ];
+    - 然后在重复的地方调用使用展开运算符展开
+    - ```js
+      {
+        test: /\.css$/i,
+        use: [...styleLoaders] // use 使用多个 loader
+      },
+      {
+        test: /\.less$/i,
+        use: [...styleLoaders, 'less-loader']
+      },
+      {
+        test: /\.s[ac]ss$/i,
+        use: [...styleLoaders, 'sass-loader']
+      },
+### `CSS` 压缩
+1. 安装与使用
+    - 安装
+      - ```shell
+         npm install css-minimizer-webpack-plugin@3.4.1 --save-dev
+    - 配置: `webpack.config.js`
+      - ```js
+        const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+        
+        plugins: [
+          new CssMinimizerPlugin(),
+        ],
+    - 重新打包 `npx webpack`
+      - 📕一定是 `production` 模式下才有效哦📕, 记得验证之前将 `webpack.config.js` 中的 `mode` 改为 `production`
+    - ![](../../image/Snipaste_2022-06-22_15-48-35.png)
+2. `html` 和 `js` 不需要手动指定压缩, 只要在 `production` 下打包, 就会压缩
 ## 处理模块资源
 > 资源模块(`asset module`)是一种模块类型, 它允许使用资源文件（字体, 图标等）而无需配置额外的 `loader`.
 1. 在 `webpack 5` 之前, 通常使用
