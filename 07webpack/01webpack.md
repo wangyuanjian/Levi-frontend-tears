@@ -1,5 +1,29 @@
 # `Webpack`
 > `webpack` 是一个现代 `JavaScript` 应用程序的静态模块打包器(`module bundler`). 当 `webpack` 处理应用程序时, 它会递归地构建一个依赖关系图(`dependency graph`), 其中包含应用程序需要的每个模块, 然后将所有这些模块打包成一个或多个 `bundle`
+
+<!-- TOC -->
+
+- [`Webpack`](#webpack)
+  - [`Hello World`](#hello-world)
+  - [五大概念与配置](#五大概念与配置)
+    - [五大概念](#五大概念)
+    - [基本配置](#基本配置)
+    - [开发模式和生产模式](#开发模式和生产模式)
+  - [处理样式资源](#处理样式资源)
+    - [处理 `CSS` 资源](#处理-css-资源)
+    - [处理 `LESS` 资源](#处理-less-资源)
+    - [处理 `SASS/SCSS` 资源](#处理-sassscss-资源)
+    - [处理 `CSS` 资源为单独的文件](#处理-css-资源为单独的文件)
+  - [处理模块资源](#处理模块资源)
+  - [处理 `js` 资源](#处理-js-资源)
+    - [`ESLint`](#eslint)
+    - [`Babel`](#babel)
+  - [处理 `HTML` 资源](#处理-html-资源)
+  - [输出 `output`](#输出-output)
+  - [搭建开发服务器](#搭建开发服务器)
+
+<!-- /TOC -->
+
 ## `Hello World`
 1. 创建项目
     - 项目结构
@@ -195,6 +219,50 @@
         }
     - 再次执行构建
     - ![](../../image/Snipaste_2022-06-21_09-25-27.png)
+### 处理 `CSS` 资源为单独的文件
+1. 之前写的代码 `CSS` 都在 `JS` 中处理, 然后才加入到 `HTML`, 这样就到这页面的 `HTML` 结构已经出现但是没有样式, 体验不好.
+    - 从下面的的动图可以看到, 当页面出现后, `js` 文件又花费了 `3s` 的时间才加载完成, 导致页面在 `js` 文件加载过程中是没有样式的
+    - ![](../../image/webpack_css_in_js.gif)
+2. 安装和使用 `MiniCssExtractPlugin`
+    - 作用就是将 `CSS` 提取到单独的文件, 为每个包含 `CSS` 的 `JS` 文件创建一个 `CSS` 文件并支持 `CSS` 的按需加载
+    - 安装
+      - ```shell
+        npm install --save-dev mini-css-extract-plugin@2.6.0
+    - 修改 `webpack.config.js`
+      - 配置插件, 并将所有的 `style-loader` 替换为 `MiniCssExtractPlugin.loader`
+      - ```js
+        plugins: [
+          new MiniCssExtractPlugin(),
+        ],
+        module: {
+          rules: [
+            {
+              test: /\.css$/i,
+              // use: ['style-loader', 'css-loader']
+              use: [MiniCssExtractPlugin.loader, 'css-loader']
+            },
+            {
+              test: /\.less$/i,
+              use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader']
+            },
+            {
+              test: /\.s[ac]ss$/i,
+              use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
+            },
+          ]
+        },
+    - 重新执行 `npx webpack` 打包, 打包完成后, dist 目录下就会多出 `main.css` 文件并且也不会出现页面无样式的问题了
+      - ![](../../image/Snipaste_2022-06-22_09-59-39.png)
+    - 修改之后, 可以看到页面 HTML 出来时样式也同步出现.
+      - ![](../../image/webpack_css_in_js_plugin.gif)
+    - 而且 `index.html` 中自动通过 `link` 引入了 `CSS`
+      - ![](../../image/Snipaste_2022-06-22_12-11-08.png)
+3. 修改打包之后的 `CSS` 文件地址
+    - ```js
+      new MiniCssExtractPlugin({
+        filename: 'css/main.css'
+      }),
+    - ![](../../image/Snipaste_2022-06-22_12-43-42.png)
 ## 处理模块资源
 > 资源模块(`asset module`)是一种模块类型, 它允许使用资源文件（字体, 图标等）而无需配置额外的 `loader`.
 1. 在 `webpack 5` 之前, 通常使用
