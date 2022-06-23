@@ -25,7 +25,9 @@
   - [输出 `output`](#输出-output)
   - [搭建开发服务器](#搭建开发服务器)
   - [`SourceMap`](#sourcemap)
-  - [`HMR(hot module replacement)`](#hmrhot-module-replacement)
+  - [提升打包构建速度](#提升打包构建速度)
+    - [`HMR(hot module replacement)`](#hmrhot-module-replacement)
+    - [`oneOf`](#oneof)
 
 <!-- /TOC -->
 
@@ -686,7 +688,49 @@
     - 下面使用生产配置重新打包, 可以看到 `main.js` 多了对应的 `main.js.map` 而且浏览器找到了源代码文件
     - ![](../../image/Snipaste_2022-06-22_17-45-35.png)
     - ![](../../image/Snipaste_2022-06-22_17-46-33.png)
-## `HMR(hot module replacement)`
+## 提升打包构建速度
+### `HMR(hot module replacement)`
+1. 开发环境中, 如果更新单个文件, 那么整个代码都会重新构建执行. 热模块替换(`HMR`)会在应用程序运行过程指令, 替换, 添加或删除模块, 而无需加载整个页面.
+    - `HMR` 是默认开启的, 如果要关闭可以修改下面的配置
+    - ```js
+      devServer: {
+        host: 'localhost',
+        port: '3000',
+        open: true, // 自动打开浏览器
+        hot: true, // 开启 HMR
+      },
+2. 但是这样配置之后, 修改 JS 文件仍会导致页面更新. 该需要在 `main.js` 中修改
+    - ```js
+      // 判断是否支持HMR
+      if (module.hot) {
+        module.hot.accept('./js/sum');
+        module.hot.accept('./js/sumArray', () => {
+          console.log('sumArray udpated')
+        });
+      }
+    - 其中 `accept` 接受第二个回调函数形式的参数, 当第一个参数指定的文件发生变化时调用回调函数
+3. 另一个问题时, 开发时有很多文件那么这样写就会很繁琐. 所以我们需要其他 loader 来解决, 比如 `vue-loader` 或 `react-hot-loader`
+### `oneOf`
+1. 在使用 `loader` 处理文件时, 一个文件匹配到某个规则后, 并不会停止而是会继续向下匹配, 这就造成打包的浪费. 使用 `oneOf` 就会在文件和 `loader` 规则匹配时, 只使用第一个匹配规则.
+    - 修改 `webpack.config.js`
+    - ```js
+      module: {
+        rules: [
+          {
+            oneOf: [
+              {
+                test: /\.css$/i,
+                use: [...styleLoaders]
+              },
+              {
+                test: /\.less$/i,
+                use: [...styleLoaders, 'less-loader']
+              },
+              // 省略剩下
+            ]
+          }
+        ]
+      },
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
