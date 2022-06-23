@@ -28,6 +28,8 @@
   - [提升打包构建速度](#提升打包构建速度)
     - [`HMR(hot module replacement)`](#hmrhot-module-replacement)
     - [`oneOf`](#oneof)
+    - [`Include/Exclude`](#includeexclude)
+    - [Cache](#cache)
 
 <!-- /TOC -->
 
@@ -731,7 +733,47 @@
           }
         ]
       },
-![](../../image/)
+### `Include/Exclude`
+1. 开发中使用第三方 `loader` 或者 `plugin` 时, 所有文件都下载到了 `node_modules` 中, 这些文件不需要编译可以直接使用因此在对文件处理时, 要排除 `node_modules` 下面的文件
+    - `include`: 只处理某些资源
+    - `exclude`: 排除某些资源不处理.
+    - `include` 和 `exclude` 只能选择一个
+    - `webpack.config.js`
+    - ```js
+      {
+        test: /\.js$/,
+        exclude: /node_modules/, // 排除 node_modules中的js文件
+        loader: 'babel-loader'
+      }
+    - 或者
+    - ```js
+      {
+        test: /\.js$/,
+        include: path.resolve(__dirname, './src'),
+        loader: 'babel-loader'
+      }
+### Cache
+1. 每次打包文件时 JS 文件都要经过 ESLint 检查和 Babel 编译, 我们可以缓存检查和编译结果, 使得已经检查和编译而没有修改的文件不需要重新检查或编译
+    - `webpack.config.js` 中修改 `babel-loader`
+    - ```js
+      {
+        test: /\.js$/,
+        // exclude: /node_modules/, // 排除 node_modules中的js文件
+        include: path.resolve(__dirname, './src'),
+        loader: 'babel-loader',
+        options: {
+          cacheDirectory: true, // 开启 babel
+          cacheCompression: false, // 关闭缓存文件压缩
+        }
+      }
+    - 修改 `ESLint` 插件
+    - ```js
+      new ESLintPlugin({
+        context: path.resolve(__dirname, 'src'),
+        cache: true, // 开启缓存
+        cacheLocation: path.resolve(__dirname, './node_modules/.cache/eslintcache')
+      }),
+    - ![](../../image/Snipaste_2022-06-23_17-03-47.png)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
