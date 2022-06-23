@@ -30,6 +30,7 @@
     - [`oneOf`](#oneof)
     - [`Include/Exclude`](#includeexclude)
     - [Cache](#cache)
+    - [Thread](#thread)
 
 <!-- /TOC -->
 
@@ -774,6 +775,58 @@
         cacheLocation: path.resolve(__dirname, './node_modules/.cache/eslintcache')
       }),
     - ![](../../image/Snipaste_2022-06-23_17-03-47.png)
+### Thread
+1. 当项目越来越庞大时, 打包速度越来越慢, 主要是打包 `JS` 文件速度. 对 `JS` 文件处理主要是 `ESLint`, `Babel` 和 `Terser`(内置的压缩插件), 开启多进程同时处理 `JS` 来提升打包速度.
+2. 安装与使用
+    - 安装依赖
+      - ```shell
+        npm install --save-dev thread-loader@3.0.4
+    - 修改配置文件
+      - 修改 `JS loader`, 加在 `babel-loader` 前面
+      - ```js
+        const os = require('os');
+        const TerserWebpackPlugin = require('terser-webpack-plugin');
+
+        const cpuNum = os.cpus().length;
+        {
+          test: /\.js$/,
+          // exclude: /node_modules/, // 排除 node_modules中的js文件
+          include: path.resolve(__dirname, './src'),
+          use: [
+            {
+              loader: 'thread-loader', // 开启多进程
+              options: {
+                works: cpuNum
+              }
+            },
+            {
+              loader: 'babel-loader',
+              options: {
+                cacheDirectory: true, // 开启 babel
+                cacheCompression: false, // 关闭缓存文件压缩
+              }
+            }
+          ]
+        }
+      - 修改 `ESLint` 配置
+      - ```js
+        new ESLintPlugin({
+          context: path.resolve(__dirname, 'src'),
+          cache: true, // 开启缓存
+          cacheLocation: path.resolve(__dirname, './node_modules/.cache/eslintcache'),
+          threads: cpuNum // 开启多进程
+        }),
+      - 增加 `optimization` 根配置项
+      - ```js
+        optimization: {
+          // 压缩的操作
+          minimizer: [
+            new TerserWebpackPlugin({
+              parallel: cpuNum
+            })
+          ]
+        },
+      - 重新打包
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
