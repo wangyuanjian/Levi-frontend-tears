@@ -31,6 +31,9 @@
     - [`Include/Exclude`](#includeexclude)
     - [Cache](#cache)
     - [Thread](#thread)
+  - [减少代码体积](#减少代码体积)
+    - [`Tree Shaking`](#tree-shaking)
+    - [`Babel`](#babel-1)
 
 <!-- /TOC -->
 
@@ -827,6 +830,30 @@
           ]
         },
       - 重新打包
+## 减少代码体积
+### `Tree Shaking`
+1. 开发时定义一些函数库或者引入第三方工具函数库, 实际上我们只能用到函数库中的一部分代码, 这时就需要 `Tree Shaking` 将没有用上的 `JS` 代码移除
+    - `Tree Shaking` 依赖 `ES Module`
+    - `Webpack` 默认开启
+### `Babel`
+1. `Babel` 为编译的每个文件都插入了辅助代码, 比如 `_extend`, 使代码体积过大. 我们可以将辅助代码作为一个独立模块, 在需要它的地方引入而不是重复定义
+    - `@babel/plugin-transform-runtime` 禁用了 `Babel` 自动对每个文件的 `runtime` 注入, 而是引入 `@babel/plugin-transform-runtime` 了 并且使所有的辅助代码都从这里引入
+2. 安装与使用
+    - 安装
+      - ```js
+        npm i -D @babel/plugin-transform-runtime@7.17.10
+    - 配置
+      - `webpack.config.js` 修改 `babel-loader`
+      - ```js
+        {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true, // 开启 babel
+            cacheCompression: false, // 关闭缓存文件压缩
+            plugins: ['@babel/plugin-transform-runtime']
+          }
+        }
+    - 重新打包
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
