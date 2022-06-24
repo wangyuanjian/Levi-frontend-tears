@@ -1078,6 +1078,44 @@
       }
     - ![](../../image/Snipaste_2022-06-24_17-28-08.png)
 ### `Core-js`
+1. `@babel/preset-env` 可以将 `ES6` 的一些语法转换但是对于 `Promise` 等语法仍是无能为力, `core-js` 就是专门用来做 `ES6` 及以上语法的 `polyfill`
+2. 安装与使用
+    - ```js
+      npm i core-js@3.23.2
+    - 引入
+      - ```js
+        import 'core-js'
+        new Promise((resolve, reject) => {
+          resolve(1);
+        })
+    - 重新执行打包命令. 就可以看到生成了新的文件, 这个文件就是 `polyfill`
+    - ![](../../image/Snipaste_2022-06-24_19-33-27.png)
+    - 但是完全引入 core-js 生成的文件很大, 有 200+KB
+    - ![](../../image/Snipaste_2022-06-24_19-35-15.png)
+3. 按需引入: 只需引入 `core-js/es/promise` 即可
+    - ![](../../image/Snipaste_2022-06-24_19-35-51.png)
+    - ```js
+      // 完整引入
+      // import 'core-js'
+      // 按需引入
+      import 'core-js/es/promise'
+    - 重新执行打包构建
+    - ![](../../image/Snipaste_2022-06-24_19-38-27.png)
+4. 自动引入
+    - 如果每次使用对应语法的地方都需要引入, 那么会比较麻烦. 设置 `Bebel` 自动按需引入, 修改 Babel 的配置文件
+    - ```js
+      module.exports = {
+        presets: [
+          [
+            '@babel/preset-env',
+            {
+              useBuiltIns: 'usage', //按需自动引入
+              corejs: 3,
+            }
+          ]
+        ]
+      }
+    - 
 ### `PWA`
 ![](../../image/)
 ![](../../image/)
