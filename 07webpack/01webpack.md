@@ -1047,12 +1047,38 @@
     - 可以看到截图中的部分, `math.chunk.js` 一共有两次请求, 只不过第二次请求是从 `cache` 中获取得到的.
     - ![](../../image/Snipaste_2022-06-24_16-48-32.png)
 ### `Network Cache`
+1. 在文件命中增加 `hash` 的一个目的是避免浏览器的缓存导致文件更新失效. 下面我们就给出口文件和 `chunk` 文件都加上 `hash`
+    - ```js
+      output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].[contenthash:10].js',
+        chunkFilename: '[name].chunk.[contenthash:10].js',
+        clean: true
+      },
+    - `[contenthash:10]` 顾名思义就是根据文件内生成 `hash`, 并取 `hash` 值得前 `10` 位. 如果文件内容不变, `hash` 值就不变, 文件名也不会变
+    - ![](../../image/Snipaste_2022-06-24_17-16-24.png)
+    - 注意在 `main.js` 中引入了 `count.js` 并修改其 `chunk` 名为 `math` 下面我们修改 `count.js`
+    - ```js
+      // 随便增加点内容
+      export function subtractReverse111(a, b) {
+        return b - a;
+      }
+    - 再次执行打包
+    - ![](../../image/Snipaste_2022-06-24_17-18-13.png)
+    - 发现不仅 `math.js` 的文件名改变了, `main.js` 的文件名也改变了. 这是因为 `main.js` 中有 `math.js` 的文件名.
+    - ![](../../image/Snipaste_2022-06-24_17-19-44.png)
+2. 这样的后果就是, `main.js` 自身内容明明没有改变只是其引用的一个模块的内容改变了, `main.js` 的文件名也改变了, 浏览器的缓存失效.
+    - 思路是生成一个中间 `runtime` 文件, 加入 `A` 依赖 `B, C, D`. 不管 `B, C, D` 中的哪一个发生了改变, `runtime` 和其一起发生改变, 而 `A` 只需从 `runtime` 中获取对应的依赖的文件名即可.  
+    - 增加 `webpack.config.js`
+    - ```js
+      optimization: {
+        runtimeChunk: {
+          name: entrypoint => `runtime-${entrypoint.name}.js`
+        },
+      }
+    - ![](../../image/Snipaste_2022-06-24_17-28-08.png)
 ### `Core-js`
 ### `PWA`
-
-
-![](../../image/)
-![](../../image/)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
