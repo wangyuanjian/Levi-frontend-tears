@@ -34,6 +34,13 @@
   - [减少代码体积](#减少代码体积)
     - [`Tree Shaking`](#tree-shaking)
     - [`Babel`](#babel-1)
+  - [优化代码运行性能](#优化代码运行性能)
+    - [`Code Split`](#code-split)
+      - [多入口文件](#多入口文件)
+    - [多入口文件提取公共组件](#多入口文件提取公共组件)
+    - [`Network Cache`](#network-cache)
+    - [`Core-js`](#core-js)
+    - [`PWA`](#pwa)
 
 <!-- /TOC -->
 
@@ -854,6 +861,111 @@
           }
         }
     - 重新打包
+## 优化代码运行性能
+### `Code Split`
+1. 打包时所有 `JS` 文件都打包到一个文件会导致体积太大, 如果只请求首页就会把其他页面的 `JS` 也请求了.
+    - 因此需要将所有打包的文件进行代码分隔, 生成多个 `JS` 文件.
+#### 多入口文件
+1. 创建项目
+    - ![](../../image/Snipaste_2022-06-24_10-03-17.png)
+    - `src` 下的两个文件分别只输出对应的文件名
+    - 初始化 `NPM` 项目: `npm init -y`
+    - 安装依赖
+      - ```js
+        npm i webpack@5.72.0 webpack-cli@4.9.2 html-webpack-plugin@5.5.0 -D
+    - `webpack.config.js`
+      - ```js
+        const path = require('path')
+        const HtmlWebpackPlugin = require('html-webpack-plugin')
+
+        module.exports = {
+          // entry: './src/main.js',
+          // 多个入口文件
+          entry: {
+            app1: './src/app.js',
+            main: './src/main.js'
+          },
+          output: {
+            path: path.resolve(__dirname, 'dist'),
+            filename: '[name].js'
+          },
+          plugins: [
+            new HtmlWebpackPlugin({
+              template: path.resolve(__dirname, './public/index.html'),
+            })
+          ],
+
+          // npm i webpack@5.72.0 webpack-cli@4.9.2 html-webpack-plugin@5.5.0 -D
+          mode: 'production'
+        }
+      - 在多入口文件下, `entry` 的写法由字符串写法变成了对象写法. `key` 为什么, 打包完成后的文件名就是什么
+        - ![](../../image/Snipaste_2022-06-24_10-07-37.png)
+    - 打包之后的 `HTML` 将两个 `JS` 文件都引入了
+    - ![](../../image/Snipaste_2022-06-24_10-08-39.png)
+2. 多入口就多输出, 因此如果想要让代码分隔的一个方式就是写多个入口文件.
+### 多入口文件提取公共组件
+1. 创建一个 `math.js` 然后在 app.js 和 main.js 中都引入其暴露的函数
+    - ```js
+      export default function add(num1, num2) {
+        return num1 + num2;
+      }
+    - 执行打包构建, 打包完成后 `add` 函数在每个地方都出现了. 现实情况是如果 `add` 函数很长, 被调用的地方很多, 那么就会增大打包后的代码体积
+    - ![](../../image/Snipaste_2022-06-24_10-21-38.png)
+2. 增加配置
+    - ![](../../image/5128488-5b3e4374a890a6d9.webp)
+    - ```js
+      optimization: {
+        // 代码分割配置
+        splitChunks: {
+          chunks: "all", // 对所有模块都进行分割
+          // 以下是默认值
+          // minSize: 20000, // 分割代码最小的大小
+          // minRemainingSize: 0, // 类似于minSize，最后确保提取的文件大小不能为0
+          // minChunks: 1, // 至少被引用的次数，满足条件才会代码分割
+          // maxAsyncRequests: 30, // 按需加载时并行加载的文件的最大数量
+          // maxInitialRequests: 30, // 入口js文件最大并行请求数量
+          // enforceSizeThreshold: 50000, // 超过50kb一定会单独打包（此时会忽略minRemainingSize、maxAsyncRequests、maxInitialRequests）
+          // cacheGroups: { // 组，哪些模块要打包到一个组
+          //   defaultVendors: { // 组名
+          //     test: /[\\/]node_modules[\\/]/, // 需要打包到一起的模块
+          //     priority: -10, // 权重（越大越高）
+          //     reuseExistingChunk: true, // 如果当前 chunk 包含已从主 bundle 中拆分出的模块，则它将被重用，而不是生成新的模块
+          //   },
+          //   default: { // 其他没有写的配置会使用上面的默认值
+          //     minChunks: 2, // 这里的minChunks权重更大
+          //     priority: -20,
+          //     reuseExistingChunk: true,
+          //   },
+          // },
+          // 修改配置
+          cacheGroups: {
+            // 组，哪些模块要打包到一个组
+            // defaultVendors: { // 组名
+            //   test: /[\\/]node_modules[\\/]/, // 需要打包到一起的模块
+            //   priority: -10, // 权重（越大越高）
+            //   reuseExistingChunk: true, // 如果当前 chunk 包含已从主 bundle 中拆分出的模块，则它将被重用，而不是生成新的模块
+            // },
+            default: {
+              // 其他没有写的配置会使用上面的默认值
+              minSize: 0, // 我们定义的文件体积太小了，所以要改打包的最小文件体积
+              minChunks: 2,
+              priority: -20,
+              reuseExistingChunk: true,
+            },
+          },
+        },
+      },
+    - 执行打包构建. 看起来 `app1.js` 的文件内容似乎更多了, 但是这是为了做到拆分必要的代码
+      - ![](../../image/Snipaste_2022-06-24_10-48-46.png)
+### `Network Cache`
+### `Core-js`
+### `PWA`
+
+
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
