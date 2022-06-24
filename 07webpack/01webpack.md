@@ -38,6 +38,7 @@
     - [`Code Split`](#code-split)
       - [多入口文件](#多入口文件)
     - [多入口文件提取公共组件](#多入口文件提取公共组件)
+      - [动态加载-按需引入](#动态加载-按需引入)
     - [`Network Cache`](#network-cache)
     - [`Core-js`](#core-js)
     - [`PWA`](#pwa)
@@ -957,6 +958,43 @@
       },
     - 执行打包构建. 看起来 `app1.js` 的文件内容似乎更多了, 但是这是为了做到拆分必要的代码
       - ![](../../image/Snipaste_2022-06-24_10-48-46.png)
+#### 动态加载-按需引入
+1. 在页面增加一个按钮, 想要点击这个按钮的时候才加载 `JS` 文件并调用其中的某个方法.
+    - 创建 `count.js`
+    - ```js
+      export default function subtract(a, b) {
+        return a - b;
+      }
+      export function subtractReverse(a, b) {
+        return b - a;
+      }
+    - 在 `public/index.html` 中添加按钮
+    - ```html
+      <button id="test">test</button>
+    - 在 `main.js` 中添加处理按钮点击函数
+    - ```js
+      document.getElementById('test').onclick = (e) => {
+        import('./count.js')
+        .then(res => {
+          console.log('res', res);
+        })
+        .catch(err => {
+        })
+      }
+    - ![](../../image/Snipaste_2022-06-24_15-24-06.png)
+    - 因此我们可以使用调用 `default`
+    - ```js
+      document.getElementById('test').onclick = (e) => {
+        import('./count.js')
+        .then(res => {
+          console.log('res', res);
+          console.log('res', res.default(1, 2))
+          console.log('res', res.subtractReverse(1, 2))
+        })
+        .catch(err => {
+        })
+      }
+    - ![](../../image/Snipaste_2022-06-24_15-25-55.png)
 ### `Network Cache`
 ### `Core-js`
 ### `PWA`
