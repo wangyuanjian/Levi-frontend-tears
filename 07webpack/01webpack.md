@@ -39,6 +39,7 @@
       - [多入口文件](#多入口文件)
     - [多入口文件提取公共组件](#多入口文件提取公共组件)
       - [动态加载-按需引入](#动态加载-按需引入)
+    - [`Preload & Prefetch`](#preload--prefetch)
     - [`Network Cache`](#network-cache)
     - [`Core-js`](#core-js)
     - [`PWA`](#pwa)
@@ -958,6 +959,17 @@
       },
     - 执行打包构建. 看起来 `app1.js` 的文件内容似乎更多了, 但是这是为了做到拆分必要的代码
       - ![](../../image/Snipaste_2022-06-24_10-48-46.png)
+3. 如果是单文件入口, 那么只需要加入下面一点点额外的配置
+    - ```js
+      optimization: {
+        // 代码分割配置
+        splitChunks: {
+          chunks: "all",
+        },
+      },
+    - 其中 `ESLint` 不能识别 `import` 语法, 可以增加配置
+    - ```js
+      plugins: ['import']
 #### 动态加载-按需引入
 1. 在页面增加一个按钮, 想要点击这个按钮的时候才加载 `JS` 文件并调用其中的某个方法.
     - 创建 `count.js`
@@ -981,6 +993,8 @@
         .catch(err => {
         })
       }
+    - 打包构建
+    - ![](../../image/Snipaste_2022-06-24_15-55-20.png)
     - ![](../../image/Snipaste_2022-06-24_15-24-06.png)
     - 因此我们可以使用调用 `default`
     - ```js
@@ -995,11 +1009,50 @@
         })
       }
     - ![](../../image/Snipaste_2022-06-24_15-25-55.png)
+2. 修改文件命名
+    - 第一步, 首先在 `import` 语句中做如下修改
+    - ```js
+      import(/* webpackChunkName: "math" */'./count.js')
+      .then(res => {
+      })
+      .catch(err => {
+      })
+    - 第二步, 在 `webpack.config.js` 的 `output` 中增加 `chunkFilename`. 加上`chunk` 是为了和入口文件区分
+    - ```js
+      output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].js',
+        chunkFilename: '[name].chunk.js',
+        clean: true
+      },
+### `Preload & Prefetch`
+1. 在动态加载时, 如果加载的文件体积很大就会出现卡顿. 我们想在浏览器空闲时间加载后续需要使用的资源, 需要用 `Preload` 或 `Prefetch`
+    - `prefetch(预获取)`: 将来某些导航下可能需要的资源
+    - `preload(预获取)`: **`当前`** 导航下可能需要的资源
+    - 共同点
+      - 只加载资源, 并不执行
+      - 都有缓存
+    - 不同点
+      - `preload` `chunk` 会在父 `chunk` **加载时**, 以并行方式开始加载. `prefetch` `chunk` 会在父 `chunk` 加载**结束后**开始加载; 
+      - `preload` `chunk` 具有中等优先级, 并立即下载.  `prefetch` `chunk` 在浏览器闲置时下载;
+      - `preload` `chunk` 会在父 `chunk` 中立即请求, 用于当下时刻. `prefetch` `chunk` 会用于未来的某个时刻;
+      - 浏览器支持程度不同
+2. 使用
+    - ```js
+      import(/* webpackChunkName: "math", webpackPrefetch: true */'./count.js')
+      .then(res => {
+      })
+      .catch(err => {
+      })
+    - 可以看到截图中的部分, `math.chunk.js` 一共有两次请求, 只不过第二次请求是从 `cache` 中获取得到的.
+    - ![](../../image/Snipaste_2022-06-24_16-48-32.png)
 ### `Network Cache`
 ### `Core-js`
 ### `PWA`
 
 
+![](../../image/)
+![](../../image/)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
