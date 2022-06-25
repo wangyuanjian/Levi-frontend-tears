@@ -46,8 +46,9 @@
   - [`Webpack` 的总结](#webpack-的总结)
   - [搭载 `React` 脚手架](#搭载-react-脚手架)
     - [开发环境配置](#开发环境配置)
-      - [生产配置文件](#生产配置文件)
+    - [生产配置文件](#生产配置文件)
     - [合并配置文件](#合并配置文件)
+    - [`antd` 主题配置](#antd-主题配置)
 
 <!-- /TOC -->
 
@@ -1433,7 +1434,7 @@
           open: true,
           historyApiFallback: true, // 解决前端路由404
         }
-#### 生产配置文件
+### 生产配置文件
 1. 在复制开发配置文件的基础上所做的修改
     - 打包输出需要有路径, 文件名和 `chunk` 名需要有 `hash` 做缓存;
     - 样式需要单独生成 `CSS` 文件并压缩;
@@ -1643,8 +1644,45 @@
           "build": "cross-env NODE_ENV=production webpack --config ./webpack.config.js",
           "test": "echo \"Error: no test specified\" && exit 1"
         },
-![](../../image/)
-![](../../image/)
+### `antd` 主题配置
+1. 安装和使用 `antd`
+    - ```
+      npm i antd
+    - 在 `main.js` 中引入 `css` 文件
+    - ```js
+      import 'antd/dist/antd.css'
+    - 在 `App.jsx` 中引入 `Button` 组件
+    - ```jsx
+      import { Button } from 'antd'
+      <Button type='primary'>CLICK ME!</Button>
+    - ![](../../image/Snipaste_2022-06-25_22-45-49.png)
+2. 配置主题
+    - 需要安装 `less-loader`
+      - ```js
+        npm i less-loader@10.2.0 less@4.1.2 -D
+    - 增加 `less-loader` 的配置
+      - ```js
+        {
+          test: /\.less$/,
+          use: [
+            ...styleLoaders,
+            {
+              loader: 'less-loader',
+              options: {
+                lessOptions: {
+                  modifyVars: { '@primary-color': '#1DA57A' },
+                  javascriptEnabled: true,
+                },
+              }
+            }
+          ],
+        },
+    - 在 `main.js` 中引入 `less` 而不是 `css`
+      - ```js
+        // import 'antd/dist/antd.css'
+        import 'antd/dist/antd.less'
+    - 按钮的颜色由蓝色变成了绿色
+    - ![](../../image/Snipaste_2022-06-25_22-45-03.png)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
