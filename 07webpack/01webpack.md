@@ -47,6 +47,7 @@
   - [搭载 `React` 脚手架](#搭载-react-脚手架)
     - [开发环境配置](#开发环境配置)
       - [生产配置文件](#生产配置文件)
+    - [合并配置文件](#合并配置文件)
 
 <!-- /TOC -->
 
@@ -1579,6 +1580,69 @@
       - ```html
         <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     - ![](../../image/Snipaste_2022-06-25_16-55-11.png)
+### 合并配置文件
+1. 通过 `process.env.NODE_ENV` 获取 `cross-env` 设置的指令, 从而判断当前是指令执行的是生产环境还是开发环境指令.
+    - 创建 `webpack.config.js`
+      - 第一处: 生产环境提取单独的 `CSS` 文件, 开发环境生成 `style` 标签
+      - ```js
+        isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
+      - 第二处: 关于输出, 生产环境输出到 `dist`, 文件名加上 `hash`, 开发环境不需要加 `hash`
+      - ```js
+        output: {
+          path: isProduction ? path.resolve(__dirname, './dist') : undefined,
+          filename: isProduction ? 'js/[name].[contenthash:10].js' : 'js/[name].js',
+          chunkFilename: isProduction ? 'js/[name].[contenthash:10].chunk.js' : 'js/[name].chunk.js',
+          clean: true
+        },
+      - 第三处: 开发环境使用 `HMR`, 生产环境不需要
+      - ```js
+        {
+          test: /.jsx?$/,
+          include: path.resolve(__dirname, './src'),
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            cacheCompression: false,
+            plugins: isProduction ? [] : [ 'react-refresh/babel' ]
+          }
+        }
+      - 第四处: 插件(省略了配置). 最后在数组过滤了 `filter` 为 `true` 的元素
+      - ```js
+        plugins: [
+          new ESLintWebpackPlugin({}),
+          new HtmlWebpackPlugin({}),
+          isProduction && new MiniCssExtractPlugin({}),
+          isProduction && new CopyWebpackPlugin({}),
+          !isProduction && new ReactRefreshWebpackPlugin(),
+        ].filter(Boolean),
+      - 第四处: `mode` 和 `tree-shaking` 的级别
+      - ```js
+        mode: isProduction ? 'production' : 'development',
+        devtool: isProduction ? 'source-map' : 'cheap-module-source-map',
+      - 第五处: 是否文件压缩. 如果 `minimize` 为真, 才会使用 `minimizer` 的配置
+      - ```js
+        optimization: {
+          minimize: isProduction,
+          minimizer: [
+          ]
+        }
+      - 第六处: `devServer` 启动需要命令中加 `serve` 选项. 但是生产 `build` 的命令中没有 `serve` 因此也就不用担心.
+      - ```js
+        devServer: {
+          host: 'localhost',
+          port: '4000',
+          hot: true,
+          open: true,
+          historyApiFallback: true, // 解决前端路由
+        }
+    - 修改 `package.json`
+      - ```json
+        "scripts": {
+          "start": "npm run dev",
+          "dev": "cross-env NODE_ENV=development webpack serve --config ./webpack.config.js",
+          "build": "cross-env NODE_ENV=production webpack --config ./webpack.config.js",
+          "test": "echo \"Error: no test specified\" && exit 1"
+        },
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
