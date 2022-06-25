@@ -1552,7 +1552,33 @@
       }
     - 运行 `serve dist`
     - ![](../../image/Snipaste_2022-06-25_16-37-23.png)
-![](../../image/)
+4. 解决 `public` 目录下资源未打包的问题
+    - 必须需要在 `public` 下放页签的图标, 打包时候直接将图标移动到 `dist` 目录下即可
+    - 安装插件
+      - ```js
+         npm i copy-webpack-plugin@10.2.4 -D
+    - 修改 `webpack.config.js`
+      - ```js
+        const CopyWebpackPlugin = require
+        ('copy-webpack-plugin')
+        
+        plugins: [
+          new CopyWebpackPlugin({
+            patterns: [
+              {
+                from: path.resolve(__dirname, './public'),
+                to: path.resolve(__dirname, './dist'),
+                globOptions: {
+                  ignore: ['**/index.html']
+                }
+              }
+            ]
+          })
+        ],
+    - 在 index.html 中引入 `.ico`
+      - ```html
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    - ![](../../image/Snipaste_2022-06-25_16-55-11.png)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
