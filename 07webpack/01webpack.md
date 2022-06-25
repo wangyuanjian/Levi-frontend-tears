@@ -43,6 +43,9 @@
     - [`Network Cache`](#network-cache)
     - [`Core-js`](#core-js)
     - [`PWA(Progressive Web Application)`](#pwaprogressive-web-application)
+  - [`Webpack` 的总结](#webpack-的总结)
+  - [搭载 `React` 脚手架](#搭载-react-脚手架)
+    - [开发环境配置](#开发环境配置)
 
 <!-- /TOC -->
 
@@ -1157,7 +1160,174 @@
       - 📕这个命令执行的地方一定是在 `dist` 的父路径下
     - 访问网站之后在浏览器开发者工具中将网络改为 `offline`, 刷新页面发现页面仍然有效
     - ![](../../image/webpack_pwa.gif)
-![](../../image/)
+## `Webpack` 的总结
+1. 提升开发体验
+    - 使用 `Source Map` 让上线时代码报错能有更加准确的错误提示
+2. 提升打包构建速度
+    - 使用 `HMR(Hot Module Replacement)` 让开发时只重新编译打包发生改变了的代码, 不变的代码使用缓存
+    - 使用 `Oneof` 让资源文件只被一个 `loader` 处理, 不会继续向后匹配而被多个 `loader` 处理
+    - 使用 `Include/Exclude` 排除某些文件, 比如 `node_modules`, 使得处理的文件更少, 速度更快
+    - 使用 `Cache` 缓存 `ESLint` 和 `Babel` 的处理结果, 让之后的打包速度更快
+    - 使用 Thread 多进程处理 `ESLint` 和 `Babel` 任务
+3. 减少代码体积
+    - 使用 `Tree Shaking` 剔除没有使用的多于代码, 让代码体积更小
+    - 使用 `@babel/plugin-transform-runtime` 插件对 `Babel` 处理, 引入辅助代码而不是直接将辅助代码加入到文件中, 减小文件体积
+4. 优化代码运行性能
+    - 使用 `Code Split` 将代码分割为多个 `JS` 文件并通过 import 动态导入语法进行按需加载. 
+    - 使用 `Preload/Prefetch` 提前加载代码, 提高用户体验 
+    - 使用 `Network Cache` 从 `runtime` 中引入辅助代码, 避免被引入的文件改变时引入的文件改变而 `hash` 值改变导致浏览器缓存失效 
+    - 使用 `Core-js` 对 `JS` 进行兼容性处理, 比如 `Promise` 语法 
+    - 使用 `PWA` 使得代码可以离线运行 
+## 搭载 `React` 脚手架
+### 开发环境配置
+1. 基本环境
+    - `webpack.config.js`
+    - ```js
+      const path = require('path');
+      const ESLintWebpackPlugin = require('eslint-webpack-plugin');
+      const HtmlWebpackPlugin = require('html-webpack-plugin')
+
+      const styleLoaders = [
+        'style-loader',
+        'css-loader',
+        {
+          loader: 'postcss-loader',
+          options: {
+            postcssOptions: {
+              plugins: [
+                'postcss-preset-env' // 能解决大多数样式兼容性问题
+              ]
+            }
+          }
+        }
+      ];
+
+      module.exports = {
+        entry: './src/main.js',
+        output: {
+          path: undefined,
+          filename: 'js/[name].js',
+          chunkFilename: 'js'
+        },
+        module: {
+          rules: [
+            {
+              test: /\.css$/,
+              use: [...styleLoaders],
+            },
+            {
+              test: /\.s[ac]ss$/,
+              use: [...styleLoaders, 'sass-loader'],
+            },
+            {
+              test: /\.(png|jpe?g|gif|webp|svg)$/,
+              type: 'asset',
+              parser: {
+                dataUrlCondition: {
+                  maxSize: 10 * 1024
+                }
+              },
+              generator: {
+                filename: 'image/[name][hash][ext][query]'
+              }
+            },
+            {
+              test: /\.(ttf|woff2?)$/i,
+              type: 'asset/resource',
+              generator: {
+                filename: "font/[hash][ext][query]"
+              }
+            },
+            {
+              test: /.jsx?$/,
+              include: path.resolve(__dirname, './src'),
+              loader: 'babel-loader',
+              options: {
+                cacheDirectory: true,
+                cacheCompression: false,
+              }
+            }
+          ]
+        },
+        plugins: [
+          new ESLintWebpackPlugin({
+            context: path.resolve(__dirname, './src'),
+            exclude: 'node_modules',
+            cache: true,
+            cacheLocation:  path.resolve(__dirname, './node_modules/.cache/.eslintcache'),
+          }),
+          new HtmlWebpackPlugin({
+            template: path.resolve(__dirname, './public/index.html')
+          })
+        ],
+        mode: 'development',
+        devtool: 'cheap-module-source-map',
+        optimization: {
+          splitChunks: {
+            chunks: 'all'
+          },
+          runtimeChunk: {
+            name: entrypoint => `runtime-${entrypoint.name}.js`,
+          }
+        },
+        devServer: {
+          host: 'localhost',
+          port: '4000',
+          hot: true,
+          open: true
+        }
+      }
+    - `babel.config.js`: 需要使用 `babel-preset-react-app` 预设的内容
+    - ```js
+      module.exports = {
+        presets: ['react-app']
+      }
+    - `.eslintrc.js`: 需要使用 `eslint-config-react-app` 的配置
+    - ```js
+      module.exports = {
+        extends: ['react-app'], // 继承 react 官方规则
+        parserOptions: {
+          babelOptions: {
+            presets: [
+              // 解决页面报错
+              ['babel-preset-react-app', false],
+              'babel-preset-react-app/prod'
+            ]
+          }
+        }
+      }
+    - 使用 `npm` 安装对应依赖
+    - 修改 `package.json` 创建启动命令
+      - ```json
+        "scripts": {
+          "start": "npm run dev",
+          "dev": "webpack serve --config ./webpack.dev.js",
+          "test": "echo \"Error: no test specified\" && exit 1"
+        },
+2. 创建基本文件
+    - `App.jsx`
+      - ```js
+        import React from 'react';
+
+        export default function App() {
+          return <h1>App</h1>
+        }
+    - `main.js`
+      - ```js
+        import React from 'react';
+        import ReactDOM from 'react-dom/client'
+        import './App'
+
+        const root = ReactDOM.createRoot(document.getElementById('app'));
+        root.render(<App />)
+    - 最后的结果
+      - ![](../../image/Snipaste_2022-06-25_12-38-42.png)
+    - 启动 `npm start`
+    - 报错😅
+      - ![](../../image/Snipaste_2022-06-25_12-41-23.png)
+3. 解决报错
+    - 大意就是使用 `babel-preset-react-env` 时需要指定环境
+    - 
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
