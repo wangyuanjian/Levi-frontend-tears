@@ -1327,7 +1327,64 @@
       - ![](../../image/Snipaste_2022-06-25_12-41-23.png)
 3. 解决报错
     - 大意就是使用 `babel-preset-react-env` 时需要指定环境
-    - 
+    - 因此需要安装包 `cross-env`
+      - ```
+        npm i cross-env@7.0.3 -D
+      - 修改启动命令
+      - ```js
+        "scripts": {
+          "start": "npm run dev",
+          "dev": "cross-env NODE_ENV=development webpack serve --config ./webpack.dev.js",
+          "test": "echo \"Error: no test specified\" && exit 1"
+        },
+    - 再次报错: 因为 webpack 只能处理后缀名为 `.js` 的省略, 而不能处理 `App.jsx` 的引入.
+    - ![](../../image/Snipaste_2022-06-25_15-19-04.png)
+      - 修改 `webpack.config.js`, 增加 `resolve` 这个根配置项
+      - ```
+        resolve: {
+          // 自动补全文件扩展名
+          extensions: ['.jsx', '.js', '.json']
+        },
+    - 再次报错: 找不到 `eslint`
+      - ![](../../image/Snipaste_2022-06-25_15-29-17.png)
+      - 安装即可
+      - `npm i eslint -D`
+    - 成功
+    - ![](../../image/Snipaste_2022-06-25_15-30-09.png)
+4. JS 的 HMR
+    - 安装插件
+      - ```js
+        npm install @pmmmwh/react-refresh-webpack-plugin@0.5.5 react-refresh@0.13.0 -D
+    - 增加配置 `webpack.config.js`
+      - ```js
+        const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
+
+        // babel-loader
+        {
+          test: /.jsx?$/,
+          include: path.resolve(__dirname, './src'),
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            cacheCompression: false,
+            plugins: [
+              'react-refresh/babel'
+            ]
+          }
+        }
+
+        // plugins
+        plugins: [
+          new ReactRefreshWebpackPlugin()
+        ],
+      - 然后修改 `App.jsx` 看效果
+      - ![](../../image/Snipaste_2022-06-25_15-39-00.png)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
