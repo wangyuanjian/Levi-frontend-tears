@@ -1351,7 +1351,7 @@
       - `npm i eslint -D`
     - 成功
     - ![](../../image/Snipaste_2022-06-25_15-30-09.png)
-4. JS 的 HMR
+4. `JS` 的 `HMR`
     - 安装插件
       - ```js
         npm install @pmmmwh/react-refresh-webpack-plugin@0.5.5 react-refresh@0.13.0 -D
@@ -1379,7 +1379,59 @@
         ],
       - 然后修改 `App.jsx` 看效果
       - ![](../../image/Snipaste_2022-06-25_15-39-00.png)
-![](../../image/)
+5. 解决 `React` 路由 `404` 问题
+    - 分别创建 Home 和 About 两个组件
+    - 安装路由
+      - `npm i react-router-dom`
+    - 修改 `main.js`
+      - ```js
+        import React from 'react';
+        import ReactDOM from 'react-dom/client'
+        import App from './App'
+        import { BrowserRouter } from 'react-router-dom'
+
+        const root = ReactDOM.createRoot(document.getElementById('app'));
+        root.render(
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        )
+    - 修改 `App.js`
+      - ```js
+        import React from 'react';
+        import Home from './components/Home/Home'
+        import About from './components/About/About'
+        import { Link, Routes, Route } from 'react-router-dom' 
+
+        export default function App() {
+          return (
+            <>
+              <h1>App!!!</h1>
+              <ul>
+                <li><Link to="/home">Home</Link></li>
+                <li><Link to="/about">About</Link></li>
+              </ul>
+              <hr />
+              <Routes>
+                <Route path='/home' element={ <Home /> }></Route>
+                <Route path='/about' element={ <About /> }></Route>
+              </Routes>
+            </>
+          )
+        }
+    - 效果就是, 可以通过点击访问路由, 但是如果到了 `/about` 路由再刷新页面就会报错. 这是因为 `http://localhost:4000/about` 实际请求的是 dist 目录下的资源而目录下根本没有这个资源
+    - ![](../../image/Snipaste_2022-06-25_16-02-17.png)
+    - 解决方法: 当页面访问子路由 `URL` 时返回 `index.html`
+      - 修改 `webpack.config.js`
+      - ```js
+        devServer: {
+          host: 'localhost',
+          port: '4000',
+          hot: true,
+          open: true,
+          historyApiFallback: true, // 解决前端路由404
+        }
+
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
