@@ -42,7 +42,7 @@
     - [`Preload & Prefetch`](#preload--prefetch)
     - [`Network Cache`](#network-cache)
     - [`Core-js`](#core-js)
-    - [`PWA`](#pwa)
+    - [`PWA(Progressive Web Application)`](#pwaprogressive-web-application)
 
 <!-- /TOC -->
 
@@ -1116,9 +1116,47 @@
         ]
       }
     - 
-### `PWA`
-![](../../image/)
-![](../../image/)
+### `PWA(Progressive Web Application)`
+1. 介绍
+    - 渐进式网络应用程序, 是一种可以提供类似于远程应用程序体验的` Web App` 技术, 主要是在离线时应用程序依然可以使用这方面类似.
+    - 内部通过 `server worker` 实现
+2. 安装与使用
+    - 安装
+      - ```shell
+        npm i workbox-webpack-plugin@6.5.3 -D
+    - 增加新的 `Plugin` 配置
+      - ```js
+        new WorkboxPlugin.GenerateSW({
+          /// 快速启动serviceworkers, 且不允许一六任何旧的servicerworker
+          clientsClaim: true,
+          skipWaiting: true,
+        })
+    - 在 `main.js` 中增加配置. 如果浏览器支持 `Service Worker` 就可以离线访问, 如果不支持, 那么大不了就不能离线访问呗
+      - ```js
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator
+              .serviceWorker
+              .register('/service-worker.js')
+              .then(registration => {
+                console.log('SW success', registration);
+              })
+              .catch(error => {
+                console.log('SW error', error);
+              })
+          });
+        }
+    - 重新执行打包. 完成之后不能立即使用 `Live Server` 启动 `index.html`,  因为请求路径不同
+    - ![](../../image/Snipaste_2022-06-25_09-18-41.png)
+3. 安装全局静态服务器 `serve`
+    - ```
+      npm i serve -g
+    - 启动以 dist 目录为根目录的静态文件服务器
+      - ```
+        serve dist
+      - 📕这个命令执行的地方一定是在 `dist` 的父路径下
+    - 访问网站之后在浏览器开发者工具中将网络改为 `offline`, 刷新页面发现页面仍然有效
+    - ![](../../image/webpack_pwa.gif)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
