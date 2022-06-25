@@ -46,6 +46,7 @@
   - [`Webpack` 的总结](#webpack-的总结)
   - [搭载 `React` 脚手架](#搭载-react-脚手架)
     - [开发环境配置](#开发环境配置)
+      - [生产配置文件](#生产配置文件)
 
 <!-- /TOC -->
 
@@ -1431,8 +1432,126 @@
           open: true,
           historyApiFallback: true, // 解决前端路由404
         }
+#### 生产配置文件
+1. 在复制开发配置文件的基础上所做的修改
+    - 打包输出需要有路径, 文件名和 `chunk` 名需要有 `hash` 做缓存;
+    - 样式需要单独生成 `CSS` 文件并压缩;
+    - `JS` 文件压缩;
+    - 删除 `HMR` 功能;
+    - 删除 `devServer`;
+    - 修改 `mode` 为 `production'`;
+    - 修改 `devtool` 为 `source-map`;
+2. 步骤
+    - 安装依赖
+      - ```
+        npm i mini-css-extract-plugin@2.6.0 css-minimizer-webpack-plugin@3.4.1 -D
+    - ```js
+      const path = require('path');
+      const ESLintWebpackPlugin = require('eslint-webpack-plugin');
+      const HtmlWebpackPlugin = require('html-webpack-plugin')
+      const CssMinimizerWebpackPlugin = require('css-minimizer-webpack-plugin');
+      const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+      const TerserWebpackPlugin = require('terser-webpack-plugin')
 
-![](../../image/)
+      const styleLoaders = [
+        MiniCssExtractPlugin.loader,
+        'css-loader',
+        {
+          loader: 'postcss-loader',
+          options: {
+            postcssOptions: {
+              plugins: [
+                'postcss-preset-env' // 能解决大多数样式兼容性问题
+              ]
+            }
+          }
+        }
+      ];
+
+      module.exports = {
+        entry: './src/main.js',
+        output: {
+          path: path.resolve(__dirname, './dist'),
+          filename: 'js/[name].[contenthash:10].js',
+          chunkFilename: 'js/[name].[contenthash:10].chunk.js',
+          clean: true
+        },
+        module: {
+          rules: [
+            {
+              test: /\.css$/,
+              use: [...styleLoaders],
+            },
+            {
+              test: /\.s[ac]ss$/,
+              use: [...styleLoaders, 'sass-loader'],
+            },
+            {
+              test: /\.(png|jpe?g|gif|webp|svg)$/,
+              type: 'asset',
+              parser: {
+                dataUrlCondition: {
+                  maxSize: 10 * 1024
+                }
+              },
+              generator: {
+                filename: 'image/[name][hash][ext][query]'
+              }
+            },
+            {
+              test: /\.(ttf|woff2?)$/i,
+              type: 'asset/resource',
+              generator: {
+                filename: "font/[hash][ext][query]"
+              }
+            },
+            {
+              test: /.jsx?$/,
+              include: path.resolve(__dirname, './src'),
+              loader: 'babel-loader',
+              options: {
+                cacheDirectory: true,
+                cacheCompression: false,
+              }
+            }
+          ]
+        },
+        plugins: [
+          new ESLintWebpackPlugin({
+            context: path.resolve(__dirname, './src'),
+            exclude: 'node_modules',
+            cache: true,
+            cacheLocation:  path.resolve(__dirname, './node_modules/.cache/.eslintcache'),
+          }),
+          new HtmlWebpackPlugin({
+            template: path.resolve(__dirname, './public/index.html')
+          }),
+          new MiniCssExtractPlugin({
+            filename: 'css/[name].[contenthash:10].css',
+            chunkFilename: 'css/[name].[contenthash:10].chunk.css'
+          })
+        ],
+        mode: 'production',
+        devtool: 'source-map',
+        resolve: {
+          // 自动补全文件扩展名
+          extensions: ['.jsx', '.js', '.json']
+        },
+        optimization: {
+          splitChunks: {
+            chunks: 'all'
+          },
+          runtimeChunk: {
+            name: entrypoint => `runtime-${entrypoint.name}.js`,
+          },
+          minimizer: [
+            new CssMinimizerWebpackPlugin(),
+            new TerserWebpackPlugin(),
+          ]
+        }
+      }
+    - 运行 `serve dist`
+    - ![](../../image/Snipaste_2022-06-25_16-37-23.png)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
