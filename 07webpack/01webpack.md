@@ -53,6 +53,8 @@
     - [关闭性能分析](#关闭性能分析)
   - [搭建 `Vue` 脚手架](#搭建-vue-脚手架)
     - [开发环境配置文件](#开发环境配置文件)
+    - [生产环境配置文件](#生产环境配置文件)
+    - [合并开发生产配置文件](#合并开发生产配置文件)
 
 <!-- /TOC -->
 
@@ -1757,6 +1759,7 @@
         plugins: [
           new VueLoaderPlugin(),
         ],
+    - 不需要 `HMR` 配置, 因为 `vue-loader` 和 `vue-style-loader` 已经可以做到 `HMR`
 3. 配置 `.eslintrc.js`
     - ```js
       module.exports = {
@@ -1818,7 +1821,93 @@
         }
         </style>
       - ![](../../image/Snipaste_2022-06-26_10-05-44.png)
-![](../../image/)
+7. 解决一个警告
+    - ![](../../image/Snipaste_2022-06-26_10-30-50.png)
+    - 就是 Vue3 中需要手动指定 `__VUE_OPTIONS_API__` 和 `__VUE_PROD_DEVTOOLS__` 两个环境变量. 
+      - 📕注意 `cross-env` 定义的环境变量是给 `webpack` 这种打包工具用的;
+      - `DefinePlugin` 这个 `webpack` 内部插件是给源代码使用的;
+    - 修改 `webpack.dev.js`
+    - ```js
+      const { DefinePlugin } = require('webpack')
+      plugins: [
+        new DefinePlugin({
+          __VUE_OPTIONS_API__: true,
+          __VUE_PROD_DEVTOOLS__: false,
+        })
+      ],
+### 生产环境配置文件
+1. 和开发环境一样, 不过我们不需要使用 `vue-style-loader`,
+    - ```js
+      const styleLoaders = [
+        MiniCssExtractPlugin.loader,
+        'css-loader',
+        {
+          loader: 'postcss-loader',
+          options: {
+            postcssOptions: {
+              plugins: [
+                'postcss-preset-env' // 能解决大多数样式兼容性问题
+              ]
+            }
+          }
+        }
+      ];
+### 合并开发生产配置文件
+1. 上代码
+    - 第一处: 开发环境用 `vue-style-loader` 生产环境用 `MiniCssExtractPlugin.loader`
+    - ```js
+      const isProduction = process.env.NODE_ENV === 'production';
+      const styleLoaders = [
+        isProduction ? MiniCssExtractPlugin.loader : 'vue-style-loader',
+        'css-loader',
+        ...
+      ];
+    - 第二处: 输出 
+    - ```js
+      output: {
+        path: isProduction ? path.resolve(__dirname, './dist') : undefined,
+        filename: isProduction ? 'js/[name].[contenthash:10].js' : 'js/[name].js',
+        chunkFilename: isProduction ? 'js/[name].[contenthash:10].chunk.js' : 'js/[name].chunk.js',
+        clean: true
+      },
+    - 第三处: 生产环境提取 `CSS` 为单独文件并复制 `public` 下的文件 
+    - ```js
+      plugins: [
+        new ESLintWebpackPlugin({}),
+        new HtmlWebpackPlugin({}),
+        isProduction && new MiniCssExtractPlugin({}),
+        isProduction && new CopyWebpackPlugin({}),
+        new VueLoaderPlugin(),
+        new DefinePlugin({})
+      ].filter(Boolean),
+    - 第四处: `mode` 和 `devtools` 
+    - ```js
+      mode: isProduction ? 'production' : 'development',
+      devtool: isProduction ? 'source-map' : 'cheap-module-source-map',
+    - 第五处: 生产需要文件压缩
+    - ```js
+      minimize: isProduction,
+      minimizer: [
+        new CssMinimizerWebpackPlugin(),
+        new TerserWebpackPlugin(),
+      ]
+    - 第六处: `dev-server` 
+    - ```js
+      devServer: {
+        host: 'localhost',
+        port: '4000',
+        hot: true,
+        open: true,
+        historyApiFallback: true, // 解决前端路由
+      }
+    - 第七处: 修改 `package.json`
+    - ```json
+      "scripts": {
+        "start": "npm run dev",
+        "dev": "cross-env NODE_ENV=development webpack serve --config ./webpack.config.js",
+        "build": "cross-env NODE_ENV=production webpack --config ./webpack.config.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+      },
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
