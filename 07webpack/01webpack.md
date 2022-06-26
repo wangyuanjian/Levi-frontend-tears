@@ -55,6 +55,7 @@
     - [开发环境配置文件](#开发环境配置文件)
     - [生产环境配置文件](#生产环境配置文件)
     - [合并开发生产配置文件](#合并开发生产配置文件)
+    - [打包优先级](#打包优先级-1)
     - [使用 `element-plus`](#使用-element-plus)
 
 <!-- /TOC -->
@@ -1909,6 +1910,8 @@
         "build": "cross-env NODE_ENV=production webpack --config ./webpack.config.js",
         "test": "echo \"Error: no test specified\" && exit 1"
       },
+### 打包优先级
+1. 设置不同的分组
 ### 使用 `element-plus`
 1. 全局使用
     - 安装
@@ -1953,7 +1956,51 @@
         createApp(App)
         // .use(ElementPlus)
         .mount(document.getElementById('app'));
-    - ![](../../image/)
+    - 引入并使用 `App.vue`
+      - ```html
+        <el-button type="primary">Button</el-button>
+
+        import { ElButton } from 'element-plus'
+3. 定制主题
+    - 创建 `src/style/element/index.scss`
+      - ```scss
+        @forward 'element-plus/theme-chalk/src/common/var.scss' with (
+          $colors: (
+            'primary': (
+              'base': salmon,
+            ),
+          ),
+        );
+    - 修改配置文件 `webpack.config.js`
+      - 修改 `sass-loader` 来使用上面创建的文件
+      - ```js
+        {
+          test: /\.s[ac]ss$/,
+          use: [
+            ...styleLoaders,
+            {
+              loader: 'sass-loader',
+              options: {
+                additionalData: `@use "@/style/element/index.scss" as *;`,
+              }
+            }
+          ],
+        },
+      - 配置路径别名, 使用 `@` 表示 `src` 目录
+      - ```js
+        resolve: {
+          alias: {
+            '@': path.resolve(__dirname, './src'),
+          }
+        },
+      - 增加 `plugin` 的配置
+      - ```js
+        Components({
+          resolvers: [ElementPlusResolver({
+            importStyle: 'sass',
+          })],
+        }),
+    - ![](../../image/Snipaste_2022-06-26_17-44-50.png)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
