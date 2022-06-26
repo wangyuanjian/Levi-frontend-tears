@@ -50,6 +50,9 @@
     - [合并配置文件](#合并配置文件)
     - [`antd` 主题配置](#antd-主题配置)
     - [打包优先级](#打包优先级)
+    - [关闭性能分析](#关闭性能分析)
+  - [搭建 `Vue` 脚手架](#搭建-vue-脚手架)
+    - [开发环境配置文件](#开发环境配置文件)
 
 <!-- /TOC -->
 
@@ -1713,7 +1716,108 @@
     - 这样原来的 `JS` 文件被拆分成三个独立的文件大小更小的 `JS`. 📕但是不能拆分过多, 因为多了的话请求数量也会变多
     - ![](../../image/Snipaste_2022-06-26_08-56-33.png)
     - ![](../../image/Snipaste_2022-06-26_08-59-18.png)
-![](../../image/)
+3. 看一下写法
+    - `test`: 满足 `test` 的所有第三方被打包在一起. 
+      - `[\\/]`: 表示路径分隔符是 `\` 或者 `/`, 因为 `/` 需要转义, 所以就写成 `[\\/]`
+      - `react(.*)?`: 表示所有以 `react` 开头的第三方库
+    - `name`: 打包后的文件名
+    - `priority`: 优先级相同的一起打包
+### 关闭性能分析
+1. 在打包过程中会提示哪些文件太大可以优化之类的, 如果不想看到这些, 可以通过在配置文件中增加 `performance: false`
+## 搭建 `Vue` 脚手架
+### 开发环境配置文件
+1. 复制 `React` 脚手架下的开发配置文件
+    - 做下面几处修改
+      - 删除 `react` `HMR`;
+      - 删除 `babel` 对 `jsx` 的处理;
+      - 修改自动补全文件后缀, 将 `.jsx` 替换为 `.vue`
+2. 安装 `loader`
+    - ```
+      npm install -D vue-loader vue-template-compiler vue-style-loader
+      ```
+      - `vue-style-loader`: 是专门代替 `style-loader` 的
+    - 修改配置文件
+      - ```js
+        const { VueLoaderPlugin } = require('vue-loader')
+        
+        const styleLoaders = [
+          'vue-style-loader',
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            ...
+          }
+        ];
+
+        {
+          test: /\.vue$/,
+          loader: 'vue-loader'
+        }
+
+        plugins: [
+          new VueLoaderPlugin(),
+        ],
+3. 配置 `.eslintrc.js`
+    - ```js
+      module.exports = {
+        root: true, // 根目录
+        env: {
+          node: true,
+        },
+        extends: [
+          'plugin:vue/vue3-essential',
+          'eslint:recommended'
+        ],
+        parserOptions: {
+          parser: '@babel/eslint-parser'
+        }
+      }
+4. 配置 `babel.config.js`
+    - ```js
+      module.exports = {
+        presets: ['@vue/cli-plugin-babel/preset']
+      }
+5. 配置 `package.json`
+    - ```json
+      "scripts": {
+        "start": "npm run dev",
+        "dev": "cross-env NODE_ENV=development webpack serve --config ./webpack.dev.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+      },
+      "browerslist": [
+        "last 2 version",
+        "> 1%",
+        "not dead"
+      ]
+6. 搭建文件
+    - 创建 `public/index.html`
+      - ```html
+        <div id="app"></div>
+    - `main.js`
+      - ```js
+        import { createApp } from 'vue';
+        import App from './App'
+
+        createApp(App).mount(document.getElementById('app'));
+    - `App.vue`
+      - ```html
+        <template>
+          <h1 class="title">App</h1>
+        </template>
+
+        <script>
+        export default {
+          name: 'App'
+        }
+        </script>
+
+        <style scoped>
+        .title {
+          background-color: salmon;
+          color: #f0f0f0;
+        }
+        </style>
+      - ![](../../image/Snipaste_2022-06-26_10-05-44.png)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
