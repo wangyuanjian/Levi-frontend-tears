@@ -55,6 +55,7 @@
     - [开发环境配置文件](#开发环境配置文件)
     - [生产环境配置文件](#生产环境配置文件)
     - [合并开发生产配置文件](#合并开发生产配置文件)
+    - [使用 `element-plus`](#使用-element-plus)
 
 <!-- /TOC -->
 
@@ -1908,8 +1909,51 @@
         "build": "cross-env NODE_ENV=production webpack --config ./webpack.config.js",
         "test": "echo \"Error: no test specified\" && exit 1"
       },
-![](../../image/)
-![](../../image/)
+### 使用 `element-plus`
+1. 全局使用
+    - 安装
+      - ```js
+        npm i element-plus@2.2.0
+    - 在 `main.js` 中引入样式文件
+      - ```js
+        import ElementPlus from 'element-plus'
+        import 'element-plus/dist/index.css'
+
+        createApp(App)
+        .use(ElementPlus)
+        .mount(document.getElementById('app'));
+    - 在 `App.vue` 中直接使用组件
+      - ```html
+        <el-button type="primary">Button</el-button>
+    - 启动项目
+    - ![](../../image/Snipaste_2022-06-26_16-58-05.png)
+2. 按需引入
+    - 安装插件
+      - ```js
+        npm install -D unplugin-vue-components@0.19.3 unplugin-auto-import@0.7.1
+    - 增加配置 `webpack.config.js`
+      - ```js
+        const AutoImport = require('unplugin-auto-import/webpack')
+        const Components = require('unplugin-vue-components/webpack')
+        const { ElementPlusResolver }  = require('unplugin-vue-components/resolvers')
+
+        plugins: [
+          AutoImport({
+            resolvers: [ElementPlusResolver()],
+          }),
+          Components({
+            resolvers: [ElementPlusResolver()],
+          }),
+        ]
+    - 取消 `main.js` 中的代码
+      - ```js
+        // import ElementPlus from 'element-plus'
+        // import 'element-plus/dist/index.css'
+
+        createApp(App)
+        // .use(ElementPlus)
+        .mount(document.getElementById('app'));
+    - ![](../../image/)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
