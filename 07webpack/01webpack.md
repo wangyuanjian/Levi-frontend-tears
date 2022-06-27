@@ -59,6 +59,8 @@
     - [使用 `element-plus`](#使用-element-plus)
   - [`loader`](#loader)
     - [概念](#概念)
+    - [自定义 `loader`](#自定义-loader)
+      - [同步 `loader`](#同步-loader)
 
 <!-- /TOC -->
 
@@ -2072,6 +2074,48 @@
       - 使用 `-!` 前缀，将禁用所有已配置的 `preLoader` 和 `loader`, 但是不禁用 `postLoaders`
         - ```js
           import Styles from '-!style-loader!css-loader?modules!./styles.css';
+### 自定义 `loader`
+#### 同步 `loader`
+1. 定义 `loader`
+    - `loader` 就是一个函数.
+    - 创建 `loaders/test_loader.js`
+    - ```js
+        module.exports = function(content, map, meta) {
+        console.log('get content, ', content, map, meta);
+        console.log('------------------------------------------');
+        return context;
+      }
+    - 参数
+      - `content`: 传入的文件的内容
+      - `map`: 用于 `SourceMap` 的处理
+      - `meta`: 上一个 `loader` 传来的参数
+    - 增加 `webpack.config.js` 的配置
+    - ```js
+      {
+        test: /.js$/,
+        include: path.resolve(__dirname, './src'),
+        loader: './loaders/test_loader.js',
+      },
+    - 执行 `npm run build`
+    ![](../../image/Snipaste_2022-06-27_19-15-08.png)
+2. 异常处理
+    - 如果在 `loader` 中出现了错误, 可以调用 `callback` 方法报错. 增加错误处理
+    - ```js
+      module.exports = function (context, map, meta) {
+        try {
+          console.log('get content, ', context);
+          console.log('------------------------------------------');
+          throw new Error('Oops');
+          return context;
+        } catch (err) {
+          console.log('出错了', err);
+          this.callback(err.msg, context, map, meta);
+        }
+      }
+    - ![](../../image/Snipaste_2022-06-27_19-21-44.png)
+![](../../image/)
+![](../../image/)
+![](../../image/)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
