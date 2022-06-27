@@ -61,6 +61,8 @@
     - [概念](#概念)
     - [自定义 `loader`](#自定义-loader)
       - [同步 `loader`](#同步-loader)
+      - [异步 `loader`](#异步-loader)
+      - [`raw loader`](#raw-loader)
 
 <!-- /TOC -->
 
@@ -2113,8 +2115,40 @@
         }
       }
     - ![](../../image/Snipaste_2022-06-27_19-21-44.png)
-![](../../image/)
-![](../../image/)
+#### 异步 `loader`
+1. 如果需要先执行某些异步操作, 并当异步操作成功之后才继续向下处理 `loader`, 需要使用异步 `loader`
+    - 通过 `this.async()` 返回 `callback` 函数
+    - 定义 `loaders/async_loader.js`
+    - ```js
+      module.exports = function (content, map, meta) {
+        let startTime = +new Date();
+        const callback = this.async();
+
+        setTimeout(() => {
+          console.log('i am here', +new Date() - startTime);
+          callback(null, content, map, meta);
+        }, 1000);
+      }
+    - 修改 `webpack.config.js`
+    - ```js
+      {
+        test: /.js$/,
+        include: path.resolve(__dirname, './src'),
+        use: ['./loaders/test_loader.js', './loaders/async_loader.js'],
+      },
+    - ![](../../image/Snipaste_2022-06-27_20-04-27.png)
+2. 同步 `loader` 中不能异步调用 `this.callback` 会报错
+#### `raw loader`
+1. 默认情况下, 资源文件会被转化为 `UTF-8` 字符串然后传给 `loader`. 通过设置 `raw` 为 `true`, `loader` 可以接收到原始的 `Buffer`.
+    - ```js
+      module.exports = function(content, map, meta) {
+        console.log('raw content', content);
+        return content;
+      }
+
+      module.exports.raw = true;
+    - ![](../../image/Snipaste_2022-06-27_20-13-46.png)
+2. 一般用 `raw-loader` 处理图片等非文本格式文件.
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
