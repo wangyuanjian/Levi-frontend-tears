@@ -57,6 +57,8 @@
     - [合并开发生产配置文件](#合并开发生产配置文件)
     - [打包优先级](#打包优先级-1)
     - [使用 `element-plus`](#使用-element-plus)
+  - [`loader`](#loader)
+    - [概念](#概念)
 
 <!-- /TOC -->
 
@@ -2001,6 +2003,75 @@
           })],
         }),
     - ![](../../image/Snipaste_2022-06-26_17-44-50.png)
+## `loader`
+### 概念
+1. 帮助 `webpack` 将不同类型的文件转换为 `webpack` 可识别的模块.
+2. 分类
+    - `pre`: 前置 `loader`
+    - `normal`: 普通 `loader`(默认)
+    - `inline`: 内联 `loader`
+    - `post`: 后置 `loader`
+3. 执行顺序
+    - `pre` > `normal` > `inline` > `post`
+    - 相同优先级的 `loader` 执行顺序为 `从右到左, 从下到上`
+      - 下面三个 `loader` 的执行顺序为 `css-loader3` > `css-loader2` > `css-loader1`
+      - ```js
+        module: {
+          rules: [
+            {
+              test: /\.css$/,
+              loader: 'css-loader1',
+            },
+            {
+              test: /\.css$/,
+              loader: 'css-loader2',
+            },
+            {
+              test: /\.css$/,
+              loader: 'css-loader3',
+            },
+          ]
+        ]
+    - 当然可以通过 `enforce` 配置项手动指定优先级来改变 `loader` 执行顺序
+      - 下面三个 `loader` 的执行顺序为 `css-loader1` > `css-loader2` > `css-loader3`
+      - ```js
+        module: {
+          rules: [
+            {
+              enforce: 'pre',
+              test: /\.css$/,
+              loader: 'css-loader1',
+            },
+            {
+              test: /\.css$/,
+              loader: 'css-loader2',
+            },
+            {
+              enforce: 'post',
+              test: /\.css$/,
+              loader: 'css-loader3',
+            },
+          ]
+        ]
+4. 使用 `loader` 的两种方式
+    - `配置方式`(推荐): 在 `webpack.config.js` 中指定 `loader`, 像上面一样
+    - `内联方式`: 在每个 `import` 语句中显示指定 `loader`
+5. 内联 `loader`
+    - 使用 **`!`** 将资源中的 `loader` 分开. 每个部分都会相对于当前目录解析
+    - ```js
+      import Styles from 'style-loader!css-loader?modules!./styles.css';
+      ```
+      - `modules` 的意思是给 `css-loader` 传递的参数
+    - 通过为内联 `import` 语句添加前缀, 可以覆盖配置中的所有 `loader`, `preLoader` 和 `postLoader`
+      - 使用 `!` 前缀，将禁用所有已配置的 `normal loader`
+        - ```js
+          import Styles from '!style-loader!css-loader?modules!./styles.css';
+      - 使用 `!!` 前缀，将禁用所有已配置的 `loader` ( `preLoader`, `loader`, `postLoader`)
+        - ```js
+          import Styles from '!!style-loader!css-loader?modules!./styles.css';
+      - 使用 `-!` 前缀，将禁用所有已配置的 `preLoader` 和 `loader`, 但是不禁用 `postLoaders`
+        - ```js
+          import Styles from '-!style-loader!css-loader?modules!./styles.css';
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
