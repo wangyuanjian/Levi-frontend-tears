@@ -63,6 +63,7 @@
       - [同步 `loader`](#同步-loader)
       - [异步 `loader`](#异步-loader)
       - [`raw loader`](#raw-loader)
+      - [`pitch loader`](#pitch-loader)
 
 <!-- /TOC -->
 
@@ -2149,10 +2150,32 @@
       module.exports.raw = true;
     - ![](../../image/Snipaste_2022-06-27_20-13-46.png)
 2. 一般用 `raw-loader` 处理图片等非文本格式文件.
-![](../../image/)
-![](../../image/)
-![](../../image/)
-![](../../image/)
+#### `pitch loader`
+1. `loader` 总是从右到左被调用. 有些情况下, `loader` 只关心 `request` 后面的元数据(`meta`) 并且忽略前一个 `loader` 的结果.在实际从右到左调用 `loader` 之前会先从左到右调用 `loader` 的 pitch 方法.
+    - 创建 `3` 个 `pitch loader` 文件, 然后每个文件都打印
+    - ```js
+      module.exports = function(content, map, meta) {
+        console.log('loader-1');
+        return content;
+      }
+      module.exports.pitch = function() {
+        console.log('pitch-1');
+      }
+    - ![](../../image/Snipaste_2022-06-27_20-32-50.png)
+    - ![](../../image/Snipaste_2022-06-27_20-34-31.png)
+2. 如果我们在第二个 `pitch` 中增加返回值. 
+    - 📕注意不能返回 `undefined`, 就会跳过后面的 `pitch` 和 `loader`
+    - ```js
+      module.exports = function(content, map, meta) {
+        console.log('loader-2');
+        return content;
+      }
+      module.exports.pitch = function() {
+        console.log('pitch-2');
+        return "111";
+      }
+    - ![](../../image/Snipaste_2022-06-27_20-36-55.png)
+    - ![](../../image/Snipaste_2022-06-27_20-37-40.png)
 ![](../../image/)
 ![](../../image/)
 `webpack`
