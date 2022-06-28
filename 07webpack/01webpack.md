@@ -70,6 +70,7 @@
     - [概念](#概念-1)
     - [`Plugin` 构建对象](#plugin-构建对象)
     - [自定义插件](#自定义插件)
+      - [自定义 `BannerWebpackPlugin`](#自定义-bannerwebpackplugin)
 
 <!-- /TOC -->
 
@@ -2393,14 +2394,76 @@
           }, 2000)
         })
       - ![](../../image/Snipaste_2022-06-28_18-39-20.png)
+#### 自定义 `BannerWebpackPlugin`
+1. 首先学习使用 `node` 调试
+    - 编写 `plugins/banner-plugin.js`
+      - ```js
+        class BannerPlugin {
 
+          apply(compiler) {
+            debugger
+          }
+        }
 
+        module.exports = BannerPlugin;
+    - 使用 `plugin`
+      - ```js
+        const BannerPlugin = require('./plugins/banner-plugin')
+        
+        plugins: [
+          new BannerPlugin(),
+        ]
+    - 增加 `package.json` 中的脚本
+      - ```json
+        "scripts": {
+          "debug": "node --inspect-brk ./node_modules/webpack-cli/bin/cli.js",
+        }
+    - 执行命令 `npm run debug`
+      - ![](../../image/Snipaste_2022-06-28_20-29-56.png)
+    - 在浏览器的任何页面打开调试面板. 会出现 `Node.js` 的光标
+      - ![](../../image/Snipaste_2022-06-28_20-30-32.png)
+    - 点击光标就可以进入调试页面
+      - ![](../../image/Snipaste_2022-06-28_20-31-21.png)
+2. 开始业务代码
+    - 过程
+      - 注册 `emit` 钩子, 在打包输出前触发
+      - 通过 `compilation.assets` 访问所有即将输出资源
+        - ![](../../image/Snipaste_2022-06-28_21-25-32.png)
+      - 只保留 `JS` 资源并添加注释
+    - ``` js
+      class BannerPlugin {
+        apply(compiler) {
+          compiler.hooks.emit.tapAsync('BannerPlugin', (compilation, callback) => {
+            const extensions = ['js'];
+            const assetPaths = Object.keys(compilation.assets).filter(assetPath => {
+              // 获取后缀名
+              const extension = assetPath.split('.').slice(-1)[0];
+              return extensions.includes(extension);
+            });
 
-![](../../image/)
-![](../../image/)
-![](../../image/)
-![](../../image/)
-![](../../image/)
+            const comments = `/*
+      * Author: Levi
+      *./
+      `;    
+            assetPaths.forEach(assetPath => {
+              const source = compilation.assets[assetPath].source();
+              const content = comments + source;
+              compilation.assets[assetPath] = {
+                source() {
+                  return content;
+                },
+                size() {
+                  return content.length;
+                }
+              };
+            });
+            callback();
+          });
+        }
+      }
+      module.exports = BannerPlugin;
+    - ![](../../image/Snipaste_2022-06-28_21-24-30.png)
+
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
