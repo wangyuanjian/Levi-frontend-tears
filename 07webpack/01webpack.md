@@ -2236,7 +2236,53 @@
           }
         }
     - ![](../../image/Snipaste_2022-06-28_07-35-44.png)
-![](../../image/)
+3. 自定义 `file-loader`
+    - 其作用是将文件原封不动地输出, 但是修改文件名
+    - 安装 `loader-utils` 包, 这是 `webpack` 官方出的包, 可以根据文件内容生成 `hash`
+      - ```js
+        npm i loader-utils@3.2.0 -D
+    - 编写 `loaders/file_loader/index.js`
+      - 一个 `file-loader` 需要做三件事情
+        - `1`: 首先根据文件内容生成 `hash` 文件名
+        - `2`: 将文件输出
+        - `3`: 返回: `module.exports = "文件路径(文件名)"`
+      - ```js
+        const LoaderUtils = require('loader-utils')
+
+        module.exports = function (content) {
+          // 1. 首先根据文件内容生成hash文件名
+          const interpolateName = LoaderUtils.interpolateName(
+            this,  // context 上下文
+            "[hash].[ext][query]", // 要生成的文件名
+            {
+              content, // 文件内容
+            }
+          );
+          // 2. 将文件输出
+          this.emitFile(interpolateName, content);
+          // 3.返回: module.exports = "文件路径(文件名)"
+          return `module.exports = "${interpolateName}"`
+        }
+
+        module.exports.raw = true;
+    - 编写 `webpack.config.js`
+      - 📕 `type: 'javascript/auto'` 不支持 `generator` 选项, 就可以避免 `webpack` 也处理这个图片资源, 而只是用我们自定义的 `loader` 来处理图片资源
+      - ```js
+        {
+          test: /\.(png|jpe?g|gif)$/,
+          loader: './loaders/file_loader/index.js',
+          type: 'javascript/auto'
+        }
+    - 📕最重要的一点是, 需要在代码中使用图片
+      - ```css
+        .title {
+          background-color: salmon;
+          color: #f0f0f0;
+          font-size: 4rem;
+          background-image: url(./image/2.png);
+        }
+    - 重新打包
+      - ![](../../image/Snipaste_2022-06-28_09-41-41.png)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
