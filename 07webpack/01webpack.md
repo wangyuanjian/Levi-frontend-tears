@@ -64,6 +64,8 @@
       - [异步 `loader`](#异步-loader)
       - [`raw loader`](#raw-loader)
       - [`pitch loader`](#pitch-loader)
+    - [`loader API`](#loader-api)
+    - [开发 `loader`](#开发-loader)
 
 <!-- /TOC -->
 
@@ -2176,6 +2178,71 @@
       }
     - ![](../../image/Snipaste_2022-06-27_20-36-55.png)
     - ![](../../image/Snipaste_2022-06-27_20-37-40.png)
+### `loader API`
+|方法名|含义|用法|
+|---|---|---|
+|this.async|异步回调 loader, 返回 this.callback|const this.callback = this.async()|
+|this.callback|可以同步或异步调用的并返回多个结果的函数|this.callback(err, content, sourceMap?, meta?)|
+|this.getOptions(schema)|获取配置文件中 loader 的 options|this.getOptions(schema)|
+|this.emitFile|产生一个文件|this.emitFile(name, content, sourceMap)|
+|this.utils.contextly|返回一个相对路径|this.utils.contextly(content, request)|
+|this.utils.absolutely|返回一个绝对路径|this.utils.absolutely(content, request)|
+<hr/>
+
+[👉更多loader的API👈](https://webpack.docschina.org/api/loaders/#the-loader-context)  
+
+### 开发 `loader`
+1. 清理 `console.log` 的 `loader`
+    - ```js
+      module.exports = function(content) {
+        return content.replace(/console\.log\(.*\);?/g, '');
+      }
+2. 增加 `banner` 的 `loader`
+    - 功能: 在 `JS` 文件开头增加文件作者信息, 作者信息在配置文件中配置
+    - 创建  `loaders/banner_loader/schema.json`
+      - `"type": "object"`: 将来在 `webpack.config.js` 中配置 `loader` 的 `options` 为对象
+      - ```json
+        {
+          "type": "object",
+          "properties": {
+            "author": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+    - 创建 `loaders/banner_loader/index.js`
+      - ```js
+        const schema = require('./schema.json')
+
+        module.exports = function (content) {
+          const options = this.getOptions(schema);
+          const banner = `
+            /*
+            * @Author: ${options.author}
+            */
+          
+          `;
+          return banner + content;
+        }
+    - 增加 `webpack.config.js`
+      - ```js
+        {
+          test: /.js$/,
+          include: path.resolve(__dirname, './src'),
+          loader: './loaders/banner_loader/index.js',
+          options: {
+            author: 'levi'
+          }
+        }
+    - ![](../../image/Snipaste_2022-06-28_07-35-44.png)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
 ![](../../image/)
 ![](../../image/)
 `webpack`
