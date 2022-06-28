@@ -69,6 +69,7 @@
   - [`Plugin`](#plugin)
     - [概念](#概念-1)
     - [`Plugin` 构建对象](#plugin-构建对象)
+    - [自定义插件](#自定义插件)
 
 <!-- /TOC -->
 
@@ -2301,6 +2302,8 @@
       - `tap`: 可以注册同步钩子和异步钩子;
       - `tapAsync`: 回调方式注册异步钩子
       - `tapPromise`: `Promise` 方式注册异步钩子
+    - 所有的钩子[👉请看官网👈](https://webpack.docschina.org/api/compiler-hooks/#environment)
+3. ![](../../image/Snipaste_2022-06-28_18-23-21.png)
 ### `Plugin` 构建对象
 1. `Compiler`
     - `compiler` 对象中保存着完整的 `webpack` 环境配置, 每次启动 `webpack` 构建时 `compiler` 都是独一无二, 仅仅会创建一次的对象. 
@@ -2316,8 +2319,85 @@
       - `compilation.chunks`: `chunk` 为多个 `modules` 组成而来的代码, 入口文件引入的资源组成一个 `chunk`, 通过代码分隔的模块又是另外的 `chunk`
       - `compilation.assets`: 可以访问本次打包生成的所有文件的结果;
       - `compilation.hooks`: 可以注册 `tapable` 的不同种类 `hook`, 用在 `compilation` 编译模块阶段进行逻辑添加以及修改
+### 自定义插件
+1. 创建 `plugins/test-plugin.js`
+    - ```js
+      class TestPlugin {
+        constructor() {
+          console.log('----------TestPlugin, constructor');
+        }
+        apply(compiler) {
+          console.log('----------TestPlugin, apply');
+        }
+      }
+      // 记得暴露哦
+      module.exports = TestPlugin;
+    - 在配置文件中引入并使用插件
+      - ```js
+        const TestPlugin = require('./plugins/test-plugin')
+        plugins: [
+          new TestPlugin(),
+        ]
+    - 执行打包构建 `npm run build`
+    - ![](../../image/Snipaste_2022-06-28_18-08-00.png)
+2. 执行流程
+    - `webpack` 加载配置文件, 此时会 `new TestPlugin()`
+    - `webpack` 创建 `compiler` 对象
+    - 遍历所有 `plugins` 中插件, 调用插件的 `apply` 方法
+    - 执行剩下的编译流程(触发各个 `hooks` 事件)
+3. 注册钩子
+    - 注册同步钩子 `environment`, 使用方法 `tap`
+      - ```js
+        compiler.hooks.environment.tap('TestPlugin', () => {
+          console.log('hook -- environment');
+        })
+    - 注册异步`串行`钩子 `emit` 使用方法 `tap`, `tapAsync`, `tapPromise`
+      - ```js
+        compiler.hooks.emit.tap('TestPlugin', (compilation) => {
+          console.log('hook -- emit tap');
+        })
+        compiler.hooks.emit.tapAsync('TestPlugin', (compilation, callback) => {
+          setTimeout(() => {
+            console.log('hook -- emit tapAsync');
+            callback();
+          }, 1000);
+        })
+        compiler.hooks.emit.tapPromise('TestPlugin', () => {
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              console.log('hook -- emit tapPromise');
+              resolve();
+            }, 1000);
+          });
+        })
+      - ![](../../image/Snipaste_2022-06-28_18-31-39.png)
+      - 从结果可知, 虽然都是异步钩子, 但是执行有顺序
+    - 注册异步`并行`钩子 `make`
+      - ```js
+        compiler.hooks.make.tapAsync('TestPlugin', (_, callback) => {
+          setTimeout(() => {
+            console.log('hook -- make 111', +new Date());
+            callback();
+          }, 2000)
+        })
+        compiler.hooks.make.tapAsync('TestPlugin', (_, callback) => {
+          setTimeout(() => {
+            console.log('hook -- make 222', +new Date());
+            callback();
+          }, 2000)
+        })
+        compiler.hooks.make.tapAsync('TestPlugin', (_, callback) => {
+          setTimeout(() => {
+            console.log('hook -- make 333', +new Date());
+            callback();
+          }, 2000)
+        })
+      - ![](../../image/Snipaste_2022-06-28_18-39-20.png)
 
-![](../../image/)`
+
+
+![](../../image/)
+![](../../image/)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
