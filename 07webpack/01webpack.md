@@ -66,6 +66,9 @@
       - [`pitch loader`](#pitch-loader)
     - [`loader API`](#loader-api)
     - [开发 `loader`](#开发-loader)
+  - [`Plugin`](#plugin)
+    - [概念](#概念-1)
+    - [`Plugin` 构建对象](#plugin-构建对象)
 
 <!-- /TOC -->
 
@@ -2283,7 +2286,38 @@
         }
     - 重新打包
       - ![](../../image/Snipaste_2022-06-28_09-41-41.png)
-![](../../image/)
+## `Plugin`
+> 通过插件,我们扩展 `webpack` 加入自定义的构建行为, 使 webpack 可以执行更广泛的任务, 有用更强的构建能力.
+
+### 概念
+> `webpack` 就像一条生产线, 要经过一系列处理流程之后才能将源文件转换成输出结果.  整条生产线上的每个处理流程都是单一的, 多个流程之间存在依赖关系, 只有完成当前处理后才能交给下一个流程处理. 插件就像一个插入生产线中的功能, 在特定的时机对生产线上的资源处理. `webpack` 通过 `Tapable` 组织这个复杂的生产线. `webpack` 在运行中会广播事件, 插件只需要监听它关心的事件就能加入到这条生产线, 从而改变生产线的运作. `webpack` 的事件流机制保证了插件的有序性. \
+--<<深处浅出 `Webpack`>>
+
+1. 工作原理 
+    - 站在编码角度就是: `webpack` 在编译代码过程中, 会触发一系列 `Tapable` 钩子事件, 插件所做的就是找到对应的钩子,注册自己的任务. 当 `webpack` 构建是, 插件注册的事件就会随着钩子的触发而执行.
+2. 内部钩子
+    - `Tapable` 为 `webpack` 提供了统一的钩子定义类型, webpack 目前有始终钩子.
+    - Tapable 统一暴露了三个方法给插件, 用于注入不同类型的自定义构建行为
+      - `tap`: 可以注册同步钩子和异步钩子;
+      - `tapAsync`: 回调方式注册异步钩子
+      - `tapPromise`: `Promise` 方式注册异步钩子
+### `Plugin` 构建对象
+1. `Compiler`
+    - `compiler` 对象中保存着完整的 `webpack` 环境配置, 每次启动 `webpack` 构建时 `compiler` 都是独一无二, 仅仅会创建一次的对象. 
+    - 主要属性
+      - `compiler.options`: 可以访问本次启动 `webpack` 时所有的配置文件, 包括但不限于 `loaders`, `entry`, `plugin` 等完整配置信息;
+      - `compiler.inputFileSystem` 和 `compiler.outputFileSystem` 可以进行文件操作, 相当于 Node.js 中的 fs;
+      - `compiler.hooks` 可以注册 `tapable` 不同种类的钩子.
+2. `Compilation`
+    - `compilation` 对象代表一次资源的构建, `compilation` 实例能够访问所有的模块和它们的依赖.
+    - 一个 `compilation` 对象会对构建依赖图中的所有模块进行编译. 在编译阶段模块会被加载(`load`), 封存(`seal`), 优化(`optimize`), 分块(`chunk`), 哈希(`hash`)和重新创建(`restore`)
+    - 主要有以下特性
+      - `compilation.modules`: 可以访问所有模块, 打包的每一个文件都是一个模块;
+      - `compilation.chunks`: `chunk` 为多个 `modules` 组成而来的代码, 入口文件引入的资源组成一个 `chunk`, 通过代码分隔的模块又是另外的 `chunk`
+      - `compilation.assets`: 可以访问本次打包生成的所有文件的结果;
+      - `compilation.hooks`: 可以注册 `tapable` 的不同种类 `hook`, 用在 `compilation` 编译模块阶段进行逻辑添加以及修改
+
+![](../../image/)`
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
