@@ -61,17 +61,59 @@
     - ![](../image/Snipaste_2022-06-29_11-08-06.png)
 ### `App.vue`
 1. 可以不使用唯一根标签
-    - 
 ## `Composition API`
-### 常用
-### 其他
+### `setup`
+1. `Vue3` 中的新配置项, 值为一个函数
+    - ```js
+      export default {
+        setup() {
+        }
+      }
+2. 组件中所用到的数据, 方法等都需要写在 `setup` 中.
+    - ```js
+      export default {
+        setup() {
+          let name = 'Tom';
+          let age = 8;
+          function getInfo() {
+            alert(`I am ${name} and ${age} years old.`) 
+          }
+
+          return {
+            name,
+            age,
+            getInfo,
+          }
+        }
+      }
+    - ```html
+      <div>{{name}} by {{age}}</div>
+      <button @click="getInfo">CLICK ME!</button>
+    - ![](../image/Snipaste_2022-06-29_12-46-08.png)
+3. `setup` 的返回值
+    - 返回对象, 则对象中的属性方法在 `template` 中均可使用
+    - 返回渲染函数: 可自定义渲染内容.
+      - 首先需要从 `vue` 中引入
+      - ```js
+        import {h} from 'vue'
+
+        export default {
+          setup() {
+            let name = 'Tom';
+            let age = 8;
+            function getInfo() {
+              alert(`I am ${name} and ${age} years old.`) 
+            }
+
+            return () => h('h1', 'Hello, World')
+          }
+        }
+      - ![](../image/Snipaste_2022-06-29_15-42-07.png)
+4. 尽量不要与 `Vue2.x` 混用
+    - `Vue2` 中的 `data`, `methods` 等可以访问 `setup` 中的属性方法, 但是反之不成立.
 ## 新的组件
 
 
-
-
-
-![](../image/)
 ![](../image/)
 ![](../image/)
 ![](../image/)
