@@ -111,9 +111,64 @@
       - ![](../image/Snipaste_2022-06-29_15-42-07.png)
 4. 尽量不要与 `Vue2.x` 混用
     - `Vue2` 中的 `data`, `methods` 等可以访问 `setup` 中的属性方法, 但是反之不成立.
+5. 无法访问选项式 `API` 的原因是 `setup 中的 `this` 是 `undefined`. 
+### `ref`
+1. `Vue3` 也提供了一个 `ref()` 方法来允许我们创建可以使用任何值类型的响应式 `ref`
+    - ```js
+      import { ref } from 'vue'
+
+      export default {
+        setup() {
+          let name = ref('Tom');
+          let age = ref(8);
+          console.log('name is', name)
+          function getInfo() {
+            alert(`I am ${name} and ${age} years old.`) 
+          }
+
+          return {
+            name,
+            age,
+            getInfo,
+          }
+        }
+      }
+    - 可以看到 `ref()` 从参数中获得值, 将其包装到一个带 `.value` 属性的 `ref` 对象. 当然, `.value` 也是 **`响应式`** 的.
+    - ![](../image/Snipaste_2022-06-29_20-53-20.png)
+    - 
+2. 但是在 `<template>` 中, 使用 `ref` 对象时却不需要使用 `.value` 才能获取到 `ref` 对象的值, `Vue` 自动为我们解包.
+    - ```html
+      <h2>Ref</h2>
+      <hr>
+      <div>{{name}} by {{age}}</div>
+    - ![](../image/Snipaste_2022-06-29_21-34-19.png)
+    - 然后, 却不一定总是奏效, 只有当 `ref` 对象是`顶层` `property` 才会生效.
+      - ```js
+        export default {
+          setup() {
+            const person = {
+              age: ref(18)
+            }
+            const { age } = person
+
+            return {
+              person,
+              age,
+            }
+          }
+        }
+      - ```html
+        <div>{{person.age + 1}}</div>
+        <div>{{person.age}}</div>
+        <div>{{age}}</div>
+      - 看上面的代码和下面的显示
+      - ![](../image/Snipaste_2022-06-29_21-41-17.png)
+      - `{{person.age + 1}}` 渲染结果是 `[object Object]1`, 因为 `person.age` 是一个 `ref` 对象, 我们可以通过解构赋值 `const { age } = person` 将 `age` 变成顶级 `property` 来解决这个问题
+      - 📕但是, 如果 `ref` 是文本插值符号, 即 `{{}}` 这个符号计算的 **`最终值`**, 那么它也会被解包, 这就是为什么 `<div>{{person.age}}</div>` 可以正常显示的原因.
 ## 新的组件
 
 
+![](../image/)
 ![](../image/)
 ![](../image/)
 ![](../image/)
