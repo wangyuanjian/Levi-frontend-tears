@@ -71,6 +71,8 @@
     - [`Plugin` 构建对象](#plugin-构建对象)
     - [自定义插件](#自定义插件)
       - [自定义 `BannerWebpackPlugin`](#自定义-bannerwebpackplugin)
+      - [自定义 `CleanWebpackPlugin`](#自定义-cleanwebpackplugin)
+      - [自定义 `AnalyzePlugin`](#自定义-analyzeplugin)
 
 <!-- /TOC -->
 
@@ -2463,7 +2465,69 @@
       }
       module.exports = BannerPlugin;
     - ![](../../image/Snipaste_2022-06-28_21-24-30.png)
+#### 自定义 `CleanWebpackPlugin`
+1. 功能: 在 webpack 打包输出前将上次打包内容清空
+    - 思路
+      - 如何在打包输出前执行? 使用 `compiler.hooks.emit` 钩子, 它在打包输出前触发
+      - 如何清空上次打包内容
+        - 通过 `compiler` 获取打包输出目录
+        - 通过文件操作清空内容: `compiler.outputFileSystem` 操作文件
+2. 代码
+    - ```js
+      class CleanPlugin {
 
+        apply(compiler) {
+          // 获取打包输出路径
+          const outputPath = compiler.options.output.path;
+          const fs = compiler.outputFileSystem;
+          compiler.hooks.emit.tap('CleanPlugin', (compilation) => {
+            this.removeFile(fs, outputPath);
+          });
+        }
+
+        removeFile(fs, filepath) {
+          // 读取当前目录下的所有资源
+          const files = fs.readdirSync(filepath);
+          files.forEach(file => {
+            const filePath = `${filepath}/${file}`;
+            const fileStatistic = fs.statSync(filePath);
+            // 如果是文件夹, 递归删除
+            if (fileStatistic.isDirectory()) {
+              this.removeFile(fs, filePath);
+            } else {
+              fs.unlinkSync(filePath);
+            }
+          })
+        }
+      }
+
+      module.exports = CleanPlugin;
+#### 自定义 `AnalyzePlugin`
+1. 功能: 用于分析打包输出的文件资源
+2. 代码
+    - ```js
+      class AnalyzePlugin {
+
+        apply(compiler) {
+          compiler.hooks.emit.tap('AnalyzePlugin', compilation => {
+            let content = `|资源名称|资源大小|
+      |---|---|`;
+            Object.entries(compilation.assets).forEach(([filename, file]) => {
+              content += `\n|${filename}|${(file.size() / 1024).toFixed(2)}KB|`
+            });
+            compilation.assets['analyze.md'] = {
+              source() {
+                return content;
+              },
+              size() {
+                return content.length
+              }
+            }
+          });
+        }
+      }
+
+      module.exports = AnalyzePlugin;
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
