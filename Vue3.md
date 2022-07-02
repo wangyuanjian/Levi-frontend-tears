@@ -217,6 +217,17 @@
       function changeHobby() {
         hobby[0] = -1;
       }
+3. `reactive` 对比 `ref`
+    - 定义数据
+      - `ref` 定义基本类型数据
+      - `reactive` 定于对象或数组类型数据
+      - `ref` 也可以定义对象或数组类型数据, 内部会自动通过 `reactive` 转为代理对象
+    - 原理角度
+      - `ref` 通过 `Object.defineProperty` 实现响应式
+      - `reactive` 通过 `Proxy` 实现响应式并通过 `Reflect` 操作源对象的内部数据
+    - 使用角度
+      - `ref` 定义的数据需要使用 `.value` 读取和修改, 但是用在`<template>` 中不需要 `.value`
+      - `reactive` 定义的数据, 读取和修改军不需要 `.value`
 ### `Vue2` 和 `Vue3` 的响应式原理
 1. `Vue2`
     - 实现原理
@@ -261,12 +272,70 @@
           }
         })
       ![](../image/Snipaste_2022-07-02_10-03-08.png)
+    - 但是源码中并不是上面这样写的, 而是使用 `Reflect` `API`
+      - ```js
+        let p = new Proxy(person, {
+          get(target, prop) {
+            console.log(`有人读取了${target}的属性${prop}`);
+            return Reflect.get(target, prop);
+          },
+          set(target, prop, value) {
+            console.log(`有人修改或新增了${target}的属性${prop}, 值为${value}`);
+            Reflect.set(target, prop, value);
+          },
+          deleteProperty(target, prop) {
+            console.log(`有人刹车农户了${target}的属性${prop}`);
+            return Reflect.deleteProperty(target, prop);
+          }
+        })
+      - `Reflect` 身上有很多 `Object` 的方法, 但是又有点不一样, 具体的对比可以看[👉MDN官网👈](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect/Comparing_Reflect_and_Object_methods), 我们举一个简单的例子
+        - ```js
+          const obj = {};
+          Object.defineProperty(obj, 'from', {
+            get() {
+              return 'heaven'
+            }
+          });
+          Object.defineProperty(obj, 'from', {
+            get() {
+              return 'heaven'
+            }
+          });
+        - 当我们使用 `Object.defineProperty` 重复定义相同数据时, 会发生报错
+        - ![](../image/Snipaste_2022-07-02_10-34-58.png)
+        - 但是使用 `Reflect.defineProperty` 时会返回操作的结果, 从而判断这次操作是否成功, 而避免编写大量 `try...catch`
+        - ```js
+          const obj = {};
+          const result1 = Reflect.defineProperty(obj, 'from', {
+            get() {
+              return 'heaven'
+            }
+          });
+          const result2 = Reflect.defineProperty(obj, 'from', {
+            get() {
+              return 'heaven'
+            }
+          });
+          console.log('result1', result1);
+          console.log('result2', result2);
+        - ![](../image/Snipaste_2022-07-02_10-37-40.png)
 ## 新的组件
 
 
 
 
 
+
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
 ![](../image/)
 ![](../image/)
 ![](../image/)
