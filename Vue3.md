@@ -1,4 +1,22 @@
 # `Vue3`
+<!-- TOC -->
+
+- [`Vue3`](#vue3)
+  - [创建 `Vue3.0` 工程](#创建-vue30-工程)
+    - [使用 `vue-cli`](#使用-vue-cli)
+    - [使用 vite](#使用-vite)
+  - [工程](#工程)
+    - [`createApp()`](#createapp)
+    - [`App.vue`](#appvue)
+  - [`Composition API`](#composition-api)
+    - [`setup`](#setup)
+    - [`ref`](#ref)
+    - [`reactive`](#reactive)
+    - [`Vue2` 和 `Vue3` 的响应式原理](#vue2-和-vue3-的响应式原理)
+  - [新的组件](#新的组件)
+
+<!-- /TOC -->
+
 
 ## 创建 `Vue3.0` 工程
 ### 使用 `vue-cli`
@@ -112,6 +130,69 @@
 4. 尽量不要与 `Vue2.x` 混用
     - `Vue2` 中的 `data`, `methods` 等可以访问 `setup` 中的属性方法, 但是反之不成立.
 5. 无法访问选项式 `API` 的原因是 `setup 中的 `this` 是 `undefined`. 
+6. 执行时间
+    - 早于 `beforeCreate`
+    - ```js
+      export default {
+        setup() {
+          console.log('i am TestSetUp --- setup');
+        },
+        beforeCreate() {
+          console.log('i am TestSetUp --- beforeCreate');
+        },
+      }
+    - ![](../image/Snipaste_2022-07-02_17-33-21.png)
+7. `setup` 接收到的参数
+    - `props`: 第一个参数
+    - `context`: 第二个参数
+    - `props`
+      - 首先在父中创建传递
+        - ```html
+          <TestSetup name="tom" :age="19" />
+      - 其次在子组件中生命接收
+        - ```js
+          export default {
+            props: {
+              name: {
+                type: String,
+              },
+              age: Number
+            },
+            setup(props) {
+              console.log('props in TestSetUp', props);
+            },
+          }
+        - ![](../image/Snipaste_2022-07-03_10-30-54.png)
+8. `setup` 的第二个参数 `context`
+    - ![](../image/Snipaste_2022-07-03_10-32-41.png)
+    - `attrs`: 包含了父组件中不作为 `prop` 被识别的 `attribute` 绑定, `class` 和 `style` 除外.
+      - 大意就是, 如果父组件传递了一些参数, 但是没有作为子组件的 `prop` 声明接收, 那么这些参数就会进入到 `attrs` 中.
+      - 父组件
+        - ```html
+          <TestSetup name="tom" :age="19" />
+      - 子组件: 只声明以一个 `prop` `name`
+        - ```js
+          export default {
+            props: {
+              name: {
+                type: String,
+              },
+            },
+            setup(props, context) {
+              console.log('props in TestSetUp', props, context);
+              // console.log('i am TestSetUp --- setup');
+            },
+            beforeCreate() {
+              // console.log('i am TestSetUp --- beforeCreate');
+            },
+          }
+      - ![](../image/Snipaste_2022-07-03_10-37-39.png)
+    - `emit` 参数
+
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
 ### `ref`
 1. `Vue3` 也提供了一个 `ref()` 方法来允许我们创建可以使用任何值类型的响应式 `ref`
     - 如果是基本数据类型, 其响应式仍然通过 `Object.defineProperty` 实现;
