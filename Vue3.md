@@ -165,7 +165,8 @@
         - ![](../image/Snipaste_2022-07-03_10-30-54.png)
 8. `setup` 的第二个参数 `context`
     - ![](../image/Snipaste_2022-07-03_10-32-41.png)
-    - `attrs`: 包含了父组件中不作为 `prop` 被识别的 `attribute` 绑定, `class` 和 `style` 除外.
+    - **`attrs`** 参数
+      - 包含了父组件中不作为 `prop` 被识别的 `attribute` 绑定, `class` 和 `style` 除外.
       - 大意就是, 如果父组件传递了一些参数, 但是没有作为子组件的 `prop` 声明接收, 那么这些参数就会进入到 `attrs` 中.
       - 父组件
         - ```html
@@ -187,8 +188,60 @@
             },
           }
       - ![](../image/Snipaste_2022-07-03_10-37-39.png)
-    - `emit` 参数
+    - **`emit`** 参数
+      - 这个就是 `Vue2` 中的 `$emit`
+      - 父组件
+        - ```html
+          <TestSetup @sayYourName="receiveName"/>
+        - ```js
+          <script setup>
+            import TestSetup from './components/TestSetup.vue'
 
+            function receiveName(name) {
+              console.log('from son, ', name);
+            }
+          </script>
+      - 子组件
+        - ```html
+          <div>
+            TestSetup
+            <button @click="getParentName">getParentName</button>
+          </div>
+        - ```js
+          setup(props, context) {
+            function getParentName() {
+              context.emit('sayYourName', 'BALABALA')
+            }
+            return {
+              getParentName
+            }
+          },
+      - ![](../image/Snipaste_2022-07-04_17-08-11.png)
+    - **`slots`**
+      - 插槽. 
+      - 首先在子组件中声明两个插槽, 分别为默认插槽和具名插槽
+        - ```html
+          <div>
+            TestSetup
+            <slot></slot>
+            <slot name="test1"></slot>
+          </div>
+        - ```js
+          setup(props, context) {
+            console.log('props in TestSetUp', props, context);
+          },
+      - 在父组件中放入内容
+        - ```html
+          <TestSetup @sayYourName="receiveName" name="tom" :age="19">
+            <span>123</span>
+            <template v-slot:test1>
+                asdasd
+            </template>
+          </TestSetup>
+      - ![](../image/Snipaste_2022-07-04_19-03-14.png)
+
+![](../image/)
+![](../image/)
 ![](../image/)
 ![](../image/)
 ![](../image/)
