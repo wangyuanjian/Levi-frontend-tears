@@ -13,7 +13,7 @@
     - [`ref`](#ref)
     - [`reactive`](#reactive)
     - [`Vue2` 和 `Vue3` 的响应式原理](#vue2-和-vue3-的响应式原理)
-  - [新的组件](#新的组件)
+    - [计算属性(`computed`)](#计算属性computed)
 
 <!-- /TOC -->
 
@@ -239,13 +239,6 @@
             </template>
           </TestSetup>
       - ![](../image/Snipaste_2022-07-04_19-03-14.png)
-
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
 ### `ref`
 1. `Vue3` 也提供了一个 `ref()` 方法来允许我们创建可以使用任何值类型的响应式 `ref`
     - 如果是基本数据类型, 其响应式仍然通过 `Object.defineProperty` 实现;
@@ -453,13 +446,70 @@
           console.log('result1', result1);
           console.log('result2', result2);
         - ![](../image/Snipaste_2022-07-02_10-37-40.png)
-## 新的组件
+### 计算属性(`computed`)
+1. 仅有 `getter` 的计算属性
+    - 使用计算属性时需引入 `computed`, 并传递回调函数
+    - ```html
+      <div>
+        {{longNames}}
+      </div>
+    - ```js
+      import { reactive, computed } from 'vue'
+
+      let names = reactive(['tom', 'jerry', 'peiqi']);
+
+      const longNames = computed(() => {
+        return names.filter(name => name.length > 4);
+      })
+      console.log('longNames, ', longNames)
+    - ![](../image/Snipaste_2022-07-04_19-12-36.png)
+    - 计算属性的返回值是一个 `ref`. 在模板中可以直接拆箱使用
+    - ![](../image/Snipaste_2022-07-04_19-18-27.png)
+2. 带有 `setter` 的计算属性
+    - 计算属性默认仅能通过计算函数得到结果, 当尝试修改计算属性时会得到运行时警告
+      - ```js
+        longNames.value = [1, 2, 3]
+      - ![](../image/Snipaste_2022-07-04_19-21-09.png)
+    - 如果需要可写属性, 可以提供 `setter`
+      - ```html
+        <div>
+          <label for="first-name">First Name: </label>
+          <input type="text" id="first-name" v-model="firstName">
+          <br>
+          <label for="last-name">Last Name: </label>
+          <input type="text" id="last-name" v-model="lastName">
+          <br>
+          <span>{{fullName}}</span>
+          <button @click="changeName">changeName</button>
+        </div>
+      - ```js
+        let firstName = ref('');
+        let lastName = ref('');
+        const fullName = computed({
+          get() {
+            return firstName.value + '-' + lastName.value
+          },
+          set(newValue) {
+            [firstName.value, lastName.value] = newValue.split(' ');
+          }
+        })
+        function changeName() {
+          fullName.value = 'li si'
+        }
+      - ![](../image/Snipaste_2022-07-04_19-30-17.png)
+3. 最佳实践
+    - 计算属性的计算函数之应该用来计算, 而不应该有其他任何副作用. 🙅‍不要在计算属性中发异步请求或修改 `DOM`🙅‍
+    - 避免直接修改计算属性的值. 可以把计算属性返回值当作派生的快照, 只有源发生了改变, 快照才会改变. 更改快照是没有意义的.
 
 
 
 
 
 
+
+
+![](../image/)
+![](../image/)
 ![](../image/)
 ![](../image/)
 ![](../image/)
