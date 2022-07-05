@@ -14,6 +14,7 @@
     - [`reactive`](#reactive)
     - [`Vue2` 和 `Vue3` 的响应式原理](#vue2-和-vue3-的响应式原理)
     - [计算属性(`computed`)](#计算属性computed)
+    - [侦听器(`watch`)](#侦听器watch)
 
 <!-- /TOC -->
 
@@ -500,19 +501,100 @@
 3. 最佳实践
     - 计算属性的计算函数之应该用来计算, 而不应该有其他任何副作用. 🙅‍不要在计算属性中发异步请求或修改 `DOM`🙅‍
     - 避免直接修改计算属性的值. 可以把计算属性返回值当作派生的快照, 只有源发生了改变, 快照才会改变. 更改快照是没有意义的.
+### 侦听器(`watch`)
+1. 使用 `watch` 函数在每次响应式专改发生变化时触发回调函数. 侦听器可以侦听不同类型的数据
+2. 侦听 `ref`
+    - 直接将 `ref` 作为 `watch` 的第一个参数传递
+    - ```html
+      <div>
+        {{count}}
+        <button @click="addCount">addCount</button>
+      </div>
+    - ```js
+      import { ref, watch } from 'vue';
 
+      let count = ref(0);
+      watch(count, (newValue, oldValue) => {
+        console.log('newValue, oldValue', newValue, oldValue);
+      })
+      function addCount() {
+        count.value++;
+      }
+    - ![](../image/Snipaste_2022-07-04_19-52-06.png)
+3. 侦听一个 `reactive` 的一个普通属性
+    - 传递一个 `getter` 函数. 比如我们想侦听 `person` 这个对象中 `age` 属性的变化.
+    - ```html
+      {{person.age}}
+      <button @click="person.age++">addAge</button>
+    - ```js
+      let person = reactive({
+        name: 'tom',
+        age: 18,
+        address: {
+          province: 'NY',
+        }
+      });
+      watch(() => person.age, (newValue, oldValue) => {
+        console.log('age newValue, oldValue', newValue, oldValue);
+      })
+    - ![](../image/Snipaste_2022-07-05_08-40-55.png)
+    - 📕但是如果写成下面的样子. 就会出现告警.
+      - ```js
+        watch(person.age, (newValue, oldValue) => {
+          console.log('age newValue, oldValue', newValue, oldValue);
+        })
+      - ![](../image/Snipaste_2022-07-05_08-40-37.png)
+4. 侦听一个 `reactive` 的多个普通属性
+    - 需要将一个数组传递给 `watch` 的第一个参数, 数组的每个值都是一个 `getter`. 同样, 回调函数中的参数也是数组形式
+    - ```html
+       {{person.age}}
+        <button @click="person.age++">addAge</button>
+    - ```js
+      watch([() => person.age, () => person.name], (newValue, oldValue) => {
+        console.log('age/name newValue, oldValue', newValue, oldValue);
+      })
+    - ![](../image/Snipaste_2022-07-05_10-34-27.png)
+    - 当然, 还可以换一种形式, `watch` 的第一个参数仍然是 `getter`, 但是这个 `getter` 返回数组
+    - ```js
+      watch(() => [person.age, person.name], (newValue, oldValue) => {
+        console.log('age/name array newValue, oldValue', newValue, oldValue);
+      })
+    - ![](../image/Snipaste_2022-07-05_10-38-33.png)
+5. 侦听一个 `reactive` 对象
+    - 直接给 `watch` 传入一个响应式对象, 会`隐式`地创建一个`深层`侦听器, 回调函数在所有嵌套的变更时都会被触发
+    - ```js
+      watch(person, (newValue, oldValue) => {
+        console.log('person newValue, oldValue', newValue, oldValue);
+      })  
+    - 📕官网文档中有说, 如果是因为这个响应式对象的某个属性发生了变化, 此时 `newValue` 和 `oldValue` 是相同的, 因为它们是同一个对象.
+      - 下面的例子, 年龄 `age` 的侦听器侦听到了 `age` 的变化, 但是 `person` 侦听器回调函数中的 `age` 却没有改变. 
+      - ![](../image/Snipaste_2022-07-05_09-34-07.png)
+    - 📕即便此时手动增加 `deep: false`, 也没有办法取消深层侦听.
+      - ```js
+        watch(person, (newValue, oldValue) => {
+          console.log('person newValue, oldValue', newValue, oldValue);
+        }, { deep: false })  // not working
+6. 侦听 `reactive` 的一个对象属性
+    - 那什么时候 `deep: false` 有效果呢? 当侦听 `reactive` 的某个对象, 比如 `person` 的 `address` 时有效.
+      - ```html
+        {{person.address.province}}
+        <button @click="changeAddress">changeAddress</button>
+      - ```js
+        watch(() => person.address, (newValue, oldValue) => {
+          console.log('address newValue, oldValue', newValue, oldValue);
+        }, {deep: true,}) 
+        function changeAddress() {
+          person.address.province = 'LA'
+        }
+    - 📕不过可惜的是, 仍然新旧对象一致
+    - ![](../image/Snipaste_2022-07-05_10-30-36.png)
+7. `watch` 的第三个参数: 配置项
+    - `immediate(boolean)`: 在侦听器创立时立即触发回调. 第一次调用时旧值为 `undefined`. 默认为 `false`;
+    - `deep(boolean)`: 如果源是对象, 强制深度遍历. 默认为 `false`;
+    - `flash(string)`: 调整回调函数的刷新时机. 可选值为 `pre`, `post`, `sync`. 默认为 `pre`; 
+    - `onTrack`: 调试侦听器的依赖. 是个函数;
+    - `onTrigger`: 调试侦听器的依赖. 是个函数.
 
-
-
-
-
-
-
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
 ![](../image/)
 ![](../image/)
 ![](../image/)
