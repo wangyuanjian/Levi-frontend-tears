@@ -15,6 +15,10 @@
     - [`Vue2` 和 `Vue3` 的响应式原理](#vue2-和-vue3-的响应式原理)
     - [计算属性(`computed`)](#计算属性computed)
     - [侦听器(`watch`)](#侦听器watch)
+      - [侦听基础](#侦听基础)
+      - [第三个参数](#第三个参数)
+      - [停止侦听器](#停止侦听器)
+      - [`watchEffect`](#watcheffect)
 
 <!-- /TOC -->
 
@@ -502,6 +506,7 @@
     - 计算属性的计算函数之应该用来计算, 而不应该有其他任何副作用. 🙅‍不要在计算属性中发异步请求或修改 `DOM`🙅‍
     - 避免直接修改计算属性的值. 可以把计算属性返回值当作派生的快照, 只有源发生了改变, 快照才会改变. 更改快照是没有意义的.
 ### 侦听器(`watch`)
+#### 侦听基础
 1. 使用 `watch` 函数在每次响应式专改发生变化时触发回调函数. 侦听器可以侦听不同类型的数据
 2. 侦听 `ref`
     - 直接将 `ref` 作为 `watch` 的第一个参数传递
@@ -586,15 +591,58 @@
         function changeAddress() {
           person.address.province = 'LA'
         }
-    - 📕不过可惜的是, 仍然新旧对象一致
+    - 📕不过可惜的是, 仍然新旧对象一致. 官网原话是 `在深层级模式时, 如果回调函数由于深层级的变更而被触发, 那么新值和旧值将是同一个对象`
     - ![](../image/Snipaste_2022-07-05_10-30-36.png)
+#### 第三个参数
 7. `watch` 的第三个参数: 配置项
     - `immediate(boolean)`: 在侦听器创立时立即触发回调. 第一次调用时旧值为 `undefined`. 默认为 `false`;
     - `deep(boolean)`: 如果源是对象, 强制深度遍历. 默认为 `false`;
     - `flash(string)`: 调整回调函数的刷新时机. 可选值为 `pre`, `post`, `sync`. 默认为 `pre`; 
     - `onTrack`: 调试侦听器的依赖. 是个函数;
     - `onTrigger`: 调试侦听器的依赖. 是个函数.
-
+#### 停止侦听器
+1. `watch` 的返回值是一个函数, 调用该函数可以停止侦听
+    - ```js
+      let count = ref(0);
+      let stopWatchingCount = watch(count, (newValue, oldValue) => {
+        console.log('newValue, oldValue', newValue, oldValue);
+      })
+      function stopWatchCount() {
+        stopWatchingCount();
+      }
+#### `watchEffect`
+1. 立即运行一个函数, 同时响应式地追踪其依赖, 并在依赖更改时重新执行
+    - 两个参数:
+      - 参数 `1`: 要运行的副作用函数. 副作用函数的参数也是一个函数, 用来注册清理回调. 清理回调会在该副作用下一次执行前被调用, 可以用来清理无效的副作用, 例如等待中的异步请求.
+      - 参数 `2`: 可选, 用来调整副作用的刷新时机或调试副作用的依赖.
+    - 一个返回值: 用来停止该副作用的函数.
+    - ```html
+      {{name}}
+      <button @click="name+='!'">changeName</button>
+    - ```js
+      let name = ref('tom');
+      watchEffect(() => {
+        console.log('name', name.value);
+      });
+    - ![](../image/Snipaste_2022-07-05_14-32-54.png)
+2. 来看副作用函数的参数, 用来注册清理回调.
+    - 它接收一个函数为参数, 并且在副作用下一次执行前被调用. `watchEffect` 立即运行时不会调用.
+    - ```js
+      watchEffect((onCleanup) => {
+        console.log('name', name.value);
+        onCleanup(() => console.log('i am cleanup'));
+      });
+    - ![](../image/Snipaste_2022-07-05_14-41-21.png)
+4. `watch` 和 `watchEffect` 的区别
+    - 区别主要是追踪响应式依赖的方式
+    - `watch`: 只追踪明确侦听的源. 不会追踪任何在回调中访问到的东西. 另外, 尽在响应源确实改变时才会触发回调. `watch` 会避免在发生副作用时追踪依赖, 因此可以更加精确地控制回调函数的触发时机.
+    - `watchEffect`, 则会在副作用发生期间最终依赖. 他会在同步执行过程中, 自动追踪所有能访问到的响应式 `property`, 这更方便和简洁, 但是响应式依赖关系不那么明显.
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
 ![](../image/)
 ![](../image/)
 ![](../image/)
