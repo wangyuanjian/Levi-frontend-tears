@@ -16,6 +16,7 @@
   - [使用插件](#使用插件)
 - [scoped](#scoped)
 - [组件自定义事件](#组件自定义事件)
+  - [`.sync`](#sync)
 - [全局事件总线](#全局事件总线)
 - [消息订阅与发布](#消息订阅与发布)
 - [`$nextTick`](#nexttick)
@@ -61,6 +62,7 @@
     - [完整的导航解析流程](#完整的导航解析流程)
   - [路由元信息](#路由元信息)
   - [HTML5 History 模式](#html5-history-模式)
+  - [路由懒加载](#路由懒加载)
 
 <!-- /TOC -->
 
@@ -680,6 +682,77 @@
     - 要这样写
     - ```html
       <Student @click.native="getStudentName"></Student>
+### `.sync`
+1. 有些情况下, 我们需要修改 `prop`, 但是直接修改会引起报错. 真正的双向绑定会带来维护上的问题, 因为子组件可以更改父组件的值, 父子组件两侧都没有明显的变更来源.
+    - ![](../image/Snipaste_2022-07-08_08-40-41.png)
+2. 如果真的要更改, 官网推荐使用 `update:propName` 的模式触发事件. 比如
+    - 父组件. 绑定了 `title` 这个 `prop`, 也绑定了自定义事件. 在子组件触发自定义事件时 `$event` 就是传来的新值.
+      - ```html
+        <Student :title="title" @update:title="title = $event"></Student>
+    - 子组件
+      - ```html
+        <div>
+          <h2>{{title}}</h2>
+          <button @click="changeTitle">修改title</button>
+        </div>
+      - ```js
+        export default {
+          name: 'Student',
+          props: {
+            title: String
+          },
+          methods: {
+            changeTitle() {
+              this.$emit('update:title', 'NEW');
+            }
+          },
+        }
+    - ![](../image/vue_sync.gif)
+3. 如果我们要十个 prop 需要双向绑定, 那么这样写十遍也挺麻烦的, 所以 Vue 为我们提供了 `.sync` 修饰符作为这种模式的缩写
+    - 我们只需要改动父组件即可
+      - ```html
+        <!-- <Student :title="title" @update:title="title = $event"></Student> -->
+        <Student :title.sync="title"></Student>
+4. 使用 `v-bind.sync`
+    - 如果在父组件中一个对象中的每个属性都需要作为 `prop` 传入的话, 可以使用 `v-bind.sync` 将每个属性都作为独立的 `prop` 传入.
+      - ```html
+        <School v-bind.sync="person"></School>
+      - ```js
+        export default {
+          data() {
+            return {
+              title: 'OLD',
+              person: {
+                name: 'tom',
+                age: 19
+              }
+            }
+          },
+        }
+    - 子组件
+      - ```html
+        <div>
+          {{name}}-{{age}}
+          <button @click="changeName">修改Name</button>
+          <button @click="changeAge">修改Age</button>
+        </div>
+      - ```js
+        export default {
+          name: 'School',
+          props: {
+            name: String,
+            age: Number
+          },
+          methods: {
+            changeName() {
+              this.$emit('update:name', 'jerry')
+            },  
+            changeAge() {
+              this.$emit('update:age', 20)
+            },
+          }
+        }
+    - ![](../image/vue_sync_vbind.gif)
 ## 全局事件总线
 1. 这并不是一个 `Vue` 的 `API` 或技术, 只是我们自己用来组件间传值的方式, 是总结出来的经验
     - ![](../image/Snipaste_2022-01-08_17-11-15.png)
@@ -2333,7 +2406,7 @@
     - ![](../image/Snipaste_2022-02-05_19-56-48.png)
     - 还有一个现象, 每一次进行路由导航, 都会完整地执行全局前置和全局后置
 #### 全局解析守卫
-1.
+1. 这个导航守卫时 (`2.5.0+`) 版本可以使用的, 在导航被确认前, 同时在所有组件内守卫和异步路由组件被解析之后, 该路由守卫调用
 #### 完整的导航解析流程
 1. 完整的导航解析流程
     - 导航被触发;
@@ -2343,7 +2416,7 @@
     - 在路由配置里调用 `beforeEnter`;
     - 解析异步路由组件;
     - 在被激活的组件里调用 `beforeRouteEnter`;
-    - 调用全局的 `beforeResolve` 守卫 `(2.5+)`;
+    - 调用全局的 `beforeResolve` 守卫 `(2.5.0+)`;
     - 导航被确认;
     - 调用全局的 `afterEach` 钩子;
     - 触发 `DOM` 更新;
@@ -2399,7 +2472,9 @@
         routes: [...]
       })
     - 使用 `history` 模式时, `URL` 就像正常的 `url`, 比如 `http://localhost/user/wang`, 但是这种模式需要后端配合, 比如用户刷新当前页面就会直接向浏览器发送 `/user/wang` 的 `GET` 请求, 这时会报错 `404`.
-
+### 路由懒加载
+1. 在打包构建应用时, JavaScript 包会变得很大, 影响首页加载. 如果把不同路由对应的组件分割成不同的代码块, 当路由被访问的时候才加载对应组件, 这样更加高效.
+2. 结合之前的代码, 
 
 
 
