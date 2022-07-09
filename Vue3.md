@@ -19,6 +19,7 @@
       - [第三个参数](#第三个参数)
       - [停止侦听器](#停止侦听器)
       - [`watchEffect`](#watcheffect)
+    - [生命周期](#生命周期)
 
 <!-- /TOC -->
 
@@ -637,8 +638,69 @@
     - 区别主要是追踪响应式依赖的方式
     - `watch`: 只追踪明确侦听的源. 不会追踪任何在回调中访问到的东西. 另外, 尽在响应源确实改变时才会触发回调. `watch` 会避免在发生副作用时追踪依赖, 因此可以更加精确地控制回调函数的触发时机.
     - `watchEffect`, 则会在副作用发生期间最终依赖. 他会在同步执行过程中, 自动追踪所有能访问到的响应式 `property`, 这更方便和简洁, 但是响应式依赖关系不那么明显.
-![](../image/)
-![](../image/)
+### 生命周期
+![](../image/lifecycle.16e4c08e.png)
+1. Vue3 中可以继续使用 Vue2 的生命周期钩子, 但有两个给更名
+    - `beforeDestroy` 改为 `beforeUnmount`
+    - `destroyed` 改为 `unmounted`
+2. Vue3 中也提供了组合式 API 的生命周期钩子, 与 Vue2 中生命周期钩子的对应关系如下
+    - |Vue2|Vue3|
+      |---|---|
+      |beforeCreate|setup|
+      |created|setup|
+      |beforeMount|onBeforeMount|
+      |mounted|onMounted|
+      |beforeUpdate|onBeforeUpdate|
+      |updated|onUpdated|
+      |beforeUnmount|onBeforeUnmount|
+      |Unmounted|onUnmounted|
+3. 代码
+    - 首先是子组件
+      - ```html
+        <div>
+          {{count}}
+          <button @click="add">count++</button>
+        </div>
+      - ```js
+        <script setup>
+          import { ref, onBeforeMount, onMounted, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted } from 'vue'
+          let count = ref(0);
+          function add() {
+            count.value++;
+          }
+          onBeforeMount(() => {
+            console.log('---onBeforeMount---');
+          })
+          onMounted(() => {
+            console.log('---onMounted---');
+          }) 
+          onBeforeUpdate(() => {
+            console.log('---onBeforeUpdate---');
+          }) 
+          onUpdated(() => {
+            console.log('---onUpdated---');
+          })
+          onBeforeUnmount(() => {
+            console.log('---onBeforeUnmount---');
+          }) 
+          onUnmounted(() => {
+            console.log('---onUnmounted---');
+          }) 
+          </script>
+    - 父组件
+      - ```html
+        <TestLifeCycle v-if="lifeCircleVisible" />
+        <hr>
+        <button @click="lifeCircleVisible = false">卸载Life-Cycle</button>
+      - ```js
+        import TestLifeCycle from './components/TestLifeCycle.vue'
+        import { ref } from 'vue'
+
+        function receiveName(name) {
+          console.log('from son, ', name);
+        }
+        let lifeCircleVisible = ref(true);
+      - ![](../image/Snipaste_2022-07-09_10-30-54.png)
 ![](../image/)
 ![](../image/)
 ![](../image/)
