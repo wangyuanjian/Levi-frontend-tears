@@ -20,6 +20,7 @@
       - [停止侦听器](#停止侦听器)
       - [`watchEffect`](#watcheffect)
     - [生命周期](#生命周期)
+    - [`hook`](#hook)
 
 <!-- /TOC -->
 
@@ -701,7 +702,47 @@
         }
         let lifeCircleVisible = ref(true);
       - ![](../image/Snipaste_2022-07-09_10-30-54.png)
-![](../image/)
+### `hook`
+1. `hook` 本质是一个函数, 把 `setup` 函数中的组合式 `API` 进行封装, 类似 `Vue2` 中的 `mixin`. 从而复用代码.
+2. 代码
+    - 创建 `src/hooks/usePoint.js`
+      - 一般将 `hook` 命名为 `useXxx` 的形式. 在 hook 中我们创建并返回了一个响应式对象, 添加了生命周期钩子用来注册页面点击事件.
+      - ```js
+        import { reactive, onMounted, onBeforeUnmount  } from 'vue';
+
+        export default function() {
+          let point = reactive({
+            x: 0,
+            y: 0,
+          });
+
+          function savePoint(event) {
+            point.x = event.pageX;
+            point.y = event.pageY;
+          }
+
+          onMounted(() => {
+            window.addEventListener('click', savePoint);
+          })
+
+          onBeforeUnmount(() => {
+            window.removeEventListener('click', savePoint);
+          })
+
+          return point;
+        }
+    - 子组件: 引入 `hook`, 调用这个暴露的函数
+      - ```html
+        <div>
+          <h2>Mouse Click at, X:{{point.x}}, Y:{{point.y}}</h2>
+        </div>\
+      - ```js
+        <script setup>
+          import usePoint from '../hooks/usePoint'
+          let point = usePoint();
+        </script>
+    - ![](../image/Snipaste_2022-07-09_11-39-19.png)
+3. 如果有其他组件也需要获取鼠标坐标, 就可以直接引入这个钩子, 来实现组件的复用.
 ![](../image/)
 ![](../image/)
 ![](../image/)
