@@ -21,6 +21,7 @@
       - [`watchEffect`](#watcheffect)
     - [生命周期](#生命周期)
     - [`hook`](#hook)
+    - [`toRef` 和 `toRefs`](#toref-和-torefs)
 
 <!-- /TOC -->
 
@@ -743,9 +744,85 @@
         </script>
     - ![](../image/Snipaste_2022-07-09_11-39-19.png)
 3. 如果有其他组件也需要获取鼠标坐标, 就可以直接引入这个钩子, 来实现组件的复用.
-![](../image/)
-![](../image/)
-![](../image/)
+### `toRef` 和 `toRefs`
+1. 可以从一个 `reactive` 对象的某个属性创建一个 `ref` 对象. 如果修改 `ref`, `reactive` 中的属性将会发生改变, 反之相同.
+    - 这解决的一个问题是, 如果对象属性嵌套太深, 在模板中使用该属性就会写很多代码.
+    - 语法
+      - `toRef(object, key)`
+    - ```js
+      import { reactive, toRef } from 'vue';
+      export default {
+        setup() {
+          let person = reactive({
+            name: 'tom',
+            salary: {
+              count: '20K'
+            }
+          });
+          return {
+            count: toRef(person.salary, 'count'),
+            person
+          }
+        }
+      }
+    - ```html
+      <div>
+        <h3>count: {{count}}</h3>
+        <button @click="person.salary.count='30K'">changeCount</button>
+      </div>
+    - ![](../image/Snipaste_2022-07-10_10-32-38.png)
+    - 📕注意下面两种写法的区别
+      - ```js
+        return {
+          count: toRef(person.salary, 'count'),
+          count: ref(person.salary.count),
+        }
+      - 两种写法都创建了一个 `ref` 对象, 但只有第一种写法将 `ref` 对象和源对象关联了起来. 
+2. 如果定义的是一个原 `reactive` 不存在的属性时, 不会将该属性保存到原 `reactive` 上, 但是如果修改了这个属性, 就会了.
+    - 📕注意这里使用了 `toRef` 的第三个参数, 默认值
+    - ```js
+      setup() {
+        let person = reactive({
+          name: 'tom',
+          salary: {
+            count: '20K'
+          }
+        });
+        return {
+          count: toRef(person.salary, 'count'),
+          peiqi: toRef(person.salary, 'peiqi', 100),
+          person
+        }
+      }
+    - ```html
+      <h3>count: {{count}}-{{peiqi}}</h3>
+      <button @click="peiqi=200">changePeiqi</button>
+    - ![](../image/Snipaste_2022-07-10_10-42-59.png)
+3. `toRefs`
+    - 如果某个 `reactive` 的很多属性都需要转成 `ref`, 一个一个地用 `toRef` 就太慢了. 因此 `toRefs` 将 `reactive` 对象转成一个普通对象, 这个普通对象的每个属性都是一个指向 `reactive` 中对应属性的 `ref`.
+    - ```js
+      setup() {
+        let person = reactive({
+          name: 'tom',
+          salary: {
+            count: '20K'
+          }
+        });
+        return {
+          count: toRef(person.salary, 'count'),
+          peiqi: toRef(person.salary, 'peiqi', 100),
+          person,
+          ...toRefs(person),
+        }
+      }
+    - ```html
+      {{name}}-{{salary}}
+      <button @click="salary.count='40k'">changeSalary</button>
+    - 使用扩展运算符(`...`)之后, 就暴露出了 `name` 和 `salary` 两个属性.
+      - 📕注意我们修改 `salary`, 剩余两处的值也发生了变化
+    - ![](../image/Snipaste_2022-07-10_11-09-16.png)
+
+
 ![](../image/)
 ![](../image/)
 ![](../image/)
