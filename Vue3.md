@@ -22,6 +22,7 @@
     - [生命周期](#生命周期)
     - [`hook`](#hook)
     - [`toRef` 和 `toRefs`](#toref-和-torefs)
+    - [`shallowReactive` 和 `shallowRef`](#shallowreactive-和-shallowref)
 
 <!-- /TOC -->
 
@@ -821,11 +822,64 @@
     - 使用扩展运算符(`...`)之后, 就暴露出了 `name` 和 `salary` 两个属性.
       - 📕注意我们修改 `salary`, 剩余两处的值也发生了变化
     - ![](../image/Snipaste_2022-07-10_11-09-16.png)
-
-
-![](../image/)
-![](../image/)
-![](../image/)
+### `shallowReactive` 和 `shallowRef`
+1. `shallowReactive`
+    - `shallowReactive` 是 `reactive` 的 `shallow` 版本, 只有对象的根属性才是响应式的.
+    - ```html
+      <div>
+        {{person}}
+        <button @click="changePersonNation">changePersonNation</button>
+        <button @click="changePersonName">changePersonName</button>
+      </div>
+    - ```js
+      <script setup>
+        import { reactive, shallowReactive, shallowRef } from 'vue';
+        let person = shallowReactive({
+          name: 'tom',
+          address: {
+            nation: 'USA'
+          },
+        });
+        function changePersonNation() {
+          person.address.nation = 'UK';
+          console.log('person', person);
+        }
+        function changePersonName() {
+          person.name = 'Sherlok'
+        }
+        </script>
+    - 可以看到修改数据后, 页面没有发生了变化, 但是数据确实改变了, 因为丢失了响应式. 📕如果在修改之前点开开发者工具, 那么修改数据后开发者工具内容不会改变, 但是数据的确改变了.📕
+    - ![](../image/Snipaste_2022-07-10_20-34-08.png)
+    - 如果接下来修改名字, 那么整个页面都会改变,
+    - ![](../image/Snipaste_2022-07-10_20-37-38.png)
+2. `shallowRef`
+    - 同样的, `shallowRef` 只处理基本数据类型的响应式, 对于对象类型, 不会深度响应式处理, 只有 `.value` 是响应式的.
+    - ```html
+      {{count}}
+      <button @click="count++">count++</button>
+      <hr>
+      {{point}}
+      <button @click="changeX">changeX</button>
+      <button @click="changePoint2">changePoint2</button>
+    - ```js
+      let count = shallowRef(0);
+      let point = shallowRef({
+        x: 0,
+        y: 0,
+      })
+      function changeX() {
+        point.value.x = 2;
+        console.log('point in changeX', point);
+      }
+      function changePoint2() {
+        point.value = {
+          x: 2,
+          y: 2
+        }
+        console.log('point in changePoint2', point);
+      }
+    - 可以看到, 单独修改 `x` 并不会触发响应式虽然数据已经更改, 只有通过 `.value` 修改数据才可以.
+    - ![](../image/Snipaste_2022-07-11_18-56-55.png)
 ![](../image/)
 ![](../image/)
 ![](../image/)
