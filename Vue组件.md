@@ -10,6 +10,8 @@
   - [单文件组件](#单文件组件)
     - [编写单文件组件](#编写单文件组件)
     - [引入单文件组件](#引入单文件组件)
+  - [处理边界情况](#处理边界情况)
+    - [程序化的事件监听器](#程序化的事件监听器)
 
 <!-- /TOC -->
 
@@ -367,13 +369,90 @@
       </div>
 4. 其实写完上面这几步骤, 脚手架的基本文件和作用就呼之欲出了
 
+## 处理边界情况
+### 程序化的事件监听器
+1. 如果我们在页面中使用定时器, 那么大概率的思路如下, 在 `mounted` 中开启定时器并且在 `beforeDestroy` 中销毁定时器.(具体写在哪个生命周期钩子不是这里讨论的重点😀)
+    - ```html
+      <h1>{{count}}</h1>
+    - ```js
+      export default {
+        name: "Student",
+        data() {
+          return {
+            count: 0
+          };
+        },
+        mounted() {
+          this.intervalId = setInterval(() => {
+            this.count++;
+          }, 1000);
+        },
+        beforeDestroy() {
+          clearInterval(this.intervalId);
+          this.intervalId = null;
+        }
+      };
+    - 上面的代码导致了两个问题
+      - 首先, 在 `this` 上保存定时器 `id`, 最好的情况是只有生命周期钩子可以访问到它.
+      - 创建定时器的代码和清除定时器的代码互相独立, 很难程序化的清理要建立的所有东西.
+2. 可以通过程序化的侦听器解决这个问题
+    - ```js
+      export default {
+        name: "Student",
+        data() {
+          return {
+            count: 0
+          };
+        },
+        mounted() {
+          let intervalId = setInterval(() => {
+            this.count++;
+          }, 1000);
+
+          this.$once('hook:beforeDestroy', () => {
+            console.log('---beforeDestroy---');
+            clearInterval(intervalId);
+            intervalId = null;
+          })
+        },
+      };
+    - 通过侦听 `hook:beforeDestroy` 事件, 省略了保存 `intervalId` 同时将注册和清理逻辑放在了一起.
+3. 除此之外呢, `@hook` 可以监听子组件的生命周期. 虽然我们都知道子组件和父组件的生命周期存在某种先后关系, 但是了解 `@hook` 也是实现另一种方式
+    - 子组件
+      - ```html
+        <h3>Son</h3>
+      - ```js
+        export default {
+          mounted() {
+            console.log('Son---mounted');
+          }
+        }
+    - 父组件
+      - 使用 `@hook:mounted` 注册自定义事件.
+      - ```html
+        <div>
+          <h2>Father</h2>
+          <Son @hook:mounted="childMountHandler"></Son>
+        </div>
+      - ```js
+        import Son from './Son.vue'
+        
+        export default {
+          components: { Son },
+          mounted() {
+            console.log('Father---mounted');
+          },
+          methods: {
+            childMountHandler() {
+              console.log('Oops, son mounted');
+            }
+          }
+        }
+      - 来看执行顺序 `子mounted -> 父hook:mounted -> 父mounted`
+      - ![](../image/Snipaste_2022-07-12_19-32-40.png)
 
 
-
-
-
-
-
+![](../image/)
 
 
 
