@@ -23,6 +23,7 @@
     - [`hook`](#hook)
     - [`toRef` 和 `toRefs`](#toref-和-torefs)
     - [`shallowReactive` 和 `shallowRef`](#shallowreactive-和-shallowref)
+    - [`readonly` 和 `shallowReadonly`](#readonly-和-shallowreadonly)
 
 <!-- /TOC -->
 
@@ -880,8 +881,81 @@
       }
     - 可以看到, 单独修改 `x` 并不会触发响应式虽然数据已经更改, 只有通过 `.value` 修改数据才可以.
     - ![](../image/Snipaste_2022-07-11_18-56-55.png)
-![](../image/)
-![](../image/)
+### `readonly` 和 `shallowReadonly`
+1. `readonly`
+    - 接受一个对象(不论是否为响应式)或是一个 `ref`, 返回一个原值的只读代理.
+    - 只读代理是深层次的, 任何嵌套的 `property` 的访问都是只读的
+    - 如果修改只读代理, 将会收到一个警告; 如果修改原值, 只读代理会同步修改
+      - ```html
+         <div>
+          <span>{{user}}</span>
+          <span>{{userCopy}}</span>
+          <button @click="changeSalary">changeSalary</button>
+          <button @click="changeSalarySource">changeSalarySource</button>
+        </div>
+      - ```js
+        import { reactive, readonly, watchEffect } from 'vue';
+        const user = reactive({
+          name: 'levi',
+          age: 18,
+          salary: {
+            month: 29
+          }
+        })
+        let userCopy = readonly(user);
+
+        watchEffect(() => {
+          console.log('user.salary.month, ', user.salary.month);
+        })
+        function changeSalary() {
+          userCopy.salary.month++;
+        }
+        function changeSalarySource() {
+          user.salary.month++;
+        }
+    - 看下面的截图, 先修改两次源数据的值, 再修改两次只读副本的值. (`watchEffect` 输出三次打印的原因是 `watchEffect` 是立即执行的.)
+    - ![](../image/Snipaste_2022-07-13_19-28-32.png)
+  - 对 `ref` 的只读设置是同样的. 
+    - 而且 `ref` 只读副本的解包也是同样的, 在模板中不需要使用 `.value` 就可以访问其值.
+    - 同样修改原值只读副本的值也会发生变化
+    - ```html
+      <span>{{count}}</span>|
+      <span>{{countCopy}}</span>
+      <button @click="changeCount">changeCount</button>
+      <button @click="changeCountCopy">changeCountCopy</button>
+    - ```js
+      const count = ref(0);
+      let countCopy = readonly(count);
+      console.log('countCopy', countCopy);
+      function changeCount() {
+        count.value++;
+      }
+      function changeCountCopy() {
+        countCopy.value++;
+      }
+    - ![](../image/Snipaste_2022-07-13_19-38-13.png)
+2. `shallowReadonly`
+    - `readonly` 的浅层作用形式. 没有深层次的转换, 只有根层级的 `property` 变成了只读.
+    - 修改 `shallowReadonly` 的深层属性会使页面响应式修改, 并且原值和原值的 `readonly` 副本也会同步修改
+    - ```js
+      import { ref, reactive, shallowReadonly } from 'vue';
+      const user = reactive({
+        name: 'levi',
+        age: 18,
+        salary: {
+          month: 29
+        }
+      })
+      let userShallowCopy = shallowReadonly(user);
+      console.log('userShallowCopy', userShallowCopy);
+      function changeSalaryShallowCopy() {
+        userShallowCopy.salary.month++;
+        // 值改变
+      }
+      function changeAgeShallowCopy() {
+        userShallowCopy.age++;
+        // 控制台收到警告: Set operation on key "age" failed: target is readonly. 
+      }
 ![](../image/)
 ![](../image/)
 ![](../image/)
