@@ -24,6 +24,7 @@
     - [`toRef` 和 `toRefs`](#toref-和-torefs)
     - [`shallowReactive` 和 `shallowRef`](#shallowreactive-和-shallowref)
     - [`readonly` 和 `shallowReadonly`](#readonly-和-shallowreadonly)
+    - [`toRaw` 和 `markRaw`](#toraw-和-markraw)
 
 <!-- /TOC -->
 
@@ -956,8 +957,56 @@
         userShallowCopy.age++;
         // 控制台收到警告: Set operation on key "age" failed: target is readonly. 
       }
-![](../image/)
-![](../image/)
+### `toRaw` 和 `markRaw`
+1. `toRaw`
+    - 创建一个 `Vue` 创建的代理返回其原始对象.
+    - `toRaw` 可以返回由 `reactive`, `readonly`, `shallowReactive` 或者 `shallowReadonly` 创建的代理对应的原始对象.
+    - 通过这个方法, 我们拿到原始对象然后修改原始对象但不会引起页面的刷新, 这是一种应用场景. 📕但是官网不建议保存对原始对象的持久引用, 需要谨慎使用!
+    - ```html
+      <span>{{userReactive}}</span>
+      <button @click="changeRawUserAge">changeRawUserAge</button>
+      <button @click="changeReactiveUserAge">changeReactiveUserAge</button>
+      <button @click="changeSourceUserAge">changeSourceUserAge</button>
+    - ```js
+      import { reactive, toRaw } from 'vue';
+      let userSource = {
+        name: 'levi',
+        age: 18,
+        salary: {
+          month: 29
+        }
+      };
+      const userReactive = reactive(userSource);
+      const userRaw = toRaw(userReactive);
+      console.log('userRaw', userRaw);
+      console.log('==', userRaw === userSource);
+      console.log('plain object Raw', toRaw({}));
+
+      function changeRawUserAge() {
+        userRaw.age++;
+      }
+      function changeReactiveUserAge() {
+        userReactive.age++;
+      }
+      function changeSourceUserAge() {
+        userSource.age++;
+      }
+    - 从下图可以看出, `toRaw` 也可以接受一个非响应式对象做参数. 而且原对象, 响应式对象和 `toRaw` 返回的对象中, 任意修改一个, 剩下两个也会修改
+    - ![](../image/Snipaste_2022-07-14_09-08-25.png)
+2. `markRaw`
+    - 将一个对象标记为不可被转为代理. 使用场景是
+      - 有些值不应该是响应式的, 例如复杂的第三方类实例或者 `Vue` 组件对象.
+      - 当呈现带有不可变数据源的大型列表时, 跳过代理转换可以提高性能.
+    - ```js
+      let user1 = {
+        name: 'abc',
+        age: {
+          tomorrow: 20
+        }
+      };
+      let userMarkRaw = markRaw(user1);
+      console.log('userMarkRaw', userMarkRaw);
+    - ![](../image/Snipaste_2022-07-14_14-03-52.png)
 ![](../image/)
 ![](../image/)
 ![](../image/)
