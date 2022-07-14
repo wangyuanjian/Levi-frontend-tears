@@ -25,6 +25,7 @@
     - [`shallowReactive` 和 `shallowRef`](#shallowreactive-和-shallowref)
     - [`readonly` 和 `shallowReadonly`](#readonly-和-shallowreadonly)
     - [`toRaw` 和 `markRaw`](#toraw-和-markraw)
+    - [`customRef`](#customref)
 
 <!-- /TOC -->
 
@@ -1007,6 +1008,36 @@
       let userMarkRaw = markRaw(user1);
       console.log('userMarkRaw', userMarkRaw);
     - ![](../image/Snipaste_2022-07-14_14-03-52.png)
+### `customRef`
+1. 创建一个自定义的 `ref`, 显式声明对其依赖追踪和更新触发的控制方式
+    - `customRef` 接收一个工参数厂函数作为参数, 这个工厂函数接受 `track` 和 `trigger` 两个函数作为参数, 并返回一个带有 `get` 和 `set` 方法的对象.
+    - 一般来说 `track()` 应该在 `get()` 方法中调用, 而 `trigger()` 应该在 `set` 中调用. 事实上, 我们对他们何时调用有完全的控制权
+2. 实现一个案例. 防抖的输入框, 用户最后一次输入的一秒后才更新页面 `<h3>` 的值
+    - ```html
+      <input type="text" v-model="input1">
+      <h3>{{input1}}</h3>
+    - ```js
+      import { customRef } from 'vue';
+
+      const input1 = myRef('what', 1000)
+      function myRef(value, timeout) {
+        let timeoutId;
+        return customRef((track, trigger) => {
+          return {
+            get() {
+              track();
+              return value;
+            },
+            set(newValue) {
+              clearTimeout(timeoutId);
+              timeoutId = setTimeout(() => {
+                value = newValue;
+                trigger();
+              }, timeout)
+            }
+          }
+        })
+      }
 ![](../image/)
 ![](../image/)
 ![](../image/)
