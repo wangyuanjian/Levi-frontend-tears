@@ -26,6 +26,7 @@
     - [`readonly` 和 `shallowReadonly`](#readonly-和-shallowreadonly)
     - [`toRaw` 和 `markRaw`](#toraw-和-markraw)
     - [`customRef`](#customref)
+    - [`provide` 和 `inject`](#provide-和-inject)
 
 <!-- /TOC -->
 
@@ -1038,6 +1039,93 @@
           }
         })
       }
+### `provide` 和 `inject`
+1. 为了解决跨层级传递 `props` 的问题, 可以使用 `provide` 和 `inject`.
+    - 一个父组件相对于其所有的后代组件, 会作为依赖`提供(Provide)`者. 任何后代的组件树, 无论层级多深, 都可以`注入(Inject)` 由父组件提供给整条链路的依赖.
+    - ![](../image/prop-drilling.11201220.png)
+    - ![](../image/provide-inject.3e0505e4.png)
+2. 案例
+    - 要为组件后代供给数据, 需要使用到 `provide()` 函数. 其接收两个参数
+      - `注入名`: 可以是一个字符串或 `Symbole`. 后代组件会用注入名查找期望注入的值. 
+      - `值`: 值可以是任意类型, 包括响应式的状态, 比如一个 `ref`
+      - 一个组件可以多次调用 `provide()`, 使用不同的注入名注入不同的依赖
+    - 要注入祖先组件供给的数据, 需使用 `inject()` 函数
+      - 第一个参数就是 `注入名`
+      - 如果供给的值是一个 `ref`, 注入进来的就是它本身, 而不会自动解包.这使得被注入的组件保持了和供给者的响应性链接, 也就是可以在孙子组件中直接修改爷爷组件的值
+      - 默认情况下, `inject` 假设传入的注入名会被某个祖先链上的组件提供. 如果该注入名的确没有任何组件提供, 则会抛出一个运行时警告
+        - ![](../image/Snipaste_2022-07-14_19-43-34.png)
+      - 可以提供第二个参数作为 `默认值`
+    - `爷爷组件`
+      - ```html
+        <div class="grand-father">
+          <div>{{name}}</div>
+          <div>{{age}}</div>
+          <div>{{address}}</div>
+          <Father/>
+        </div>
+      - ```js
+        import { provide, ref, reactive } from 'vue';
+        import Father from './Father.vue'
+
+        let name = 'tom';
+        let age = ref(18);
+        let address = reactive({
+          postcode: 200200
+        });
+        provide('name', name);
+        provide('age', age);
+        provide('address', address);
+    - `父组件`
+      - ```html
+        <div class="father">
+          <Son/>
+        </div>
+      - ```js
+        import Son from './Son.vue'
+    - `子组件`
+      - ```html
+        <div class="son">
+          <button @click="age++">changeAge</button>
+          <button @click="address.postcode++">changeAddress</button>
+        </div>
+      - ```js
+        import { inject } from 'vue';
+        const name = inject('name', '123');
+        const age = inject('age');
+        const address = inject('address');
+        const notExisted = inject('not-existed');
+    - ![](../image/Snipaste_2022-07-14_19-45-03.png)
+3. 配合响应式
+    - 当使用响应式 `provide` / `inject` 的值时, **应尽可能将对响应式状态的修改都保持在 `provide` 内**.
+    - 所以, 在调用 `provide` 时可以同时传入数据和更改数据的方法.
+    - 如果不想后代组件修改 provide 传递的值, 可以将传递的值使用 `readonly` 包装.
+    - `爷爷组件`
+      - ```js
+        let salary = ref(1000);
+        function updateSalary(bonus) {
+          salary.value += bonus;
+        }
+        provide('salary', {
+          salary,
+          updateSalary
+        })
+    - `孙子组件`
+      - ```html
+        <button @click="up">涨薪</button>
+      - ```js
+        const { salary, updateSalary } = inject('salary');
+        function up() {
+          updateSalary(100);
+        }
+4. 使用 `Symbol` 作为注入名
+    - 如果构建大型应用程序或者编写提供给其他开发者使用的组件库时, 最好使用 `Symbol` 作为注入名来避免冲突.
+    - 📕建议在一个单独的文件中导出这些注入名的 `Symbol`
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
 ![](../image/)
 ![](../image/)
 ![](../image/)
