@@ -1120,8 +1120,35 @@
 4. 使用 `Symbol` 作为注入名
     - 如果构建大型应用程序或者编写提供给其他开发者使用的组件库时, 最好使用 `Symbol` 作为注入名来避免冲突.
     - 📕建议在一个单独的文件中导出这些注入名的 `Symbol`
-![](../image/)
-![](../image/)
+    - 在同级目录下创建 `key.js`
+      - ```js
+        export const HOBBY = Symbol();
+    - 爷爷组件
+      - ```js
+        import { HOBBY } from './key'
+        provide(HOBBY, 'running');
+    - 孙子组件
+      - ```html
+        <h3>{{ hobby }}</h3>
+      - ```js
+        import { HOBBY } from './key'
+        const hobby = inject(HOBBY, '');
+    - ![](../image/Snipaste_2022-07-15_09-20-30.png)
+5. `app.provide`
+    - 除了攻击一个组件的数据, 还可以在整个应用层面供给
+    - `main.js`
+      - 📕一定要注意 `provide` 和 `mount` 的`调用顺序`!!!
+      - ```js
+        const app = createApp(App);
+
+        app.provide('author', 'Levi');
+        app.mount('#app');
+    - 孙子组件
+      - ```html
+        <h3>{{ hobby }} by {{author}}</h3>
+      - ```js
+        const author = inject('author');
+    - ![](../image/Snipaste_2022-07-15_09-40-01.png)
 ![](../image/)
 ![](../image/)
 ![](../image/)
