@@ -27,6 +27,7 @@
     - [`toRaw` 和 `markRaw`](#toraw-和-markraw)
     - [`customRef`](#customref)
     - [`provide` 和 `inject`](#provide-和-inject)
+    - [`isRef`, `isReactive`, `isProxy`, `isReadonly`](#isref-isreactive-isproxy-isreadonly)
 
 <!-- /TOC -->
 
@@ -1149,7 +1150,29 @@
       - ```js
         const author = inject('author');
     - ![](../image/Snipaste_2022-07-15_09-40-01.png)
-![](../image/)
+### `isRef`, `isReactive`, `isProxy`, `isReadonly`
+1. 官网定义
+    - `isRef()`: 检查某个值是否为 `ref`
+    - `isProxy()`: 检查一个对象是否是由 `reactive()`,`readonly()`, `shallowReactive()` 或 `shallowReadonly()` 创建的代理
+    - `isReactive()`: 检查一个对象是否是由 `reactive()` 或 `shallowReactive()` 创建的代理
+    - `isReadonly()`: 检查一个对象是否是由 `readonly()` 或 `shallowReadonly()` 创建的代理
+    - ```js
+      import { ref, reactive, readonly, isRef,  isReactive, isReadonly, isProxy } from 'vue'
+      
+      const count = ref(1);
+      const person = reactive({
+        name: 'tom',
+        age: 18
+      });
+      const personReadonly = readonly(person);
+      
+      console.log('isRef(count)', isRef(count));
+      console.log('isReactive(person)', isReactive(person));
+      console.log('isProxy(count)', isProxy(count));
+      console.log('isProxy(person)', isProxy(person));
+      console.log('isProxy(personReadonly)', isProxy(personReadonly));
+      console.log('isReadonly(personReadonly)', isReadonly(personReadonly));
+    - ![](../image/Snipaste_2022-07-15_17-40-57.png)
 ![](../image/)
 ![](../image/)
 ![](../image/)
