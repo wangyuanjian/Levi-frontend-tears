@@ -28,6 +28,8 @@
     - [`customRef`](#customref)
     - [`provide` 和 `inject`](#provide-和-inject)
     - [`isRef`, `isReactive`, `isProxy`, `isReadonly`](#isref-isreactive-isproxy-isreadonly)
+  - [新的组件](#新的组件)
+    - [`Fragment`](#fragment)
 
 <!-- /TOC -->
 
@@ -1173,8 +1175,26 @@
       console.log('isProxy(personReadonly)', isProxy(personReadonly));
       console.log('isReadonly(personReadonly)', isReadonly(personReadonly));
     - ![](../image/Snipaste_2022-07-15_17-40-57.png)
-![](../image/)
-![](../image/)
+## 新的组件
+### `Fragment`
+1. 在 Vue2 中组件必须有一个跟标签, 在 Vue3 中组件可以没有跟标签, 内部会将多个标签包含在一个 Fragment 的虚拟元素中.
+    - 好处, 减少标签层级, 减少内存占用
+    - ```html
+      <template>
+        <h1>asd</h1>
+        <h1>qwe</h1>
+      </template>
+    - ![](../image/Snipaste_2022-07-16_09-51-48.png)
+2. 当然上面的代码还是可以写成
+    - ```html
+      <template>
+        <Fragment>
+          <h1>asd</h1>
+          <h1>qwe</h1>
+        </Fragment>
+      </template>
+    - ![](../image/Snipaste_2022-07-16_09-57-08.png)
+    - 这时候开发者工具的 `fragment` 就消失了.
 ![](../image/)
 ![](../image/)
 ![](../image/)
