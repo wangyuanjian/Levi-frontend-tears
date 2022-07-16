@@ -31,6 +31,7 @@
   - [新的组件](#新的组件)
     - [`Fragment`](#fragment)
     - [`Teleport`](#teleport)
+  - [其他改变](#其他改变)
 
 <!-- /TOC -->
 
@@ -1277,6 +1278,22 @@
         </div>
       </Teleport>
     - ![](../image/Snipaste_2022-07-16_16-01-23.png)
+## 其他改变
+1. `Vue3` 中将这些全局的 `API` 调整到了应用实例 `app` 上
+    - |Vue2 全局 API|Vue3 API|
+      |---|---|
+      |Vue.config.xxx|app.config.xxx|
+      |Vue.config.productionTip|`移除`|
+      |Vue.component|app.component|
+      |Vue.directive|app.directive|
+      |Vue.mixin|app.mixin|
+      |Vue.use|app.use|
+      |Vue.prototype|app.config.globalProperties|
+2. 其他修改
+    - `data` 应该始终被声明为一个函数
+    - 移除 `keyCode` 作为 `v-on` 的修饰符, 同时不再支持 `config.keyCodes`
+    - 移除 `v-on.native` 修饰符
+    - 移除过滤器 `filter`
 ![](../image/)
 ![](../image/)
 ![](../image/)
