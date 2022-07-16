@@ -30,6 +30,7 @@
     - [`isRef`, `isReactive`, `isProxy`, `isReadonly`](#isref-isreactive-isproxy-isreadonly)
   - [新的组件](#新的组件)
     - [`Fragment`](#fragment)
+    - [`Teleport`](#teleport)
 
 <!-- /TOC -->
 
@@ -1195,6 +1196,87 @@
       </template>
     - ![](../image/Snipaste_2022-07-16_09-57-08.png)
     - 这时候开发者工具的 `fragment` 就消失了.
+### `Teleport`
+1. `<Teleport>` 是一个内置组件, 使我们可以将一个组件的一部分模板"传送"到该组件的 `DOM` 层次结构之外的 `DOM` 节点中.
+2. 有时我们可能会遇到一下情况: 组件模板的一部分在逻辑上属于它, 但是从视图角度来看, 在 `DOM` 中它应该显示在 `Vue` 应用之外的其他地方.
+    - 最常见的例子是构建一个全屏的模态框. 理想情况下, 模态框的按钮和模态框本身是在同一个组件, 因为他们都与组件的开关状态有关.
+    - 但是这意味着模态框与打开模态框的按钮要一起出现, 并且位于应用程序的 DOM 更深层次的结构. 想要通过 CSS 选择器定位该模态框时非常困难.
+    - 下面时经常实现的模态框写法
+      - ```html
+        <template>
+          <button @click="open = true">打开</button>
+          <div class="modal" v-if="open">
+            <p>来自模态框的问候</p>
+            <button @click="open = false">关闭</button>
+          </div>
+        </template>
+        <style scoped>
+        .modal {
+          position: fixed;
+          z-index: 999;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background-color: aliceblue;
+          padding: 1rem;
+          border-radius: 5px;
+          box-shadow: 0 0 10px 10px rgba(0, 0, 0, .1);
+        }
+        </style>
+      - ```js
+        <script setup>
+        import { ref } from 'vue';
+        const open = ref(false);
+        </script> 
+    - ![](../image/Snipaste_2022-07-16_15-18-45.png)
+    - 当在 HTML 结构中使用这个组件时, 会有一些潜在问题
+      - `position: fixed;` 能够相对于视口放置的条件是: **没有任何组件元素设置了 `transform`, `perspectivem` 或者 `filter` 属性**.
+        - ![](../image/Snipaste_2022-07-16_15-25-25.png)
+      - 模态框的 `z-index` 被包含它的元素制约. 如果有其他元素与父元素重叠并由更高的 `z-index`, 就会覆盖的模态框
+        - 下图就是为模态框增加叔叔元素, 且叔叔元素的 `z-index` 比模态框更大, 遮挡了模态框
+        - ![](../image/Snipaste_2022-07-16_15-30-17.png)
+3. `<Teleport>` 提供一个更简洁的方式解决此类问题, 使我们无需考虑那么多层 `DOM` 结构的问题.
+    - ```html
+      <template>
+        <button @click="open = true">打开</button>
+        <Teleport to="body">
+          <div class="modal" v-if="open">
+            <p>来自模态框的问候</p>
+            <button @click="open = false">关闭</button>
+          </div>
+        </Teleport>
+      </template>
+    - 为 `<Teleport>` 指定的目标 `to` 期望接收一个 `CSS` 选择器字符串或者一个真实的 `DOM` 节点. 就是告诉 `Vue` 将 `<Teleport>` 包裹的模板片段传送到 `body` 标签下.
+    - ![](../image/Snipaste_2022-07-16_15-35-24.png)
+    - 📕 `<Teleport>` 挂载时, 传送门的 `to` 目标`必须是已经存在`于 `DOM` 之中. 理想情况下, 应该是这个 `Vue` 应用程序之外的一个元素. 
+    - 📕 `<Teleport>` 只改变了渲染的 `DOM` 结构, 不会影响组件间的逻辑关系. 也就是是说如果 `<Teleport>` 包含了一个组件 `A`, 那么 `A` 始终和使用了 `<Teleport>` 的组件保持逻辑上的父子关系. 传入的 `props` 和触发的事件也会照常工作.
+4. 禁用 `<Teleport>`
+    - 有些情况我们想要在桌面端将一个组件作为弹框使用, 但是在移动段作为行内组件使用. 就可以传入 `disabled` 这个 `prop` 处理.
+    - ```html
+      <Teleport to="body" :disabled="true">
+        <div class="modal" v-if="open">
+          <p>来自模态框的问候</p>
+          <button @click="open = false">关闭</button>
+        </div>
+      </Teleport>
+    - ![](../image/Snipaste_2022-07-16_15-47-27.png)
+    - 注意模态框不再作为 `body` 的子元素出现
+5. 同一目标上多个传送门
+    - 如果多个 `<Teleport>` 将内容挂载到同一目标元素, 顺序就是简单的顺次追加, 后挂载的将排在目标元素下更后面的位置上.
+    - ```html
+      <Teleport to="body" :disabled="false">
+        <div class="modal" v-if="open">
+          <p>来自模态框的问候</p>
+          <button @click="open = false">关闭</button>
+        </div>
+      </Teleport>
+      <Teleport to="body" :disabled="false">
+        <div class="modal" v-if="open">
+          <p>来自模态框的问候2222</p>
+          <button @click="open = false">关闭</button>
+        </div>
+      </Teleport>
+    - ![](../image/Snipaste_2022-07-16_16-01-23.png)
 ![](../image/)
 ![](../image/)
 ![](../image/)
