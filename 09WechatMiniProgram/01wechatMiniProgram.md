@@ -9,9 +9,20 @@
     - [配置文件](#配置文件)
   - [小程序页面](#小程序页面)
   - [小程序的宿主环境(`host environment`)](#小程序的宿主环境host-environment)
+  - [协同工作与发布](#协同工作与发布)
   - [组件](#组件)
-    - [`view`](#view)
-    - [`scroll-view`](#scroll-view)
+    - [视图容器](#视图容器)
+      - [`view`](#view)
+      - [`scroll-view`](#scroll-view)
+      - [`swiper` 和 `swiper-item`](#swiper-和-swiper-item)
+    - [基础内容](#基础内容)
+      - [`text`](#text)
+      - [`rich-text`](#rich-text)
+    - [表单组件](#表单组件)
+      - [`button`](#button)
+    - [媒体组件](#媒体组件)
+      - [`image`](#image)
+  - [模板与配置](#模板与配置)
 
 <!-- /TOC -->
 
@@ -182,9 +193,26 @@
       - 无障碍访问
     - 
 8. `API`
-    - 
+    - 事件监听 `API`
+      - 以 `on` 开头, 用来监听某些事件的触发
+      - 举例: `wx.onWindowResize()` 监听窗口尺寸的变化
+    - 同步 `API`
+      - 以 `Sync` 结尾. 通过 API 的执行结果可以通过函数返回值直接获取, 如果执行出错也会抛异常
+      - 举例: `wx.setStorageSync(key, value)` 向本地存储写入内容
+    - 异步 `API`
+      - 需要通过 `success`, `fail`, `complete` 接收调用的结果
+      - 举例: `wx.request()` 发起网络请求
+## 协同工作与发布
+1. 小程序的版本
+    - |版本阶段|说明|
+      |---|---|
+      |开发版本|使用开发者工具, 可将代码上传到开发版本. 开发版本只保留没人最新的一份上传的代码. 点击提交审核, 可将代码提交审核. 开发版本可以删除, 不影响线上版本和审核中版本的代码.|
+      |体验版本|可选择某个开发版本作为体验版|
+      |审核中的版本|只能由一份代码处于审核中. 有审核结果后可以发布到线上, 也可以直接重新提交审核, 覆盖原审核版本.|
+      |线上版本|线上所有用户使用的代码版本, 该版本代码在新版本代码发布后被覆盖更新.|
 ## 组件
-### `view`
+### 视图容器
+#### `view`
 1. 普通视图区域, 类似 `HTML` 中的 `div`, 是一个块级容器
     - [官网文档](https://developers.weixin.qq.com/miniprogram/dev/component/view.html)
     - ```html
@@ -203,7 +231,7 @@
         line-height: 100px;
       }
     - ![](../../image/Snipaste_2022-07-19_10-36-09.png)
-### `scroll-view`
+#### `scroll-view`
 1. 可滚动视图区域
     - 使用竖向滚动时, 需要给 `scroll-view` 一个固定高度, 通过 `WXSS` 设置 `height`. 如果横向滚动, 则不需要设置宽度.
     - ```html
@@ -248,10 +276,79 @@
       }
     - 📕注意横向滚动时, 需要设置 `scroll-view` 的 `white-space` 值为 `nowrap`. 子项 `display` 为 `inline-block`.
     - ![](../../image/Snipaste_2022-07-19_14-05-41.png)
-![](../../image/)
-![](../../image/)
-![](../../image/)
-![](../../image/)
+#### `swiper` 和 `swiper-item`
+1. `swiper` 是滑块视图容器. 其中只可放置 `swiper-item` 组件, 否则会导致未定义的行为
+    - ```html
+      <swiper indicator-dots circular>
+        <swiper-item>
+          <view>111</view>
+        </swiper-item>
+        <swiper-item>
+          <view>222</view>
+        </swiper-item>
+        <swiper-item>
+          <view>333</view>
+        </swiper-item>
+      </swiper>
+    - ```css
+      swiper-item view {
+        font-size: 3rem;
+        color: #fff;
+        font-weight: bold;
+        height: 100%;
+        text-align: center;
+      }
+      swiper-item:nth-child(1) view {
+        background-color: #f1c40f;
+      }
+      swiper-item:nth-child(2) view {
+        background-color: #2ecc71;
+      }
+      swiper-item:nth-child(3) view {
+        background-color: #9b59b6;
+      }
+    - ![](../../image/Snipaste_2022-07-19_14-15-59.png)
+### 基础内容
+#### `text`
+1. 文本
+    - 除了文本节点以外的其他节点都无法长按选中. 文档中说 `selectable` 是已废弃的属性, 改用 `user-select`
+    - ```html
+      <text selectable>123</text>
+      <text user-select="true">asd</text>
+    - ![](../../image/Snipaste_2022-07-19_16-31-42.png)
+#### `rich-text`
+1. 富文本
+    - `nodes` 属性表示要渲染的节点列表或者 `HTML` 字符串
+    - ```html
+      <rich-text nodes="<h1>Life is a box of Chocolates</h1>"></rich-text>
+    - ![](../../image/Snipaste_2022-07-19_16-37-05.png)
+### 表单组件
+#### `button`
+1. 按钮
+    - 可以通过 `open-type` 属性调用微信提供的各种功能(客服, 转发, 获取用户授权, 获取用户信息等)
+    - ```html
+      <button>普通按钮</button>
+      <button type="primary">主要按钮</button>
+      <button type="warn">警告按钮</button>
+      <button plain>普通按钮</button>
+      <button type="primary" plain>主要按钮</button>
+      <button type="warn" plain>警告按钮</button>
+      <button size="mini">小普通按钮</button>
+      <button type="primary" size="mini">主要按钮</button>
+      <button type="warn" size="mini">警告按钮</button>
+    - ![](../../image/Snipaste_2022-07-19_16-43-49.png)
+### 媒体组件
+#### `image`
+1. 图片组件.
+    - 默认宽度约为 `300px`, 高度约为 `200px`
+    - 支持 `JPG`, `PNG`, `SVG`, `WEBP`, `GIF` 等格式，`2.3.0` 起支持云文件`ID`
+    - 可以通过 `mode` 属性来指定图片的裁剪和缩放模式
+    - ```html
+      <image></image>
+      <image src="https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg"></image>
+    - 即便是空的 `<image>` 也会占据宽和高
+    - ![](../../image/Snipaste_2022-07-19_16-48-34.png)
+## 模板与配置
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
