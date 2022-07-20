@@ -28,6 +28,7 @@
     - [条件渲染](#条件渲染)
     - [列表渲染](#列表渲染)
     - [`WXSS`](#wxss)
+  - [全局配置](#全局配置)
 
 <!-- /TOC -->
 
@@ -533,6 +534,45 @@
       - ![](../../image/Snipaste_2022-07-20_16-59-28.png)
 4. 全局样式和局部样式
     - 只有当局部样式的权重大于全局样式时, 才会覆盖全局样式
+## 全局配置
+1. `app.json` 是全局配置文件
+2. `window`
+    - 可以配置 `navigationBar(导航栏)` 和 `background(背景)`, 其中背景默认不可见, 只有下拉时才可见.
+    - |属性名|类型|默认值|说明|
+      |---|---|---|---|
+      |navigationBarTitleText|String||导航栏标题内容|
+      |navigationBarBackgroundColor|`HexColor`|#00000|导航栏背景色|
+      |navigationBarTextStyle|String|white|导航栏标题颜色, 仅支持 `black` 或 `white`|
+      |backgroundColor|`HexColor`|#ffffff|窗口背景色|
+      |backgroundTextStyle|String|dark|下拉 loading 样式, 仅支持 `black` 或 `white`|
+      |enablePullDownRefresh|Boolean|false|是否开启全局下拉刷新|
+      |onReachBottomDistance|Number|50|页面上拉触底事件出发时距底部的举例, 单位 `px`|
+3. `tabBar`
+    - 分为底部 `tabBar` 和 顶部 `tabBar`
+    - `tabBar` 最少配置 2 个, 最多配置 5 个.
+    - 当渲染顶部 `tabBar` 时, 不显示 `icon`, 只显示文本
+    - `tabBar` 的 6 个组成部分
+      - `backgroundColor`: `tabBar` 的背景色
+      - `borderStyle`: `tabBar` 的上边框颜色
+      - `color`: `tab` 文字默认(未选中时)的颜色
+      - `iconPath`: `tab` 未选中的图片路径
+      - `selectedColor`: `tab` 上文字选中时的颜色
+      - `selectedIconPath`: `tab` 选中时的图片路径
+    - 在 `tabBar` 节点的配置项
+      - |属性|类型|必填|默认值|描述|
+        |---|---|---|---|---|
+        |position|String|否|bottom|tabBar 的位置, 仅支持 `bottom`/`top`|
+        |borderStyle|String|否|black|仅支持 `black`/`white`|
+        |color|HexColor||||
+        |selectedColor|HexColor||||
+        |backgroundColor|HexColor||||
+        |list|Array|是||tab页签的列表. 每个值的配置如下|
+      - |属性|类型|必填|描述|
+        |---|---|---|---|
+        |pagePath|String|是|页面路径, 页面必须在 pages 中配置|
+        |text|String|是|tab 上显示的文字|
+        |iconPath|String|否||
+        |selectedIconPath|String|否||
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
