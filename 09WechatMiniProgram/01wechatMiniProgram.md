@@ -23,6 +23,8 @@
     - [媒体组件](#媒体组件)
       - [`image`](#image)
   - [模板与配置](#模板与配置)
+    - [数据绑定](#数据绑定)
+    - [事件绑定](#事件绑定)
 
 <!-- /TOC -->
 
@@ -349,6 +351,117 @@
     - 即便是空的 `<image>` 也会占据宽和高
     - ![](../../image/Snipaste_2022-07-19_16-48-34.png)
 ## 模板与配置
+### 数据绑定
+1. 数据绑定的基本原则
+    - 在 `data` 中定义数据
+    - ```js
+      Page({
+        data: {
+          name: 'Tom',
+          age: 18,
+          
+        },
+      })
+    - 在 `WXML` 中使用数据
+    - ```html
+      <text>{{ name }} - {{ age + 1 }}</text>
+    - ![](../../image/Snipaste_2022-07-19_20-08-29.png)
+2. 使用 `{{}}` 绑定属性
+    - ```js 
+      data: {
+        src: 'https://res.wx.qq.com/wxdoc/dist/assets/img/0.4cb08bb4.jpg'
+      },
+    - ```html
+      <image src="{{src}}"></image>
+    - ![](../../image/Snipaste_2022-07-19_20-13-25.png)
+### 事件绑定
+1. 小程序中的常用事件
+    - 类型: `tap`
+    - 绑定方式: `bindtap` 或 `bind:tap`
+    - 事件描述: 手指触摸后马上离开, 类似于 `HTML` 中的 `click` 事件.
+2. 事件对象的属性列表
+    - 当事件回调触发时, 会收到一个事件对象 `event`
+    - |属性|类型|说明|
+      |---|---|---|
+      |type|String|事件类型|
+      |timeStamp|Integer|页面打开到触发事件所经过的毫秒数|
+      |target|Object|触发事件的组件的属性值集合|
+      |currentTarget|Object|事件绑定的组件的属性值集合|
+      |detail|Object|额外的信息|
+      |touches|Array|触摸事件, 当前停留在屏幕中的触摸点信息的数组|
+      |changedTouches|Arrray|触摸事件, 当前变化的触摸点信息的数组|
+3. 绑定事件
+    - ```html
+      <view>
+        <button type="primary" bindtap="btnTapHandler">CLICK ME!</button>
+      </view>
+    - ```js
+      Page({
+        
+        data: {
+        },
+        btnTapHandler(e) {
+          console.log(e);
+        }
+      })
+    - ![](../../image/Snipaste_2022-07-19_22-57-24.png)
+      - 📕注意此时 `target` 和 `currentTarget` 是相同的
+    - 但是如果我们给 `<view>` 绑定事件
+    - ```html
+      <view bindtap="btnTapHandler">
+        <button type="primary" >CLICK ME!</button>
+      </view>
+    - ![](../../image/Snipaste_2022-07-19_22-59-31.png)
+      - 显然此时的 `target` 为按钮, 但是 `currentTarget` 为 `<view>`. 所以总结一下就是 `currentTarget` 永远为事件绑定的组件, 而 `target` 是点击事件真实发生的组件
+4. 修改 `data` 中的属性值
+    - 通过调用 `this.setData({})` 修改数据, 通过 `this.data.xxx` 访问 `data` 中定义的属性
+    - ```js
+      btnTapHandler(e) {
+        this.setData({
+          age: this.data.age + 1
+        })
+      }
+5. 事件传参
+    - 不能通过绑定事件的同时传递参数. 下面代码中小程序会将 `btnTapHandler(1)` 整体作为函数名, 而不会将小括号中的 `1` 作为参数
+      - ```html
+        <button bindtap="btnTapHandler(1)">CLICK</button>
+      - ![](../../image/Snipaste_2022-07-20_10-49-46.png)
+    - 通过为组件提供 `data-*` 自定义属性传参, 其中 `*` 为参数的名字
+      - ```html
+        <button type="error" data-age="{{2}}" data-age-hello="{{3}}" bindtap="btnTapHandler1">CLICK ME!</button>
+      - ```js
+        btnTapHandler1(e) {
+          console.log(e);
+          this.setData({
+            age: this.data.age + e.target.dataset.age
+          })
+        }
+      - 📕需要通过 `e.target.dataset.xxx` 的方式拿到传递的参数. 注意如果是 `data-age-hello` 这种命名, 会自动转为 `camelCase`
+      - ![](../../image/Snipaste_2022-07-20_10-56-48.png)
+6. `bindinput` 事件
+    - 对于文本框, 可以通过 `bindinput` 绑定文本框的输入事件, 通过 `event.detail.value` 访问输入的值
+      - ```html
+        <view>
+          <input bindinput="inputHandler"></input>
+        </view>
+      - ```js
+        inputHandler(e) {
+          console.log(e.detail.value);
+        }
+7. 文本框与数据绑定
+    - 通过 `<input>` 的 `value` 属性绑定数据, 在 `bindinput` 的回调函数中修改数据
+      - ```html
+        <input value="{{name}}" bindinput="inputHandler"></input>
+      - ```js
+        data: {
+          name: 'Tom',
+        },
+        inputHandler(e) {
+          this.setData({
+            name: e.detail.value
+          })
+        }
+8. 
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
