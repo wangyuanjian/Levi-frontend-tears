@@ -29,6 +29,9 @@
     - [列表渲染](#列表渲染)
     - [`WXSS`](#wxss)
   - [全局配置](#全局配置)
+    - [全局配置](#全局配置-1)
+    - [页面配置](#页面配置)
+  - [网络请求](#网络请求)
 
 <!-- /TOC -->
 
@@ -535,6 +538,7 @@
 4. 全局样式和局部样式
     - 只有当局部样式的权重大于全局样式时, 才会覆盖全局样式
 ## 全局配置
+### 全局配置
 1. `app.json` 是全局配置文件
 2. `window`
     - 可以配置 `navigationBar(导航栏)` 和 `background(背景)`, 其中背景默认不可见, 只有下拉时才可见.
@@ -558,7 +562,7 @@
       - `iconPath`: `tab` 未选中的图片路径
       - `selectedColor`: `tab` 上文字选中时的颜色
       - `selectedIconPath`: `tab` 选中时的图片路径
-    - 在 `tabBar` 节点的配置项
+    - 在 `tabBar` 节点的根配置项
       - |属性|类型|必填|默认值|描述|
         |---|---|---|---|---|
         |position|String|否|bottom|tabBar 的位置, 仅支持 `bottom`/`top`|
@@ -566,13 +570,95 @@
         |color|HexColor||||
         |selectedColor|HexColor||||
         |backgroundColor|HexColor||||
-        |list|Array|是||tab页签的列表. 每个值的配置如下|
+        |`list`|Array|`是`||tab页签的列表. 每个值的配置如下|
       - |属性|类型|必填|描述|
         |---|---|---|---|
         |pagePath|String|是|页面路径, 页面必须在 pages 中配置|
         |text|String|是|tab 上显示的文字|
         |iconPath|String|否||
         |selectedIconPath|String|否||
+    - ```json
+      "pages":[
+        "pages/template/template",
+        "pages/home/home",
+        "pages/index/index",
+        "pages/logs/logs"
+      ],
+      "tabBar": {
+        "list": [
+          {
+            "pagePath": "pages/template/template",
+            "text": "Template",
+            "iconPath": "/images/tab/user.png",
+            "selectedIconPath": "/images/tab/user_active.png"
+          },
+          {
+            "pagePath": "pages/home/home",
+            "text": "Home",
+            "iconPath": "/images/tab/home.png",
+            "selectedIconPath": "/images/tab/home_active.png"
+          }
+        ]
+      },
+    - ![](../../image/Snipaste_2022-07-21_08-34-03.png)
+### 页面配置
+1. 这里的页面配置和全局配置一样, 不过不需要写在 `window` 里了
+    - ```json
+      {
+        "usingComponents": {},
+        "navigationBarBackgroundColor": "#e67e22",
+        "navigationBarTextStyle": "black",
+        "backgroundColor": "#e67e22",
+        "backgroundTextStyle": "light",
+        "enablePullDownRefresh": true
+      }
+## 网络请求
+1. 限制
+    - 出于安全的考虑, 小程序对数据接口的请求做出了如下限制
+      - 只能请求 `HTTPS` 类型的接口
+      - 必须将接口域名加入信任列表中. (需要在网站的管理中配置, 配置完成后开发者工具会自动刷新)
+        - ![](../../image/Snipaste_2022-07-21_11-02-05.png)
+        - 域名不能使用 `localhost` 或者 `IP` 地址
+        - 用域名必须经过 `ICP` 备案
+2. `GET` 请求
+    - 请求参数
+      - `url`: 开发者服务器接口地址
+      - `method`: HTTP 请求方法
+      - `data`: 请求的参数
+      - `success`: 接口调用成功的回调函数
+      - `fail`: 接口调用失败的回调函数
+      - `complete`: 接口调用结束的回调函数(成功或失败都会执行)
+    - `success` 回调函数的参数: `res`
+      - `data`: 开发者服务器返回的数据
+      - `statusCode`: 开发者服务器返回的 `HTTP` 状态码
+      - `	header`: 开发者服务器返回的 `HTTP Response Header`
+      - `cookies`: 开发者服务器返回的 `cookies`, 格式为字符串数组
+    - `fail` 回调函数的参数: `err`
+      - `errMsg`: 错误信息
+      - `errno`: `Number` 类型, 错误码.
+    - ```js
+      getRequest() {
+        wx.request({
+          url: 'https://www.escook.cn/api/get',
+          method: 'GET',
+          data: {
+            name: 'zs',
+            age: 20
+          },
+          success: (res) => {
+            console.log(res)
+          }
+        })
+      }
+    - ![](../../image/Snipaste_2022-07-21_11-08-20.png)
+    - ![](../../image/Snipaste_2022-07-21_11-08-50.png)
+    - 
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
