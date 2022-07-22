@@ -1,0 +1,42 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(90deg, #e74c3c, #9b59b6);
+  min-height: 100vh;
+}
+.container {
+  position: relative;
+}
+.container input[type="checkbox"] {
+  display: none;
+}
+.container label {
+  display: inline-block;
+  background-color: #fff;
+  height: 50px;
+  width: 50px;
+  text-align: center;
+  line-height: 50px;
+  font-size: 24px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.container input[type="text"] {
+  border: 0;
+  font-size: 24px;
+  background-color: #fff;
+  height: 50px;
+  width: 40px;
+  padding: 0;
+  transition: all .3s ease;
+  padding: 0 5px;
+}
+.container input[type="text"]:focus {
+  outline: none;
+}
+.container input[type="checkbox"]:checked + input {
+  margin-left: 50px;
+  width: 200px;
+}
