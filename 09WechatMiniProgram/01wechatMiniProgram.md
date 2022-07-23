@@ -32,6 +32,9 @@
     - [全局配置](#全局配置-1)
     - [页面配置](#页面配置)
   - [网络请求](#网络请求)
+  - [页面导航](#页面导航)
+    - [声明式导航](#声明式导航)
+    - [编程式导航](#编程式导航)
 
 <!-- /TOC -->
 
@@ -652,9 +655,87 @@
       }
     - ![](../../image/Snipaste_2022-07-21_11-08-20.png)
     - ![](../../image/Snipaste_2022-07-21_11-08-50.png)
-    - 
-![](../../image/)
-![](../../image/)
+3. `post` 请求 
+    - ```js
+      postRequest() {
+        wx.request({
+          url: 'https://www.escook.cn/api/post',
+          method: 'POST',
+          data: {
+            name: 'tom',
+            age: 100
+          },
+          success: (res) => {
+            console.log(res.data)
+          }
+        })
+      }
+4. 跳过 `request` 合法域名校验
+    - 如果后端仅仅提供了 `http` 协议接口, 暂时没有提供 `https` 协议接口, 可以通过本地配置勾选不校验 `HTTPS` 证书等.
+    - ![](../../image/Snipaste_2022-07-21_18-32-36.png)
+5. 小程序的网络请求不存在跨域
+## 页面导航
+1. 实现页面导航的两种方式
+    - `声明式导航`和`编程式导航`
+### 声明式导航
+1. 跳转到 `tabBar` 页面
+    - tabBar 页面就是被配置为 tabBar 的页面. 比如从首页跳转到个人中心页面
+    - 使用 `<navigator>` 组件跳转到指定的 `tabBar` 页面, 需要指定 `url` 属性和 open-type 属性
+      - `url`: 表示要跳转到的页面地址, 必须以 **`/`** 开头
+      - `open-type`: 表示跳转的方式, 必须为 `switchTab`
+    - ```html
+      <navigator url="/pages/home/home" open-type="switchTab">去我的中心 >>></navigator>
+2. 跳转到非 `tabBar` 页面
+    - 将 `open-type` 值修改为 `navigate`
+    - 当跳转到非 `tabBar` 页面时, 可以省略不写 `open-type`
+    - ```html
+      <navigator url="/pages/index/index" open-type="navigate">去Index >>></navigator>
+      <navigator url="/pages/index/index" >去Index >>></navigator>
+3. 后退页面
+    - `open-type`: `navigateBack`
+    - `delta`: 表示要后退到多少层级. 默认值为 `1`, 因此可以省略 `delta` 配置项
+    - ```html
+      <navigator open-type="navigateBack" delta="1">返回上一级</navigator>
+      <navigator open-type="navigateBack" >返回上一级</navigator>
+4. 传递参数
+    - 通过
+### 编程式导航
+1. 跳转到 `tabBar` 页面
+    - 通过 `wx.switchTab(object)` 方法, 可以跳转到 `tabBar` 页面.
+    - 参数的属性
+      - `url`: 必选. 需要跳转的 `tabBar` 的地址, 路径后不能带参数; 
+      - `success`: 接口调用成功的回调函数 
+      - `fail`: 接口调用失败的回调函数
+      - `complete`: 接口调用完成的回调函数
+    - ```html
+      <button type="primary" bindtap="mySwitchTab">去我的中心</button>
+    - ```js
+      mySwitchTab() {
+        wx.switchTab({
+          url: '/pages/home/home',
+          success: () => { console.log('去home成功') },
+          fail: () => { console.log('去home失败') },
+          complete: () => { console.log('去home完成') }
+        })
+      }
+    - ![](../../image/Snipaste_2022-07-21_19-02-56.png)
+2. 跳转到非 `tabBar` 页面
+    - 通过 `wx.navigateTo(object)` 方法跳转到非 `tabBar` 页面, 参数与 `switchTab` 相同
+    - ```js
+      myNavigateTo() {
+        wx.navigateTo({
+          url: '/pages/index/index',
+        })
+      }
+3. 后退页面
+    - 通过 `wx.navigateBack` 方法回退. `delta` 参数默认为 `1`, 可以省略
+    - ```js
+      myNavigateBack() {
+        // wx.navigateBack({
+        //   delta: 1,
+        // })
+        wx.navigateBack()
+      }
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
