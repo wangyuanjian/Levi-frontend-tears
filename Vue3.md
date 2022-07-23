@@ -31,7 +31,11 @@
   - [新的组件](#新的组件)
     - [`Fragment`](#fragment)
     - [`Teleport`](#teleport)
+  - [内置特殊元素](#内置特殊元素)
   - [其他改变](#其他改变)
+  - [单文件组件`<setup>`](#单文件组件setup)
+    - [基本语法](#基本语法)
+    - [`defineProps()` 和 `defineEmits()`](#defineprops-和-defineemits)
 
 <!-- /TOC -->
 
@@ -1278,6 +1282,27 @@
         </div>
       </Teleport>
     - ![](../image/Snipaste_2022-07-16_16-01-23.png)
+## 内置特殊元素
+1. `<component>`
+    - 这是用于渲染动态组件或元素的原组件
+    - 这个组件只有一个 `prop` 就是 `is`. 
+      - 当 `is` 是字符串, 它既可以是 `HTML` 标签名也可以是组件的注册名.
+      - 或者 `is` 也可以直接绑定到组件的定义
+    - 案例
+      - ```html
+        <button @click="coundPlus">{{ count }}</button>
+        <Son></Son>
+        <hr>
+        <component :is="count % 2 === 0 ? Son : 'a'"></component>
+      - ```js
+        import { ref } from 'vue'
+        import Son from './Son.vue'
+
+        const count = ref(0);
+        function coundPlus() {
+          count.value++;
+        }
+      - ![](../image/Snipaste_2022-07-23_16-32-01.png)
 ## 其他改变
 1. `Vue3` 中将这些全局的 `API` 调整到了应用实例 `app` 上
     - |Vue2 全局 API|Vue3 API|
@@ -1294,6 +1319,67 @@
     - 移除 `keyCode` 作为 `v-on` 的修饰符, 同时不再支持 `config.keyCodes`
     - 移除 `v-on.native` 修饰符
     - 移除过滤器 `filter`
+## 单文件组件`<setup>`
+1. `<script setup>` 是单文件组件 (`SFC`) 中使用组合式 API 编译时的语法糖. 比起普通的 `setup(){}` 语法, 具有一下优势
+### 基本语法
+1. 使用这个语法只需要将 `setup` 这个 `attribute` 添加到 `script` 代码块
+    - ```html
+      <script setup>
+      </script>
+    - 里面的代码会被编译成 `setup()` 函数中的内容. 这意味着与普通的 `<script>` 只在组件被首次引入的时候执行一次不同, `<script setup>` 中的代码会在每次组件实例被创建的时候执行.
+2. 顶层的绑定会被暴露给模板
+    - 任何顶层的绑定, 包括变量, 函数声明和 `import` 引入的内容都能在模板中直接使用.
+      - ```html
+        <template>
+          <div>
+            <button @click="coundPlus">{{ count }}</button>
+            <Son></Son>
+          </div>
+        </template>
+      - ```js
+        <script setup>
+        import { ref } from 'vue'
+        import Son from './Son.vue'
+
+        const count = ref(0);
+        function coundPlus() {
+          count.value++;
+        }
+        </script>
+    - 使用组件
+      - `Son` 被当作一个变量引用. 官网建议使用驼峰命名的风格保持一致性. 
+3. 递归组件
+    - 一个单文件组件是可以通过文件名被自己引用. 例如, 名为 `FooBar.vue` 的组件可以在其模板中用 `<FooBar/>` 引用自己.
+### `defineProps()` 和 `defineEmits()`
+1. 为了在声明 props 和 emits 选项时获得完整的类型推断支持, 可以使用 `defineProps` 和 `defineEmits`
+    - 他们都是只能在 `<script setup>` 中使用的编译器宏, 不需要导入.
+    - 传入到 `defineProps()` 和 `defineEmits()` 的选项会从 `setup` 中提升到模块的作用域, 因此传入的选项`不能`引用在 `setup` 作用域中声明的局部变量, 但是可以引用 `import` 的绑定.
+2. `defineProps()`
+    - 其接收与 `prop` 相同选项的值.
+    - 子组件
+      - ```html
+        <h3>Son:{{name}}</h3>
+      - ```js
+        const props = defineProps({
+          name: {
+            type: String,
+            default: 'tom',
+            validator(value) {
+              return ['tom', 'jerry'].includes(value)
+            }
+          }
+        })
+        console.log('props are', props)
+      - ![](../image/Snipaste_2022-07-23_17-00-16.png)
+    - 父组件
+      - ```html
+        <Son name="tom"></Son>
+        <Son></Son>
+3. `defineEmits()`
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
 ![](../image/)
 ![](../image/)
 ![](../image/)
