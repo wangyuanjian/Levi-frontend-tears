@@ -36,6 +36,7 @@
   - [单文件组件`<setup>`](#单文件组件setup)
     - [基本语法](#基本语法)
     - [`defineProps()` 和 `defineEmits()`](#defineprops-和-defineemits)
+    - [`defineExpose`](#defineexpose)
 
 <!-- /TOC -->
 
@@ -1376,8 +1377,42 @@
         <Son name="tom"></Son>
         <Son></Son>
 3. `defineEmits()`
-![](../image/)
-![](../image/)
+    - 组件要触发的事件可以显示地通过 `defineEmits()` 宏来声明. 可以以两种形式声明触发地事件
+      - 使用字符串数组的简易形式
+      - 使用对象的完整形式. 该对象的每个属性都是事件的名称, 值是一个验证函数或者 `null`(表示没有验证函数)
+        - 验证函数给接收传递给组件的 `$emit` 调用的额外参数. 例如, 如果 `$emit('foo', 1)` 被调用, 那么 `foo` 函数的验证函数将接受参数 `1`. 验证函数返回 `boolean`, 以表明时间参数是否有效.
+    - 父组件
+      - ```html
+        <Son @click="parentClick" @showAlert="parentShowAlert"></Son>
+      - ```js
+        function parentClick() {
+          console.log('Son 触发了 click')
+        }
+        function parentShowAlert(n) {
+          console.log('Son 触发了 parentShowAlert, 参数是', n)
+        }
+    - 子组件
+      - ```html
+        <button @click="$emit('click')">触发click</button>
+        <button @click="showAlertEmiter">触发showAlert</button>
+      - ```js
+        const emit = defineEmits({
+          click: null,
+          showAlert: (payload) => {
+            console.log('payload', payload)
+            return true
+          }
+        })
+        console.log('emit', emit);
+        function showAlertEmiter() {
+          emit('showAlert', 1);
+        }
+    - 如下图, 子组件在触发 `showAlert` 事件时, 传递了额外参数, 这个参数被传递给了 `showAlert` 的验证函数
+    - ![](../image/Snipaste_2022-07-24_21-23-04.png)
+    - 如果验证函数返回了 false, 那么控制台会打印下面
+    - ![](../image/Snipaste_2022-07-24_21-24-47.png)
+### `defineExpose`
+1. 
 ![](../image/)
 ![](../image/)
 ![](../image/)
