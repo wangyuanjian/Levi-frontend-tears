@@ -1412,9 +1412,34 @@
     - 如果验证函数返回了 false, 那么控制台会打印下面
     - ![](../image/Snipaste_2022-07-24_21-24-47.png)
 ### `defineExpose`
-1. 
-![](../image/)
-![](../image/)
+1. 使用 `<script setup>` 的组件是**默认关闭**的, 即通过模板 `ref` 或者 `$parent` 链获取到的组件的实例不会暴露任何在 `<script setup>` 中的声明
+    - 比如在子组件中定义一个 `count`
+      - ```js
+        let count = ref(0)
+    - 在父组件通过 `ref` 拿到这个 子组件
+      - ```html
+        <Son ref="sonRef" @click="parentClick" @showAlert="parentShowAlert"></Son>
+      - ```js
+        const sonRef = ref(null);
+        console.log('son', sonRef)
+    - ![](../image/Snipaste_2022-07-24_21-39-41.png)
+2. 通过 `defineExpose` 这个编译器宏来显示指定要在 `<script setup>` 组件中暴露出去的 `property`. 当父组件通过 `ref` 的方式获得当前的组件时
+    - 子组件
+      - ```js
+        let count = ref(0)
+        defineExpose({
+          count
+        })
+    - 父组件
+      - ```js
+        const sonRef = ref(null);
+        console.log('son', sonRef)
+        onMounted(() => {
+          console.log('son in mounted', sonRef.value.count)
+        })
+        // console.log('son', sonRef.value.count)
+    - ![](../image/Snipaste_2022-07-24_21-55-01.png)
+    - 📕只能在父组件`挂载`后才能访问 `ref`, 如果想在模板 `<script setup>` 中访问 `sonRef` 中的值将会得到 `null`, 因为在 `<script setup>` 执行期间, 子组件根本不存在呢!!!
 ![](../image/)
 ![](../image/)
 ![](../image/)
