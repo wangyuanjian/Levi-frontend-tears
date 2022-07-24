@@ -35,6 +35,9 @@
   - [页面导航](#页面导航)
     - [声明式导航](#声明式导航)
     - [编程式导航](#编程式导航)
+  - [页面事件](#页面事件)
+    - [下拉刷新](#下拉刷新)
+    - [上拉触底](#上拉触底)
 
 <!-- /TOC -->
 
@@ -698,7 +701,17 @@
       <navigator open-type="navigateBack" delta="1">返回上一级</navigator>
       <navigator open-type="navigateBack" >返回上一级</navigator>
 4. 传递参数
-    - 通过
+    - 在测试传参时尽量不要传参到 `index` 页面, 也就是包含这样代码的页面 `const app = getApp()` 有些问题....
+    - 也不要去 `tabBar` 页面...
+    - 通过在路径后拼接 `query` 参数传递参数
+      - ```html
+        <navigator url="/pages/test/test?name=tom&age=20" >(传参)去我的test >>></navigator>
+    - 然后在 `test.js` 的 `onLoad` 函数中接收参数
+      - ```js
+        onLoad(options) {
+          console.log('test---', options)
+        },
+      - ![](../../image/Snipaste_2022-07-23_10-26-12.png)
 ### 编程式导航
 1. 跳转到 `tabBar` 页面
     - 通过 `wx.switchTab(object)` 方法, 可以跳转到 `tabBar` 页面.
@@ -736,8 +749,61 @@
         // })
         wx.navigateBack()
       }
-![](../../image/)
-![](../../image/)
+4. 传递参数
+    - 直接通过 `url` 拼接参数
+      - ```html
+        <button type="error" bindtap="myNavigateToWithParams">(传参)去test</button>
+      - ```js
+        myNavigateToWithParams() {
+          wx.navigateTo({
+            url: '/pages/test/test?name=tom&age=12',
+          })
+        }
+    - ![](../../image/Snipaste_2022-07-23_10-28-36.png)
+## 页面事件
+### 下拉刷新
+1. 打开对应页面的 `json` 配置文件, 增加配置项
+    - ```json
+      {
+        "enablePullDownRefresh": true
+      }
+2. 在事件 `onPullDownRefresh` 中编写触发逻辑
+    - ```html
+      <view>
+        <button type="primay">{{count}}</button>
+      </view>
+    - ```js
+      data: {
+        count: 0
+      },
+      onPullDownRefresh() {
+        console.log('onPullDownRefresh')
+        this.setData({
+          count: this.data.count + 1,
+        });
+      },
+    - ![](../../image/Snipaste_2022-07-24_09-24-00.png)
+3. 在手机端需要手动关闭下拉刷新的 loading 效果. 调用
+    - ```js
+      onPullDownRefresh() {
+        console.log('onPullDownRefresh')
+        this.setData({
+          count: this.data.count + 1,
+        });
+        setTimeout(() => {
+          wx.stopPullDownRefresh();
+        }, 1000)
+      },
+### 上拉触底
+1. `onReachBottom` 函数
+    - ```js
+      onReachBottom() {
+        console.log('-------到底了')
+      }
+2. 修改触发事件的举例
+    - 修改页面的 `json` 配置文件, 增加如下配置. 默认为 `50`.
+    - ```json
+      "onReachBottomDistance": 100
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
