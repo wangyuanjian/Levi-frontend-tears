@@ -38,6 +38,10 @@
   - [页面事件](#页面事件)
     - [下拉刷新](#下拉刷新)
     - [上拉触底](#上拉触底)
+  - [编译模式](#编译模式)
+  - [生命周期](#生命周期)
+  - [`WXS`](#wxs)
+    - [基础语法](#基础语法)
 
 <!-- /TOC -->
 
@@ -804,9 +808,64 @@
     - 修改页面的 `json` 配置文件, 增加如下配置. 默认为 `50`.
     - ```json
       "onReachBottomDistance": 100
-![](../../image/)
-![](../../image/)
-![](../../image/)
+## 编译模式
+1. 增加自定义的编译模式
+    - 如果是在默认普通模式下编译, 每次编译后的文件可能不是目前修改的文件. 我们可以通过增加自定义的编译模式实现这个功能
+    - ![](../../image/Snipaste_2022-07-24_10-48-00.png)
+    - ![](../../image/Snipaste_2022-07-24_10-53-38.png)
+## 生命周期
+1. 在小程序中生命周期分为两类, 分别是
+    - 应用生命周期: 小程序 `启动->运行->销毁`
+    - 页面生命周期: 每个页面
+2. 应用生命周期
+    - `onLaunch`: 在小程序初始化完成时, 触发该函数(只触发一次) 
+    - `onShow`: 小程序启动时, 或者从后台进入前台显示时, 触发该函数 
+    - `onHide`: 小程序从前台进入后台时触发.
+3. 页面生命周期
+    - `onLoad`: 页面加载时触发. 一个页面`只会调用一次`, 可以在 `onLoad` 的参数中获取打开当前页面路径中的参数
+    - `onShow`: 页面显示/切入前台时触发
+    - `onReady`: 页面初次渲染完成时触发. 一个页面`只会调用一次`, 代表页面已经准备妥当, 可以和视图层进行交互.
+      - 📕注意: 对界面内容进行设置的 `API` 如 `wx.setNavigationBarTitle`, 请在 `onReady` 之后进行
+    - `onHide`: 页面隐藏/切入后台时触发. 如 `wx.navigateTo` 或底部 `tab` 切换到其他页面, 小程序切入后台等
+    - `onUnload`: 页面卸载时触发. 如 `wx.redirectTo` 或 `wx.navigateBack` 到其他页面时
+## `WXS`
+1. `WXS(Weixin Script)` 是小程序独有的一套脚本语言, 结合 `WXML` 可以构建出页面的结构
+    - `wxml` 中无法调用在页面的 `js` 中定义的函数, 但是 `wxml` 中可以调用 `wxs` 中定义的函数. 至于为什么不能, [👉请看这里👈](https://developers.weixin.qq.com/community/develop/doc/0000e0245b4b60908fa9d52b05b800)
+    - `wxs` 定义的函数不能作为事件的回调
+    - `wxs` 中不能调用小程序提供的 `API`, 也不能调用 `js` 中定义的文件.
+    - `wxs` 主要的作用大概就是过滤器吧...
+2. `WXS` 和 `JavaScript` 的关系
+    - `wxs` 有自己的数据类型
+      - `number`, `string`, `boolean`, `object`
+      - `function`, `array`, `data`, `regexp`
+    - `wxs` 不支持 `ES6` 及以上的语法
+    - `wxs` 遵循 `CommonJS` 规范
+### 基础语法
+1. 在 `wxml` 中创建 `<wxs></wxs>` 的标签.
+    - 每个 `<wxs>` 都必须提供 `module` 属性用来指定当前 `<wxs>` 的模块名称.
+    - ```js
+      <wxs module="what">
+      module.exports.myUppercase = function(str) {
+        return str.toUpperCase();
+      }
+      </wxs>
+    - ```html
+      <view>{{ what.myUppercase('abc') }}</view>
+2. 定义外联的 `wxs` 脚本
+    - 创建 `tools.wxs` 文件
+      - ```js
+        function myLowercase(str) {
+          return str.toLowerCase();
+        }
+
+        module.exports = {
+          myLowercase: myLowercase
+        }
+    - 在 `wxml` 中引入
+      - ```html
+        <view>{{ blah.myLowercase('ABC') }}</view>
+        <wxs src="./tools.wxs" module="blah"></wxs>
+    - ![](../../image/Snipaste_2022-07-25_16-11-46.png)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
