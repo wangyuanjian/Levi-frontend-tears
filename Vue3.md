@@ -37,6 +37,8 @@
     - [基本语法](#基本语法)
     - [`defineProps()` 和 `defineEmits()`](#defineprops-和-defineemits)
     - [`defineExpose`](#defineexpose)
+    - [`useSlots` 和 `useAttrs`](#useslots-和-useattrs)
+    - [与普通的 `<script>` 一起使用](#与普通的-script-一起使用)
   - [`CSS` 功能](#css-功能)
     - [`CSS` 作用域](#css-作用域)
     - [`CSS Module`](#css-module)
@@ -346,6 +348,7 @@
         }
 ### `reactive`
 1. 定义 **`对象类型`** 的响应式数据, 返回代理类型的对象. 基本类型请用 `ref`
+    - 对象类型包括对象, 数组和 `Map`, `Set` 这样的集合类型
     - ```js
       const where = reactive('shanghai')
     - ![](../image/Snipaste_2022-07-02_07-43-38.png)
@@ -1444,6 +1447,53 @@
         // console.log('son', sonRef.value.count)
     - ![](../image/Snipaste_2022-07-24_21-55-01.png)
     - 📕只能在父组件`挂载`后才能访问 `ref`, 如果想在模板 `<script setup>` 中访问 `sonRef` 中的值将会得到 `null`, 因为在 `<script setup>` 执行期间, 子组件根本不存在呢!!!
+### `useSlots` 和 `useAttrs`
+1. 在 `<script setup>` 中使用 `slots` 与 `attrs` 的情况应该相对较为罕见, 因为可以在模板中直接通过 `$slots` 和 `$attrs` 访问它们.
+    - 但是可以使用 `useSlots` 和 `useAttrs` 访问.
+    - ```js
+      import { ref, useSlots, useAttrs } from "vue"
+
+      const slots = useSlots();
+      const attrs = useAttrs();
+      console.log('slots', slots);
+      console.log('attrs', attrs);
+    - ```html
+      <div>{{ $attrs.sayBye }}</div>
+    - ![](../image/Snipaste_2022-07-25_11-01-27.png)
+    - slots 一般用在手写 render 函数渲染, 所以没法在模板渲染.
+### 与普通的 `<script>` 一起使用
+1. 普通的 `<script>` 在有些情况下或许会被使用得到
+    - 无法在 `<script setup>` 声明的选项, 例如 `inheritAttrs` 或通过插件启动的自定义选项.
+    - 声明命名导出
+    - 运行副作用或者创建只需要执行一次的对象
+2. 来看示例
+    - 📕在 `<script>` 中无法访问 `<script setup>` 中定义的数据, 但是反过来可以. 这个规则与两个标签书写顺序无关.
+    - 另外的一些区别
+      - 普通 `<script>`, 在模块作用域下执行 (仅一次)
+      - 而 `<script setup>` 在 `setup()` 作用域中执行 (对每个实例皆如此)
+    - 执行顺序, 先执行 `<script>` 再执行 `<script setup>`
+    - ```js
+      <script>
+      // 普通 <script>, 在模块作用域下执行 (仅一次)
+      runSideEffectOnce()
+
+      let a = 'asd';
+      setTimeout(() => {
+        console.log('count in script', count)
+      })
+      // 声明额外的选项
+      export default {
+        inheritAttrs: false,
+        customOptions: {}
+      }
+      </script>
+
+      <script setup>
+      // 在 setup() 作用域中执行 (对每个实例皆如此)
+      console.log('a in script', a)
+      let count = ref(0)
+      </script>
+    - ![](../image/Snipaste_2022-07-25_11-12-12.png)
 ## `CSS` 功能
 ### `CSS` 作用域
 1. 使用 `scoped` 后, 父组件的样式将不会渗透到子组件中. 不过子组件的根节点会同时被父组件的作用域样式和子组件的作用域样式影响.
