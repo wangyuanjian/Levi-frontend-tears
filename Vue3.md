@@ -39,6 +39,8 @@
     - [`defineExpose`](#defineexpose)
   - [`CSS` 功能](#css-功能)
     - [`CSS` 作用域](#css-作用域)
+    - [`CSS Module`](#css-module)
+    - [CSS 中的 `v-bind`](#css-中的-v-bind)
 
 <!-- /TOC -->
 
@@ -1522,6 +1524,78 @@
     - ![](../image/Snipaste_2022-07-25_09-30-30.png)
 5. 作用域样式提示
     - 作用域样式并没有消除对 `class` 的需求. 由于浏览器渲染各种各样 `CSS` 选择器的方式, `p` 标签选择器结合作用域样式(属性选择器)会慢很多, 如果使用类选择器或者 `id` 选择器就几乎可以避免性能的损失.
+### `CSS Module`
+1. 一个 `<style module>` 标签会被编译为 `CSS Modules` 并且将生成的 `CSS class` 作为 `$style` 对象暴露给组件.
+    - [关于 css-modules 看这里](https://github.com/css-modules/css-modules). 一个 `CSS Module` 就是一个 CSS 文件, 这个文件中所有的 `class` 名和 `animation` 名都只能局部使用.
+    - ```html
+      <div :class="$style.yellow">Yellow by Coldplay</div>
+      <div :class="$style.yellowWhite">Yellow by  Coldplay</div>
+    - ```css
+      <style module>
+      .yellow {
+        background-color: #f1c40f;
+      }
+      .yellow-white {
+        background-color: #f1c40f;
+        color: #fff;
+      }
+      </style>
+    - ![](../image/Snipaste_2022-07-25_10-11-01.png)
+2. 注入自定义的名字
+    - ```CSS
+      <style module="levi">
+      .yellow {
+        background-color: #f1c40f;
+      }
+      </style>
+    - ```html
+      <div :class="levi.yellow">Yellow by Coldplay</div>
+3. 与组合式 `API` 一同使用
+    - 可以通过 `useCssModule` `API` 在 `setup` 或者 `<script setup>` 中访问注入的 `class`,  对于使用自定义诸如名称的 `module`, 在调用 `useCssModule` 时需要接收一个新的参数.
+    - ```js
+      <script setup>
+      import { useCssModule  } from 'vue'
+
+      // 没有起别名
+      // const module = useCssModule(); 
+      
+      const levi = useCssModule('levi');
+      console.log('levi', levi)
+      </script>
+    - ![](../image/Snipaste_2022-07-25_10-14-26.png)
+### CSS 中的 `v-bind`
+1. 但文件中的 `<style>` 标签支持使用 `v-bind` `CSS` 函数将 `CSS` 的值链接到组件的状态
+    - 📕如果访问对象属性, 需要使用引号
+    - ```html
+      <div class="what">What R U Doing now?</div>
+    - ```js
+      <script setup>
+      import { reactive } from 'vue';
+
+      let theme = reactive({
+        color: '#9b59b6',
+      })
+      let fontColor = '#fff';
+      </script>
+    - ```css
+      .what {
+        background-color: v-bind('theme.color');
+        color: v-bind(fontColor);
+      }
+    - ![](../image/Snipaste_2022-07-25_10-28-54.png)
+2. 实际的值会被编译成哈希化的 `CSS` 自定义 `property`, 因此 `CSS` 本身仍然是静态的. 
+    - ![](../image/Snipaste_2022-07-25_10-27-39.png)
+    - 自定义 `property` 会通过内联样式的方式应用到组件的根元素上, 并且在源值变更的时候响应式地更新
+    - ```html
+      <button @click="changeBgColor">changeBgColor</button>
+    - ```js
+      function changeBgColor() {
+        theme.color === '#9b59b6' ? theme.color = '#1abc9c' : theme.color = '#9b59b6';
+      }
+    - ![](../image/Snipaste_2022-07-25_10-32-09.png)
+![](../image/)
+![](../image/)
+![](../image/)
 ![](../image/)
 ![](../image/)
 ![](../image/)
