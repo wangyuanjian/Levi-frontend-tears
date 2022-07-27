@@ -8,6 +8,7 @@
   - [工程](#工程)
     - [`createApp()`](#createapp)
     - [`App.vue`](#appvue)
+  - [模板语法](#模板语法)
   - [`Composition API`](#composition-api)
     - [`setup`](#setup)
     - [`ref`](#ref)
@@ -19,6 +20,7 @@
       - [第三个参数](#第三个参数)
       - [停止侦听器](#停止侦听器)
       - [`watchEffect`](#watcheffect)
+    - [回调的刷新时间](#回调的刷新时间)
     - [生命周期](#生命周期)
     - [`hook`](#hook)
     - [`toRef` 和 `toRefs`](#toref-和-torefs)
@@ -108,6 +110,17 @@
     - ![](../image/Snipaste_2022-06-29_11-08-06.png)
 ### `App.vue`
 1. 可以不使用唯一根标签
+## 模板语法
+1. 动态绑定多个值
+    - 如果一个对象包含多个 `attribute`, 那么可以使用不带参数的 `v-bind` 将这个对象的每个属性都绑定到元素上.
+    - ```js
+      let attributeObject = {
+        id: 'title',
+        class: 'title2'
+      }
+    - ```html
+      <h1 v-bind="attributeObject">Hello, World</h1>
+    - ![](../image/Snipaste_2022-07-27_14-13-06.png)
 ## `Composition API`
 ### `setup`
 1. `Vue3` 中的新配置项, 值为一个函数
@@ -662,6 +675,23 @@
     - 区别主要是追踪响应式依赖的方式
     - `watch`: 只追踪明确侦听的源. 不会追踪任何在回调中访问到的东西. 另外, 尽在响应源确实改变时才会触发回调. `watch` 会避免在发生副作用时追踪依赖, 因此可以更加精确地控制回调函数的触发时机.
     - `watchEffect`, 则会在副作用发生期间最终依赖. 他会在同步执行过程中, 自动追踪所有能访问到的响应式 `property`, 这更方便和简洁, 但是响应式依赖关系不那么明显.
+### 回调的刷新时间
+1. 当修改了响应式状态, 可能会触发 `Vue` 组件更新和侦听器回调. 
+    - 默认情况下, 用户创建的侦听器回调, 都会在 `Vue` 组件更新`之前`被调用, 这意味着在侦听器回调中访问的 `DOM` 将是被 `Vue` 更新前的状态
+    - 如果想在侦听器回调中能访问 `Vue` 更新之后的 `DOM`, 需要指明 `flust: 'post'` 选项, 
+    - 后置刷新的 `watchEffect` 有个别名别名 `watchPostEffect`
+      - 注意体会下面两种的区别, 使用 `watch` 手动指定了侦听源, 但是使用 `watchPostEffect` 的话, 必须在 `callback` 内部使用了对象才会侦听对象哦~
+    - ```js
+      watch(count, () => {
+        console.log('watch-更新之后', document.getElementById('testSpan').innerHTML)
+      }, {
+        flush: 'post'
+      });
+      
+      watchPostEffect(() => {
+        console.log('watchPostEffect-更新之后', document.getElementById('testSpan').innerHTML)
+        let a = count.value;
+      })
 ### 生命周期
 ![](../image/lifecycle.16e4c08e.png)
 1. Vue3 中可以继续使用 Vue2 的生命周期钩子, 但有两个给更名
