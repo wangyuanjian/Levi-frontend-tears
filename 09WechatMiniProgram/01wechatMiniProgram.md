@@ -49,6 +49,9 @@
     - [数据监听器](#数据监听器)
     - [纯数据字段](#纯数据字段)
     - [组件的生命周期](#组件的生命周期)
+    - [插槽](#插槽)
+    - [父子组件通信](#父子组件通信)
+    - [`behaviors`](#behaviors)
 
 <!-- /TOC -->
 
@@ -1049,12 +1052,151 @@
           console.log('组件-detached')
         }
       },
-![](../../image/)
-![](../../image/)
-![](../../image/)
-![](../../image/)
-![](../../image/)
-![](../../image/)
-![](../../image/)
+4. 组件所在页面的生命周期
+    - 有时候, 自定义组件的行为依赖于页面状态的变化, 此时就需要用到组件所在页面的生命周期.
+    - 在组件中组件所在页面的生命周期有三个
+      - `show`: 无参数, 页面被展示时执行
+      - `hide`: 无参数, 页面被隐藏时执行
+      - `resize`: `(Object size)`, 页面尺寸变化时执行
+    - 组件需要在 `pageLifetimes` 节点中定义
+      - ```js
+        pageLifetimes: {
+          show() {
+            this.setData({
+              rgb: {
+                r: Math.floor(Math.random() * 255),
+                g: Math.floor(Math.random() * 255),
+                b: Math.floor(Math.random() * 255),
+              }
+            })
+          },
+          hide() {},
+          resize() {}
+        },
+### 插槽
+1. 小程序中, 默认每个自定义组件只允许使用一个 `<slot>` 进行占位, 即单个插槽
+    - 组件
+      - ```html
+        <text class="test2">components/test2.wxml</text>
+        <slot></slot>
+    - 组件的页面
+      - ```html
+        <my-test2>
+          <view>我是凑热闹的</view>
+        </my-test2>
+    - ![](../../image/Snipaste_2022-07-27_10-47-24.png)
+2. 多个插槽
+    - 增加配置
+      - ```js
+        options: {
+          multipleSlots: true
+        },
+    - 组件
+      - 通过 `name` 这个属性增加插槽标志
+      - ```html
+        <text class="test2">components/test2.wxml</text>
+        <slot name="before"></slot>
+        <slot name="after"></slot>
+    - 组件的页面
+      - 通过 `slot` 这个属性指明要使用哪个插槽
+      - ```html
+        <my-test2>
+          <view slot="before">我是凑热闹的--before</view>
+          <view slot="after">我是凑热闹的--after</view>
+        </my-test2>
+    - ![](../../image/Snipaste_2022-07-27_10-53-02.png)
+### 父子组件通信
+1. 属性绑定
+    - 父组件向子组件的指定属性设置数据, 仅能设置 `JSON` 兼容的数据
+    - 这就是之前介绍的 `property`
+2. 事件绑定
+    - 子组件向父组件传递数据, 可以传递任意类型的数据
+    - 案例: 父组件传递给子组件一个 `count`, 在子组件中增加按钮来触发父组件的 `count` 增加.
+    - 父组件
+      - 父组件通过 `e.detail` 获取子组件触发事件时传递过来的参数值
+      - ```js
+        handleCountTrigger(e) {
+          this.setData({
+            count: e.detail
+          })
+        }
+      - 父组件通过 `bind:自定义事件名称="函数名"` 的方式传递事件
+      - ```html
+        <my-test2 count="{{count}}" bind:countTrigger="handleCountTrigger">
+          <view slot="before">我是凑热闹的--before</view>
+          <view slot="after">我是凑热闹的--after</view>
+        </my-test2>
+    - 子组件
+      - ```html
+        <view>子组件的count:{{count}}</view>
+        <button type="primary" bindtap="countPlus">countPlus</button>
+      - ```js
+        countPlus() {
+          this.setData({
+            count: this.properties.count + 1
+          });
+          this.triggerEvent('countTrigger', this.data.count)
+        }
+3. 获取组件实例
+    - 父组件通过 `this.selectComponent` 获取子组件实例对象, 从而访问子组件的任意数据和方法
+    - 首先, 需要给子组件绑定唯一的选择器
+      - ```html
+        <my-test2 
+          count="{{count}}" 
+          bind:countTrigger="handleCountTrigger"
+          class=".test2"
+        >
+        ...
+        </my-test2>
+        <button type="warn" bindtap="callSonMethod">调用子组件方法</button>
+      - 在调用 `this.selectComponent` 时传递唯一的选择器
+      - ```js
+        callSonMethod() {
+          const test2Comp = this.selectComponent('.test2');
+          test2Comp.countPlus();
+        }
+    - ![](../../image/Snipaste_2022-07-27_11-15-43.png)
+    - 在子组件的原型对象上存在我们定义的函数 `countPlus`
+    - ![](../../image/Snipaste_2022-07-27_11-17-21.png)
+### `behaviors`
+1. 小程序中, 用于实现组件间代码共享的特性, 类似于 `Vue` 中的 `mixin`
+2. 每个 `behavior` 可以包含一组属性, 数据, 生命周期函数和方法. 引用这个 `behavior` 时, 它的属性, 和方法等也会合并到组件中
+    - 每个组件可以有多个 `behavior`, `behavior` 自身也可以引用其他 `behavior`
+3. 创建 `behavior`
+    - ```js
+      module.exports = Behavior({
+        data: {
+          username: 'tom',
+        },
+        methods: {},
+      })
+    - ![](../../image/Snipaste_2022-07-27_11-27-05.png)
+    - `behavior` 可以定义的节点
+      - `properties`
+      - `data`
+      - `methods`
+      - `behaviors`
+      - `created`
+      - `attached`
+      - `ready`
+      - `moved`
+      - `detached`
+4. 导入并使用 `behavior`
+    - ```js
+      const myBehavior = require('../../behaviors/my-behavior')
+
+      Component({
+        behaviors: [myBehavior],
+      })
+    - 在页面中直接使用
+      - ```html
+        <button type="primary" bindtap="countPlus">countPlus</button>
+        <view>Behavior: {{username}}</view>
+    - ![](../../image/Snipaste_2022-07-27_11-30-45.png)
+5. 同名字段的覆盖和组合规则
+    - `data`
+    - `properties` 或 `methods`
+    - `生命周期函数`
+![](../../image/) 
 ![](../../image/)
 ![](../../image/)
