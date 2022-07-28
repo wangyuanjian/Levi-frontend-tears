@@ -55,6 +55,7 @@
   - [使用 `npm`](#使用-npm)
     - [`Vant Weapp`](#vant-weapp)
     - [`API` 的 `Promise` 化](#api-的-promise-化)
+  - [全局数据共享](#全局数据共享)
 
 <!-- /TOC -->
 
@@ -1259,7 +1260,67 @@
         console.log('data', data)
       }
     - ![](../../image/Snipaste_2022-07-28_15-01-30.png)
-![](../../image/)
+## 全局数据共享
+1. 使用 `mobx-miniprogram` 和 `mobx-miniprogram-bindings` 实现全局数据共享
+    - `mobx-miniprogram` 用来创建 `Store` 实例对象
+    - `mobx-miniprogram-bindings` 将 `Store` 中的数据和方法绑定到组件或页面使用.
+2. 安装
+    - ```shell
+      npm i mobx-miniprogram@4.13.2 mobx-miniprogram-bindings@1.2.1
+    - 执行构建
+3. 创建 `Mobx` 的 `Store` 实例
+    - 调用 `observable` 函数, 并传递配置对象, 这个对象可以有
+      - 数据字段
+      - `getter`
+      - `action`
+    - ```js
+      import { observable, action } from 'mobx-miniprogram';
+
+      export const store = observable({
+        // 数据字段
+        name: 'tomStore',
+        birth: 1999,
+
+        // 计算属性
+        get info() {
+          return `${this.name} start @ ${this.birth}`
+        },
+
+        // actions 方法
+        updateBirth: action(function(moreAge) {
+          this.birth += moreAge;
+        })
+      })
+4. 使用 `Store` 的数据
+    - 引入属性, 在页面/组件创建时绑定数据, 在页面/组件卸载时取消绑定
+    - ```js
+      import { createStoreBindings } from 'mobx-miniprogram-bindings'
+      import { store } from '../../store/store'
+
+      lifetimes: {
+        attached() {
+          this.storeBindings = createStoreBindings(this, {
+            store,
+            fields: ['name', 'birth'],
+            actions: ['updateBirth']
+          })
+        },
+        detached() {
+          this.storeBindings.destroyStoreBindings();
+        }
+      },
+    - 在页面展示
+      - ```html
+        <view>
+          <text>From Store: {{name}}@{{birth}}</text>
+          <van-button type="warning" bindtap="addStoreBirth">增加 Birth</van-button>
+        </view>
+      - ```js
+        addStoreBirth() {
+          this.updateBirth(1);
+        },
+    - ![](../../image/Snipaste_2022-07-28_15-29-36.png)
+
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
