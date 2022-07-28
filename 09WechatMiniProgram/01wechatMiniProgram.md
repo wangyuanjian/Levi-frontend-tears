@@ -52,6 +52,9 @@
     - [插槽](#插槽)
     - [父子组件通信](#父子组件通信)
     - [`behaviors`](#behaviors)
+  - [使用 `npm`](#使用-npm)
+    - [`Vant Weapp`](#vant-weapp)
+    - [`API` 的 `Promise` 化](#api-的-promise-化)
 
 <!-- /TOC -->
 
@@ -1197,6 +1200,67 @@
     - `data`
     - `properties` 或 `methods`
     - `生命周期函数`
-![](../../image/) 
+## 使用 `npm`
+1. 小程序使用 npm 有三个限制
+    - 不支持依赖于 `Node.js` 内置库的包
+    - 不支持依赖 `浏览器内置对象` 的包
+    - 不支持依赖 `C++` 插件的包
+### `Vant Weapp`
+1. 是有赞前端团队开源的小程序 `UI` 组件库, 使用 `MIT` 开源协议.
+2. 使用
+    - 将仓库初始化为 `npm` 仓库
+      - `npm init -y`
+    - 安装依赖(推荐 `1.3.3`)
+      - `npm i @vant/weapp@1.3.3 -S --production`
+    - 构建 `npm` 包
+      - 在开发者工具中, 点击 `工具->构建 npm`, 并勾选 `使用 npm 模块选项`, 构建完成后即可引入.
+      - ![](../../image/Snipaste_2022-07-28_10-22-23.png)
+    - 修改 `app.json`
+      - 删除 `"style": "v2",`
+3. 使用 `Vant`
+    - 在 `app.json` 中的 `usingComponents` 引入需要的组件
+      - 因为 `button` 使用比较频繁所以才在 `app.json` 中引用. 如果其他不频繁的组件, 在哪个页面使用就在那个页面引入即可,
+      - ```json
+        "usingComponents": {
+          "van-button" : "@vant/weapp/button/index"
+        }
+    - 使用
+      - ```html
+        <van-button type="warning">我是Vant</van-button>
+    - ![](../../image/Snipaste_2022-07-28_10-32-48.png)
+4. 定制全局主题样式
+    - 使用 `CSS` 变量定义样式.
+    - 在 `app.wxss` 中声明变量
+      - ```css
+        page {
+          --button-danger-background-color: salmon;
+          --button-danger-border-color: salmon;
+        }
+    - 因为小程序根节点标签是 `<page>` 所以要将变量写在 `page` 这个标签选择器中. 至于变量的名字, 可以访问 `Vant` 官网 [https://vant-ui.github.io/vant-weapp/#/theme](https://vant-ui.github.io/vant-weapp/#/theme)
+    - ![](../../image/Snipaste_2022-07-28_10-42-00.png)
+### `API` 的 `Promise` 化
+1. 默认情况下, 小程序提供的 `API` 都是基于回调函数的. 主要基于 `miniprogram-api-promise` 这个第三方 `npm` 包
+    - 安装
+      - ```shell
+        npm i miniprogram-api-promise@1.0.4
+    - 构建
+      - 为了防止构建失败, 每次都可以删除构建后的文件夹然后重新执行构建.
+2. 使用
+    - ```js
+      async sendPromiseRequest() {
+        const { data } = await wx.p.request({
+          methods: 'GET',
+          url: 'https://www.escook.cn/api/get',
+          data: {
+            name: 'tom',
+            age: 18
+          }
+        })
+        console.log('data', data)
+      }
+    - ![](../../image/Snipaste_2022-07-28_15-01-30.png)
+![](../../image/)
+![](../../image/)
+![](../../image/)
 ![](../../image/)
 ![](../../image/)
