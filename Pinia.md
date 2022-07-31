@@ -167,7 +167,204 @@
           increment(2);
         }
 ### `State`
+1. `state` 就是我们要定义的数据, 如果定义 `store` 时传入的第二个参数是对象, 那么 `state` 需要是一个函数, 这个函数的返回值才是状态的初始值.
+    - 这样设计的原因是为了让 `Pinia` 在客户端和服务端都可以工作
+    - 📕官方推荐使用箭头函数(`()=>{}`)获得更好的类型推断
+    - ```js
+      import { defineStore } from 'pinia';
+
+      const userStore = defineStore('user', {
+        state: () => {
+          return {
+            user: {
+              name: 'tom',
+              age: 18
+            },
+            color: 'red',
+            userList: [],
+          }
+        }
+      })
+2. `TypeScript`
+    - 可以定义 `interface` 来标记类型
+    - ```js
+      import { defineStore } from 'pinia';
+
+      interface UserInfo {
+        name: string;
+        age: number;
+      }
+
+      export const userStore = defineStore('user', {
+        state: () => {
+          return {
+            color: 'red' as string,
+            userList: [] as UserInfo[],
+            user: {
+              name: 'tom',
+              age: 18
+            } as UserInfo | null
+          }
+        }
+      })
+3. 访问 `state`
+    - 默认可以直接通过 `store` 实例访问和修改 `state`.
+    - ```js
+      const user = userStore();
+      function changeColor() {
+        user.color = 'black'
+      }
+      function changeAge() {
+        user.user.age++;
+      }
+4. 重置 `state`
+    - 调用 `store` 的 `$reset()`
+    - ```js
+      function resetStore() {
+        user.$reset();
+      }
+5. 修改 `state`
+    - 除了直接通过 `store` 修改 `state`, 还可以调用 `store` 的 `$patch` 方法. 这个方法允许一次进行多处修改
+    - ```js
+      function patchChange() {
+        user.$patch({
+          color: 'skyblue',
+          user: {
+            age: user.user.age + 10
+          }
+        })
+      }
+    - 但是这种语法有时会很麻烦, 比如我们想要对数组进行增删时, 这种语法会要求创建一个新的数组. 所以 `$patch` 方法可以接收一个函数为参数. 函数的参数
+    - ```js
+      function patchChangeFunction() {
+        user.$patch((state) => {
+          state.userList.push({ name: 'mike', age: 19 });
+          state.user.age++;
+          state.color = 'pink';
+        });
+      }
+    - 📕也直接通过 `store` 的 `$state` 属性修改 `state`, 因为其内部会调用 `$patch`
+    - ```js
+      function stupidChange() {
+        user.$state = {
+          color: 'hahha'
+        }
+        // 实际上内部调用了
+        // user.$patch({ color: 'hahha' })
+      }
+6. 订阅状态
+    - 我们可以通过 `store` 的 `$subscribe` 方法侦听 `state` 的改变. 使用 `$subscribe` 而不是` watch()` 的好处是 `$subscribe` 总是在 `state` 修改之后执行一次.
+    - ```js
+      user.$subscribe((mutation, state) => {
+        console.log('mutation', mutation);
+      })
+    - ![](../image/Snipaste_2022-07-30_09-03-54.png)
+    - 参数 `state`: 最新的 `state`
+    - 参数 `mutation`
+      - `type`: 表示通过那种方式修改的值
+        - `direct`: 直接修改, 例如 `user.user.age++`
+        - `patch object`: 通过 `$patch({...})` 传递对象的方式修改
+        - `patch function`: 通过 `$patch(() => {...})` 传递对象的方式修改
+      - `storeId`: 定义 `defineStore` 的第一个参数, 也就是 `store.$id` 属性
+      - `payload`: 只有 `type` 值为 `plain object` 才会有这个值, 即为传递给 `$patch` 的对象参数.
+      - `$subscribe` 的返回值是一个函数, 调用这个函数将取消订阅
+        - ```js
+          const stopSubscribeFunc = user.$subscribe((mutation, state) => {
+            console.log('mutation', mutation);
+            console.log('state', state);
+          })
+          function stopSubscribe() {
+            stopSubscribeFunc()
+        }
+    - 📕如果在组件内调用 `store.$subscribe()`, 那么组件卸载时会自动清理定于, 除非将 `detached` 设置为 `true`
+      - ```js
+        user.$subscribe((mutation, state) => {
+          // do something...
+        }, {
+          detached: true
+        })
+    - 如果要实现保存数据到 `localStorage`, 可以使用 `watch`
+      - `main.js`
+      - ```js
+        const pinia = createPinia();
+        app.use(pinia);
+
+        watch(
+          pinia.state,
+          (state) => {
+            console.log(state)
+            localStorage.setItem('piniaState', JSON.stringify(state));
+          },
+          {
+            deep: true,
+            immediate: true
+          }
+        )
 ### `Getters`
+1. `getters` 就像计算属性一样, 通过 `defineStore` 的 `getters` 配置项来定义. 每一个 `getter` 都是一个函数, 这个函数接收 `state` 作为第一个参数, 官网鼓励使用箭头函数
+    - ```js
+      export const userStore = defineStore('user', {
+        state: () => {
+          return {
+            color: 'red' as string,
+            userList: [] as UserInfo[],
+            user: {
+              name: 'tom',
+              age: 18
+            } as UserInfo | null
+          }
+        },
+        getters: {
+          doubleAge: (state) => {
+            return state.user.age * 2;
+          }
+        }
+      })
+    - 大多数时间, `getter` 都仅仅依赖于 `state`, 但是有时候也会依赖其他 `getter`. 所以呢, 如果 `getter` 定义为非箭头函数就可以通过 `this` 拿到整个 `store` 实例, 但是由于 `TS` 又必须为函数返回值定义类型. 但是这并不影响将 `getters` 定义为箭头或者, 也不影响不使用 `this` 的 `getters`
+      - ```js
+        getters: {
+          doubleAge: (state) => {
+            return state.user.age * 2;
+          },
+
+          doubleAgePlus3(): number {
+            return this.doubleAge + 3;
+          }
+        }
+2. 在页面或者组件使用 `getters`
+    - 直接通过 `store` 实例对象
+      - ```js
+        import { userStore } from '../store/user';
+        const user = userStore();
+      - ```html
+        <h2>{{ user.color }} | 【{{ user.doubleAge }}】</h2>
+      - ![](../image/Snipaste_2022-07-30_10-06-40.png)
+3. 向 `getters` 传递参数
+    - `getters` 可以通过返回一个函数 `A` 来接收参数, 这个 `A` 的返回值也就是 `getter` 的值.
+      - ```js
+        getters: {
+          plusAgeBy: (state) => {
+            return (moreAge: number) => state.user.age + moreAge
+          }
+        }
+      - ```html
+        <h2>{{ user.color }} | 【{{ user.doubleAge }}】 | 【{{ user.plusAgeBy(10) }}】</h2>
+      - ![](../image/Snipaste_2022-07-30_10-08-42.png)
+    - 📕如果传递参数, `getters` 就不会再缓存了❗❗❗.
+4. 使用其他 `store` 中的 `getters`
+    - 直接在 getter 内部使用即可
+    - ```js
+      import { useCounterStore } from './index'
+
+      getters: {
+        addCounterFromOtherStore: (state) => {
+          const useCounter = useCounterStore();
+          return state.user.age + useCounter.count;
+        }
+      }
+    - ```html
+      <h2>{{ user.addCounterFromOtherStore }}</h2>
+    - ![](../image/Snipaste_2022-07-31_10-25-42.png)
 ### `Actions`
 ### `Plugins`
 
