@@ -366,11 +366,120 @@
       <h2>{{ user.addCounterFromOtherStore }}</h2>
     - ![](../image/Snipaste_2022-07-31_10-25-42.png)
 ### `Actions`
+1. `actions` 类似组件的方法, 通过 `actions` 这个配置项配置
+    - ```js
+      export const userStore = defineStore('user', {
+        state: () => {
+          return {
+            color: 'red' as string,
+            userList: [] as UserInfo[],
+            user: {
+              name: 'tom',
+              age: 18
+            } as UserInfo | null
+          }
+        },
+        actions: {
+          plusAgeOne() {
+            this.user.age++;
+          }
+        }
+      })
+    - 通过将 `action` 配置为非函数方式, `action` 就可以通过 `this` 访问整个 `store` 实例.
+    - 📕actions 可以是异步的
+      - 服务端代码
+      - ```js
+        app.get('/age', (req, res) => {
+          res.json({
+            age: 5
+          });
+        });
+      - 客户端代码
+      - ```js
+        actions: {
+          async plusAgeAsync() {
+            const result = await fetch('http://localhost:5000/age');
+            const data = await result.json();
+            this.user.age += data.age;
+          }
+        }
+      - ![](../image/Snipaste_2022-07-31_10-55-00.png)
+2. 给 `actions` 传递参数
+    - ```js
+      actions: {
+        plueAgeBy(moreAge: number) {
+          this.user.age += moreAge;
+        },
+      }
+    - ```js
+      function plusAgeParams(moreAge) {
+        user.plueAgeBy(moreAge);
+      }
+    - ```html
+      <button @click="plusAgeParams(1)">plusAgeParams</button>
+3. 使用其他 `store` 中的 `actions`
+    - ```js
+      actions: {
+        plusFromOtherStore() {
+          const useCounter = useCounterStore();
+          useCounter.increment(1);
+          this.plueAgeBy(useCounter.count)
+        },
+        plueAgeBy(moreAge: number) {
+          this.user.age += moreAge;
+        },
+      }
+4. 订阅 `actions`
+    - `$onAction()` 允许设置一个回调函数, 这个回调函数在 `action` 每次被调用时被调用. 回调函数接收一个对象参数, 这个对象参数和当前被调用的 `action` 有关系.
+      - `store`: ``action`` 所在的 `store`
+      - `name`: `action` 的名字, 即函数名
+      - `args`: 传递给 `action` 的参数
+    - 对象除了这三个参数外, 还会两个函数参数, 分别在 `action` 成功或失败时调用
+      - `after()`: 设置一个钩子, 一旦 `action` 完成就调用. 这个钩子接收 `action` 的返回值作为参数
+      - `onError()`: 设置一个钩子, 一旦 `action` 失败就调用. 钩子可以返回 `false` 来捕获 `error` 并阻止 `error` 传播.
+    - ```js
+      user.$onAction(({
+        store,
+        name,
+        args,
+        after,
+        onError
+      }) => {
+        console.log(`start action [${name}] with params [${args.join(', ')}] in store `, store);
+        after((result) => {
+          console.log(`action finished with result ${result}`);
+        });
+        onError((error) => {
+          console.log(`Oops, something bad happens ${error}`);
+          return false;
+        })
+      });
+    - 调用传递参数的 `action` `plusAgeBy`
+      - ![](../image/Snipaste_2022-07-31_21-02-49.png)
+    - 如果函数出错
+      - 自定义一个会报错的函数
+      - ```js
+        badAction() {
+        console.log(asd);
+      }
+      - ![](../image/Snipaste_2022-07-31_21-07-48.png)
+    - 📕默认订阅 `actions` 会与使用 `store` 的组件绑定(需要 `store` 在 `setup` 中), 也就是说如果组件卸载那么对 `actions` 的订阅同样会被移除. 如果在组件被卸载时想要保留, 需要传递 `{ detach: true }` 这个对象作为 `$onActions` 的第二个参数
+    - `$onActions` 的返回值为一个函数, 调用这个函数会移除对 `actions` 的订阅
+      - ```js
+        const removeActionsSubscribe = user.$onAction(() => {
+          // ...
+        });
+        function removeOnActions() {
+          removeActionsSubscribe();
+        }
 ### `Plugins`
 
 
 
 
+
+
+![](../image/)
 ![](../image/)
 ![](../image/)
 ![](../image/)
