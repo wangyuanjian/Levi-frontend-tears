@@ -460,8 +460,8 @@
       - 自定义一个会报错的函数
       - ```js
         badAction() {
-        console.log(asd);
-      }
+          console.log(asd);
+        }
       - ![](../image/Snipaste_2022-07-31_21-07-48.png)
     - 📕默认订阅 `actions` 会与使用 `store` 的组件绑定(需要 `store` 在 `setup` 中), 也就是说如果组件卸载那么对 `actions` 的订阅同样会被移除. 如果在组件被卸载时想要保留, 需要传递 `{ detach: true }` 这个对象作为 `$onActions` 的第二个参数
     - `$onActions` 的返回值为一个函数, 调用这个函数会移除对 `actions` 的订阅
@@ -473,12 +473,156 @@
           removeActionsSubscribe();
         }
 ### `Plugins`
+1. `plugin` 是一个函数, 其接收一个 `context` 作为参数, 其返回值将会被添加到 `store` 上.
+    - `context` 参数
+      - `pinia`: `createPinia()` 返回的 `Pinia` 实例
+      - `app`: `createApp()` 返回的 `app`
+      - `store`: 被插件作用的 `store`
+      - `options`: 定义 `defineStore` 时传入第三个参数
+    - 返回值
+      - 返回对象, 其中的属性将被添加到 `store`. 或者返回 `void`
+    - 📕只有 `pinia` 实例被传给 `app` 之后创建的 `store` 才会被 `plugin` 作用.
+2. `plugin` 的简单使用
+    - 创建 `src/store/plugin/test.ts`
+      - ```js
+        import { PiniaPluginContext } from 'pinia'
+
+        export default function (context: PiniaPluginContext) {
+          console.log('context.pinia', context.pinia);
+          console.log('context.app', context.app);
+          console.log('context.store', context.store);
+          console.log('context.options', context.options);
+          return {
+            secret: 'don\'t tell anyone!'
+          }
+        }
+    - `main.js`
+      - ```js
+        import { createPinia } from 'pinia'
+        import myPiniaPlugin from './store/plugin/test'
+
+        const app = createApp(App);
+        const pinia = createPinia();
+        app.use(pinia);
+        pinia.use(myPiniaPlugin);
+    - 看下面的截图, 只有 `user` 和 `counter` 两个 `store` 被插件作用了, 而且每个 `store` 上都有 `plugin` 返回的参数.
+    - ![](../image/Snipaste_2022-08-01_08-36-42.png)
+    - ![](../image/Snipaste_2022-08-01_08-42-08.png)
+    - 当然可以通过 `store.[属性]` 的方式直接使用
+      - ```html
+        <h2>By Plugin: {{ user.secret }}</h2>
+      - ![](../image/Snipaste_2022-08-01_08-44-33.png)
+    - 📕返回的参数每个 `store` 各自一份, 并不共享. 即如果你修改了 `store A` 的 `secret`, `store B` 的 `secret` 不会被影响.
+3. 给 `store` 添加参数
+    - 可以直接通过 `store.[属性]` 的方式给 `store` 添加参数, 但是官网建议尽量使用返回值的方式来从而被开发者工具跟踪
+      - 📕这种方式同样每个 `store` 都有自己的数据, 互不影响.
+      - 📕这种方式其实就是给 store 添加新的 `state`
+      - ```js
+        export default function (context: PiniaPluginContext) {
+
+          context.store.hello = 'world';
+          return {
+            secret: 'don\'t tell anyone!'
+          }
+        } 
+      - 这样的方式开发者工具并不会侦测到属性的添加, 只有在控制台打印 `store` 时才可以看到
+      - ![](../image/Snipaste_2022-08-01_09-06-18.png)
+      - 如果一定要在开发者工具中看到这个属性, 请保证 **`仅`** 在 `开发环境` 下使用 `_customProperties`. 因为生产环境下会被移除
+        - ```js
+          context.store.hello = 'world';
+          if (process.env.NODE_ENV === 'development') {
+            context.store._customProperties.add('hello');
+          }
+        - ![](../image/Snipaste_2022-08-01_09-15-14.png)
+4. 给 `store` 添加响应式参数
+    -  📕另外, 如果定义属性时使用响应式数据, 那么每个 `store` 都会有自己的属性; 
+    - 由于 `store` 本身是 `reactive`, 其会自动解包内部的 `ref` 或者 `reactive`, 因此在访问器内部响应式数据时不需要使用 `.value`
+    - ```js
+      context.store.good = ref('bye');
+      console.log('no unwrapping', context.store.good);
+    - 在组件中使用
+      - ```html
+        <h2>By Plugin Reactive: {{ user.good }}</h2>
+      - ```js
+        function updateRefGood() {
+          user.good = 'hahaha'
+          console.log('after changing user good ', count.good)
+        }
+    - ![](../image/Snipaste_2022-08-01_09-58-41.png)
+  - 但是响应式数据定义在插件之外, 那么所有的 `store` 共享一个属性.
+    - 同样的套路, 现在 `plugin` 中定义数据
+    - ```js
+      const bad = ref('sad')
+        export default function (context: PiniaPluginContext) {
+
+          context.store.hello = 'world';
+
+          // each store has its own good
+          context.store.good = ref('bye');
+          console.log('no unwrapping', context.store.good);
+
+          // all store share the same bad
+          context.store.bad = bad;
+
+          return {
+            secret: 'don\'t tell anyone!'
+          }
+        }
+    - 在组建中
+      - ```html
+        <h2>By Plugin nonReactive: {{ user.bad }}</h2>
+        <button @click="updateRefBad">updateRefBad</button>
+      - ```js    
+        function updateRefBad() {
+          user.bad = 'happy';
+          console.log('after changing user bad ', count.bad)
+        } 
+      - ![](../image/Snipaste_2022-08-01_10-08-53.png)   
+5. 给 `store` 添加新的 `state`
+    - 如果想给 store 添加新的 state property 可以通过下面两种方式
+      - 直接通过 `store.[属性名]`
+      - 通过 `store.$state` 这样才能在开发者工具中使用, 并且在 `SSR` 过程中被序列化.
+    - 下面看第二种
+      - ```js
+        export default function({ store } : PiniaPluginContext) {
+          if (!Object.prototype.hasOwnProperty(store.$state, 'hasError')) {
+            const hasError = ref(false);
+            store.$state.hasError = hasError;
+          }
+          store.hasError = toRef(store.$state, 'hasError');
+        }
+      - `1️⃣` 首先, 为了正确处理 `SSR`, 需要确保不覆盖任何已存在的值. 因此先判断是否存在 `hasError`
+      - `2️⃣` 如果不存在, 那么使用 `ref` 定义. 这样每个 `store` 都会有自己独立的 `hasError`
+      - `3️⃣` 其次, 如果已经存在 `hasError`, 我们需要将 `hasError` 从 `state` 转移到 `store`, 这样既可以通过 `store.hasError` 访问, 也可以通过 `store.$state.hasError` 访问.
+    - 📕这种情况下, 最后不要在 `return` 时返回 `hasError` 了. 因为返回值会被展示在开发者工具中的 `state` 部分, 又定义又返回就会展示两次了.
+    - 📕在 `plugin` 中的增加 `state` 或修改 `state`, 都不触发任何的订阅, 因为这时 `store` 并不活跃 
+6. 添加外部属性
+    - 如果要添加外部属性, 添加来自其他库的类的实例, 添加其他非响应式的数据, 我们应该使用 `markRaw` 包装一下再传递给 `pinia`.
+    - ```js
+      context.store.language = markRaw({
+        locale: 'zh-CN',
+      });
+7. 调用 `$onAction` 和 `$subscribe`
+    - ```js
+      context.store.$subscribe((mutation, state) => {
+        // ...
+      });
+      context.store.$onAction(() => {
+        // ...
+      });
+8. 添加新的 `options` 参数
+    - 在调用 `defineStore` 时可以传入第三个参数, 这个参数会被 `plugin` 得到
+      - ```js
+        
 
 
-
-
-
-
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
+![](../image/)
 ![](../image/)
 ![](../image/)
 ![](../image/)
