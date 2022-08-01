@@ -613,24 +613,45 @@
 8. 添加新的 `options` 参数
     - 在调用 `defineStore` 时可以传入第三个参数, 这个参数会被 `plugin` 得到
       - ```js
-        
+## 在组件之外使用 `store`
+1. `Pinia` 中的 `store` 依赖于 `pinia` 实例来共享同一个 `store`. 大多数是加, 直接调用 `useStore()` 就可以开箱即用, 例如在 `setup` 或者 `<script setup>` 中调用.
+    - 但是在组件外调用就会有很大不同. `useStore()` 会将 `pinia` 实例注入 `app`, 这意味着如果 `pinia` 实例没有正确注入, 必须手动提供 `pinia` 实例给 `useStore()`.
+2. 在单页面应用中, 如果不使用 `SSR`, 需要在 `app.use(pinia)` 之后调用 `useStore()` 才能成功.
+    - 如果在之前调用, 就会报错 
+      - ```js
+        const countStore = useCounterStore();
 
+        const app = createApp(App);
+        const pinia = createPinia();
+        app.use(pinia);
+      - ![](../image/Snipaste_2022-08-01_15-22-41.png)
+    - 正确的顺序应该是这样
+      - ```js
+        const app = createApp(App);
+        const pinia = createPinia();
+        app.use(pinia);
 
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
-![](../image/)
+        const countStore = useCounterStore();
+3. 最简单的方式就是延迟 `useStore()` 的调用, 将其放在一定在 `app.use(pinia)` 之后执行的函数中. 下面是官网中的举例.
+    - ```js
+      import { createRouter } from 'vue-router'
+      const router = createRouter({
+        // ...
+      })
+
+      // ❌ Depending on the order of imports this will fail
+      const store = useStore()
+
+      router.beforeEach((to, from, next) => {
+        // we wanted to use the store here
+        if (store.isLoggedIn) next()
+        else next('/login')
+      })
+
+      router.beforeEach((to) => {
+        // ✅ This will work because the router starts its navigation after
+        // the router is installed and pinia will be installed too
+        const store = useStore()
+
+        if (to.meta.requiresAuth && !store.isLoggedIn) return '/login'
+      })
