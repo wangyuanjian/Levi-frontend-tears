@@ -45,6 +45,10 @@
     - [`CSS` 作用域](#css-作用域)
     - [`CSS Module`](#css-module)
     - [CSS 中的 `v-bind`](#css-中的-v-bind)
+- [`vue-router@4`](#vue-router4)
+  - [安装与使用](#安装与使用)
+  - [动态路由匹配](#动态路由匹配)
+    - [路由的匹配语法](#路由的匹配语法)
 
 <!-- /TOC -->
 
@@ -1673,8 +1677,116 @@
         theme.color === '#9b59b6' ? theme.color = '#1abc9c' : theme.color = '#9b59b6';
       }
     - ![](../image/Snipaste_2022-07-25_10-32-09.png)
-![](../image/)
-![](../image/)
+# `vue-router@4`
+> 这里仅探讨 `Vue3` 带来的更新和 `vue-router@3` 中没学过的知识点
+## 安装与使用
+1. 安装
+    - ```shell
+      npm install vue-router@4
+2. 使用
+    - 创建两个页面 `src/views/home/index.vue` 和 `src/views/about/index.vue`
+    - 创建 `src/router/index.ts`
+      - ```ts
+        import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
+        import Home from '../views/home/index.vue';
+        import About from '../views/about/index.vue';
+
+        const routes: RouteRecordRaw[] = [
+          {
+            path: '/',
+            component: Home,
+          },
+          {
+            path: '/about',
+            component: About,
+          },
+        ];
+
+        const router = createRouter({
+          history: createWebHashHistory(),
+          routes,
+        });
+
+        export default router;
+    - 在 `main.js` 中引入路由
+      - ```js
+        import router from './router'
+        const app = createApp(App);
+        app.use(router);
+    - ![](../image/Snipaste_2022-08-02_10-18-35.png)
+2. 在组件中访问
+    - ```js 
+      <script setup>
+      import { useRoute, useRouter } from 'vue-router'
+      const route = useRoute();
+      const router = useRouter();
+      console.log('route', route);
+      console.log('router', router);
+      </script>
+    - ![](../image/Snipaste_2022-08-02_10-19-46.png)
+    - ![](../image/Snipaste_2022-08-02_10-20-10.png)
+## 动态路由匹配
+1. 响应路由参数的变化
+    - 在使用带有参数的路由时, 需要注意当用户从 `/user/123` 导航到 `/user/456` 时, 相同的组件实例将被重复使用. 由于两个路由都渲染同个组件, 比起销毁再创建复用的逻辑更加高效, 不过这也意味着`组件的生命周期钩子不会被调用`
+      - 创建 `src/views/uer/index.vue`
+      - ```js
+        import { useRoute, onBeforeRouteUpdate } from 'vue-router'
+        import { ref } from 'vue';
+
+        const id = ref(useRoute().params.id || 999999999);
+
+        onBeforeRouteUpdate((to, from, next) => {
+          id.value = to.params.id;
+          console.log('======to', to)
+          next();
+        })
+      - ```html
+        <div>
+          <h1>User: {{ id }}</h1>
+        </div>
+      - ![](../image/Snipaste_2022-08-02_11-27-28.png)
+### 路由的匹配语法
+1. 在参数中自定义正则
+    - 当定义类似 `id` 类型参数时, 如果想要显示参数一定匹配数字, 可以配置路由规则时增加静态的正则表达式部分
+      - ```js
+        const routes = [
+          {
+            path: '/user/:id(\\d+)',
+            component: User
+          }
+        ];
+      - 上面的代码表示仅匹配 `id` 为数字的路由.
+      - ![](../image/Snipaste_2022-08-02_11-41-47.png)
+2. `sensitive` 和 `strict` 路由配置
+    - 默认情况下, 所有的路由是不匹配大小写的, 并且能匹配带有或不带有尾部斜线的路由
+      - ![](../image/Snipaste_2022-08-02_11-45-19.png)
+    - 这种行为可以通过 `strict` 和 `sensitive` 选项来修改, 这两个配置既可以应用在全局路由上, 又可以应用在单个路由上
+      - ```js
+        const routes: RouteRecordRaw[] = [
+          {
+            path: '/user/:id(\\d+)',
+            component: User,
+            sensitive: true,
+          }
+        ];
+
+        const router = createRouter({
+          history: createWebHashHistory(),
+          routes,
+          strict: true,
+        });
+      - ![](../image/Snipaste_2022-08-02_11-50-35.png)
+3. 可选的路由参数
+    - 通过 `?` 将参数标记为可选
+    - ```js
+      const routes: RouteRecordRaw[] = [
+        {
+          path: '/user/:id(\\d+)?',
+          component: User,
+          sensitive: true,
+        }
+      ];
+    - ![](../image/Snipaste_2022-08-02_11-55-47.png)
 ![](../image/)
 ![](../image/)
 ![](../image/)
