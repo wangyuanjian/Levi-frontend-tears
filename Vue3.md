@@ -49,6 +49,8 @@
   - [安装与使用](#安装与使用)
   - [动态路由匹配](#动态路由匹配)
     - [路由的匹配语法](#路由的匹配语法)
+    - [嵌套路由](#嵌套路由)
+    - [命名视图](#命名视图)
 
 <!-- /TOC -->
 
@@ -1787,8 +1789,66 @@
         }
       ];
     - ![](../image/Snipaste_2022-08-02_11-55-47.png)
-![](../image/)
-![](../image/)
+### 嵌套路由
+1. 创建 `src/views/about/posts/index.vue` 和 `src/views/about/profile/index.vue`
+    - 使用嵌套路由
+      - ```js
+        const routes: RouteRecordRaw[] = [
+          {
+            path: '/about',
+            component: About,
+            children: [
+              {
+                path: 'profile',
+                component: Profile,
+              },
+              {
+                path: 'posts',
+                component: Post,
+              }
+            ]
+          },
+        ];
+    - ![](../image/Snipaste_2022-08-02_14-18-51.png)
+2. 这时, 如果访问 `/about` 的话, 在 `<router-view>` 中就会什么都显示不出来. 如果确实想要显示一些东西, 可以提供一个空的嵌套路径
+    - 📕记得加上 `name` 属性, 不然控制台会有警告
+    - ```js
+      {
+        path: '/about',
+        component: About,
+        children: [
+          {
+            path: '',
+            name: 'aboutFallback',
+            component: Fallback
+          },
+          // other children routes
+        ]
+      },
+    - ![](../image/Snipaste_2022-08-02_14-24-18.png)  
+### 命名视图
+1. 如果想要在页面同时(同级)显示多个视图, 而不是嵌套展示, 例如创建一个布局, 这时候命名视图就排上用场了.
+    - 可以在界面中拥有多个单独命名的 `<router-view>`, 如果没有名字, 那么默认为 `default`
+      - ```html 
+        <template>
+          <router-view class="header" name="header"></router-view>
+          <div class="non-header">
+            <router-view class="aside" name="aside"></router-view>
+            <router-view class="main"></router-view>
+          </div>
+        </template>
+    - 一个 `<router-view>` 使用一个组件渲染, 因此对于同一个路由就需要多个组件, 所以不再使用 `component` 而是 `components`
+      - 其中 `key` 就是 `<router-view>` 的 `name`, 对应的 `value` 就是组件.
+      - ```js
+        {
+          path: '/layout',
+          components: {
+            default: Main,
+            header: Header,
+            aside: Aside
+          },
+        },
+    - 
 ![](../image/)
 ![](../image/)
 ![](../image/)
