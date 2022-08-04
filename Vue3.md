@@ -51,6 +51,8 @@
     - [路由的匹配语法](#路由的匹配语法)
     - [嵌套路由](#嵌套路由)
     - [命名视图](#命名视图)
+    - [重定向](#重定向)
+    - [路由传参](#路由传参)
 
 <!-- /TOC -->
 
@@ -1848,7 +1850,128 @@
             aside: Aside
           },
         },
-    - 
+    - ![](../image/Snipaste_2022-08-03_22-53-13.png)
+    - 此时仍然可以使用 `children` 增加子路由, 不过要注意的时只能 `Main`, `Header`, `Aside` 中的一个有 `<router-view>`. 如果三个都写, 那么就会显示三次.
+      - ```js
+        {
+          path: '/layout',
+          components: {
+            default: Main,
+            header: Header,
+            aside: Aside
+          },
+          children: [
+            {
+              path: 'test',
+              component: User
+            }
+          ]
+        },
+      - ![](../image/Snipaste_2022-08-03_22-54-43.png)
+### 重定向
+1. 使用重定向的三种方法: `字符串`, `对象`, `函数`
+    - 字符串
+      - ```js
+        {
+          path: '/home',
+          redirect: '/'
+        },
+        {
+          path: '/',
+          component: Home,
+        },
+      - ![](../image/Snipaste_2022-08-03_22-58-09.png)
+    - 对象
+      - ```js
+        {
+          path: '/index',
+          redirect: {
+            name: 'home'
+          }
+        },
+        {
+          path: '/',
+          name: 'home',
+          component: Home,
+        },
+      - ![](../image/Snipaste_2022-08-03_22-58-59.png)
+    - 函数
+      - 函数接收 `to` 这个路由地址为参数.
+      - ```js
+        {
+          path: '/oops',
+          redirect: (to: RouteLocation) => {
+            const { age } = to.query;
+            let path = age && +age > 18 ? '/layout' : '/'
+            return {
+              path,
+            };
+          }
+        },
+      - ![](../image/Snipaste_2022-08-04_08-30-19.png)
+2. 别名
+    - 重定向是值当用户访问 `/home` 时, `URL` 会被 `/` 替换, 并且路由匹配规则匹配的是 `/`
+    - 将 `/home` 别名为 `/`, 意味着当用户访问 `/` 时, `URL` 仍然是 `/`, 但是路由规则匹配的是 `/home`
+      - ```js
+        {
+          path: '/goodbye',
+          component: Goodbye,
+          alias: '/bye'
+        },
+      - ![](../image/Snipaste_2022-08-04_15-24-25.png)
+      - 从上图可以看到, 访问 `/goodbye` 可以的匹配, 访问别名`/bye` 规则匹配的是 `/goodbye`.
+    - 📕如果将别名设置为别的路由规则的 `path`, 那么别名失效哦
+      - ```js
+        {
+          path: '/goodbye',
+          component: Goodbye,
+          alias: '/index'
+        },
+        {
+          path: '/index',
+          redirect: {
+            name: 'home'
+          }
+        },
+      - ![](../image/Snipaste_2022-08-04_16-07-45.png)
+    - 别名还可以是一个数组, 用一个数组提供多个别名
+      - ```js
+        {
+          path: '/goodbye',
+          component: Goodbye,
+          alias: ['/bye', '/night']
+        },
+      - ![](../image/Snipaste_2022-08-04_16-11-43.png)
+### 路由传参
+1. 命名视图
+    - 对于有命名的视图, 你必须为每个命名视图定义 `props` 配置
+      - 下面的配置表示只有 `default` 的路由视图会接收参数
+      - ```js
+        {
+          path: '/layout/:id(\\d+)',
+          components: {
+            default: Main,
+            header: Header,
+            aside: Aside
+          },
+          props: {
+            default: true,
+            header: false,
+            aside: false,
+          }
+        },
+      - 在 `Main` 和 `Header` 组件接收参数
+      - ```js
+        const props = defineProps({
+          id: {
+            type: String,
+          }
+        })
+      - ```html
+        <div>
+          main-{{id}}
+        </div>
+      - ![](../image/Snipaste_2022-08-04_16-28-31.png)
 ![](../image/)
 ![](../image/)
 ![](../image/)
