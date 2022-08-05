@@ -30,6 +30,7 @@
     - [`WXSS`](#wxss)
   - [全局配置](#全局配置)
     - [全局配置](#全局配置-1)
+      - [`tabBar`](#tabbar)
     - [页面配置](#页面配置)
   - [网络请求](#网络请求)
   - [页面导航](#页面导航)
@@ -580,7 +581,8 @@
       |backgroundTextStyle|String|dark|下拉 loading 样式, 仅支持 `black` 或 `white`|
       |enablePullDownRefresh|Boolean|false|是否开启全局下拉刷新|
       |onReachBottomDistance|Number|50|页面上拉触底事件出发时距底部的举例, 单位 `px`|
-3. `tabBar`
+#### `tabBar`
+1. `tabBar`
     - 分为底部 `tabBar` 和 顶部 `tabBar`
     - `tabBar` 最少配置 2 个, 最多配置 5 个.
     - 当渲染顶部 `tabBar` 时, 不显示 `icon`, 只显示文本
@@ -630,6 +632,25 @@
         ]
       },
     - ![](../../image/Snipaste_2022-07-21_08-34-03.png)
+2. 自定义 `tabBar`
+    - 配置文件: 增加 `custom` 配置项, 但是不能删除 list, 一方面是兼容低版本的小程序, 一方面也显示指出了哪些页面是 `tabBar` 页面
+      - ```json
+        "tabBar": {
+          "custom": true,
+          "list": [
+            {
+              // ...
+            },
+          ]
+        },
+    - 添加 `tabBar` 的代码文件
+      - 在根目录下创建 `custom-tab-bar` 文件夹并在改文件夹下创建名为 `index` 的文件
+      - 之后页面底部就会出现 `tabBar`
+      - ![](../../image/Snipaste_2022-08-01_22-52-44.png)
+    - 编写 `tabBar` 代码
+
+
+![](../../image/)
 ### 页面配置
 1. 这里的页面配置和全局配置一样, 不过不需要写在 `window` 里了
     - ```json
@@ -1422,7 +1443,6 @@
 3. 分包预下载限制
     - 同一分包中的页面享有共同的预下载大小限额 **`2M`**.
     - 即如果 `home` 页面预下载分包 `A`, `message` 预下载 `B`, 那么 `A` 和 `B` 的大小之和要小于 `2M`
-![](../../image/)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
