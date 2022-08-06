@@ -53,6 +53,8 @@
     - [命名视图](#命名视图)
     - [重定向](#重定向)
     - [路由传参](#路由传参)
+    - [路由传参](#路由传参-1)
+    - [过渡效果](#过渡效果)
 
 <!-- /TOC -->
 
@@ -1960,7 +1962,7 @@
             aside: false,
           }
         },
-      - 在 `Main` 和 `Header` 组件接收参数
+      - 在 `Main` 和 `Header` 组件接收参数. 但是最后只有 `Main` 组件会收到参数
       - ```js
         const props = defineProps({
           id: {
@@ -1972,6 +1974,71 @@
           main-{{id}}
         </div>
       - ![](../image/Snipaste_2022-08-04_16-28-31.png)
+### 路由传参
+1. `TypeScript` 扩展 `RouteMeta` 接口
+    - 创建 `src/types/router.ts`
+      - ```ts
+        import 'vue-router';
+
+        declare module 'vue-router' {
+          interface RouteMeta {
+            isAdmin?: boolean;
+            requireAuth?: boolean;
+          }
+        }
+    - 这样在 `src/router/index.ts` 的 `meta` 项中就会出现语法提示
+      - ![](../image/Snipaste_2022-08-05_21-16-48.png)
+### 过渡效果
+1. 如果想要在路径组件中始终转场,并对导航进行动画处理, 需要使用 `v-slot` `API`
+    - ```html
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
+    - ```css
+      .fade-enter-active,
+      .fade-leave-active {
+        transition: transform .5s ease;
+      }
+      .fade-enter-from,
+      .fade-leave-to {
+        transform: translateX(100%)
+      }
+    - ![](../image/router-transition-view-router.gif)
+2. 上面的用法会对所有的路由使用相同的过渡, 如果想要让每个路由的组件有不同的过渡信息和动态的 `name` 结合在一起, 放在 `transtion` 上
+    - 先在路由配置信息中配置过渡的类名
+      - ```js
+        {
+          path: '/about',
+          component: About,
+          name: 'about',
+          children: [
+            {
+              path: 'profile',
+              component: Profile,
+              meta: {
+                transition: 'sparkle'
+              }
+            },
+            {
+              path: 'posts',
+              component: Post,
+            }
+          ]
+        },
+    - 接着, 使用 `v-slot` 暴露出来的更多信息
+      - ```html
+        <router-view v-slot="{ Component, route }">
+          <transition :name="route.meta.transition || 'fade'" mode="out-in">
+            <component :is="Component" />
+          </transition>
+        </router-view>
+    - ![](../image/router-transition-view-scale.gif)
+3. 
+![](../image/)
+![](../image/)
+![](../image/)
 ![](../image/)
 ![](../image/)
 ![](../image/)
