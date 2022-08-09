@@ -644,12 +644,64 @@
           ]
         },
     - 添加 `tabBar` 的代码文件
-      - 在根目录下创建 `custom-tab-bar` 文件夹并在改文件夹下创建名为 `index` 的文件
+      - 在根目录下创建 `custom-tab-bar` 文件夹并在该文件夹下创建名为 `index` 的文件
       - 之后页面底部就会出现 `tabBar`
       - ![](../../image/Snipaste_2022-08-01_22-52-44.png)
     - 编写 `tabBar` 代码
+      - ```html
+        <van-tabbar active="{{ active }}" bind:change="onChange">
+          <van-tabbar-item icon="home-o">标签</van-tabbar-item>
+          <van-tabbar-item icon="search">标签</van-tabbar-item>
+          <van-tabbar-item icon="friends-o">标签</van-tabbar-item>
+          <van-tabbar-item icon="setting-o">标签</van-tabbar-item>
+        </van-tabbar>
+      - ```js
+        data: {
+          active: 0,
+        },
 
-
+        onChange(event) {
+          this.setData({ active: event.detail });
+        },
+      - ![](../../image/Snipaste_2022-08-09_10-36-28.png)
+    - 自定义 `tabBar` 图标
+      - 可以通过 slot 自定义图标, 其中 `icon` 这个 `slot` 表示未选中状态下的图标, `icon-active` 这个 `slot` 表示选中状态下的图标
+      - ```html
+        <van-tabbar active="{{ active }}" bind:change="onChange">
+          <van-tabbar-item>
+            <image
+              slot="icon"
+              src="/images/tab/home.png"
+              mode="aspectFit"
+              style="height: 18px; width: 18px;"
+            ></image>
+            <image
+              slot="icon-active"
+              src="/images/tab/home_active.png"
+              mode="aspectFit"
+              style="height: 18px; width: 18px;"
+            ></image>
+            首页
+          </van-tabbar-item>
+          <van-tabbar-item icon="search">标签</van-tabbar-item>
+          <van-tabbar-item icon="friends-o">标签</van-tabbar-item>
+          <van-tabbar-item icon="setting-o">标签</van-tabbar-item>
+        </van-tabbar>
+      - ![](../../image/Snipaste_2022-08-09_10-56-07.png)
+    - 修改 `tabBar` 图标和文字之间的距离
+      - ```css
+        .van-tabbar-item__icon  {
+          margin-bottom: 0;
+        }
+      - ![](../../image/Snipaste_2022-08-09_11-29-33.png)
+    - 使用 `info` 渲染数字徽标
+      - ```xml
+        <van-tabbar-item icon="setting-o" info="3">标签</van-tabbar-item>
+      - ![](../../image/Snipaste_2022-08-09_11-37-12.png)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
 ![](../../image/)
 ### 页面配置
 1. 这里的页面配置和全局配置一样, 不过不需要写在 `window` 里了
