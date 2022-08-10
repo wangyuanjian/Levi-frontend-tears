@@ -645,6 +645,7 @@
         },
     - 添加 `tabBar` 的代码文件
       - 在根目录下创建 `custom-tab-bar` 文件夹并在该文件夹下创建名为 `index` 的文件
+      - 📕选择新建组件而不是新建页面
       - 之后页面底部就会出现 `tabBar`
       - ![](../../image/Snipaste_2022-08-01_22-52-44.png)
     - 编写 `tabBar` 代码
@@ -689,20 +690,63 @@
         </van-tabbar>
       - ![](../../image/Snipaste_2022-08-09_10-56-07.png)
     - 修改 `tabBar` 图标和文字之间的距离
+      - 重置 `CSS` 变量
       - ```css
-        .van-tabbar-item__icon  {
-          margin-bottom: 0;
+        .van-tabbar-item__icon {
+          --tabbar-item-margin-bottom: 0;
         }
+      - 样式共享
+      - ```js
+        options: {
+          styleIsolation: 'shared'
+        },
       - ![](../../image/Snipaste_2022-08-09_11-29-33.png)
     - 使用 `info` 渲染数字徽标
       - ```xml
         <van-tabbar-item icon="setting-o" info="3">标签</van-tabbar-item>
       - ![](../../image/Snipaste_2022-08-09_11-37-12.png)
-![](../../image/)
-![](../../image/)
-![](../../image/)
-![](../../image/)
-![](../../image/)
+    - 使用全局 `mobx` 配置数字徽标
+      - 创建全局状态
+      - ```js
+        import { observable, action } from 'mobx-miniprogram';
+
+        export const store = observable({
+          // 数据字段
+          name: 'tomStore',
+          birth: 19,
+        })
+      - 在组件中引入状态: 记得使用 `observer` 侦听变化
+      - ```js
+        import { storeBindingsBehavior } from 'mobx-miniprogram-bindings';
+        import { store } from '../store/store'
+
+        Component({
+          behaviors: [storeBindingsBehavior],
+          storeBindings: {
+            store,
+            fields: {
+              birth: 'birth'
+            }
+          },
+          observers: {
+            'birth': function(val) {
+              this.setData({
+                messageCount: val
+              })
+            }
+          },
+
+          /**
+          * 组件的初始数据
+          */
+          data: {
+            messageCount: 0,
+          },
+        })
+      - 在页面中使用
+      - ```html
+        <van-tabbar-item icon="setting-o" info="{{messageCount}}">标签</van-tabbar-item>
+      - ![](../../image/Snipaste_2022-08-09_14-32-02.png)
 ### 页面配置
 1. 这里的页面配置和全局配置一样, 不过不需要写在 `window` 里了
     - ```json
@@ -1495,6 +1539,11 @@
 3. 分包预下载限制
     - 同一分包中的页面享有共同的预下载大小限额 **`2M`**.
     - 即如果 `home` 页面预下载分包 `A`, `message` 预下载 `B`, 那么 `A` 和 `B` 的大小之和要小于 `2M`
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
