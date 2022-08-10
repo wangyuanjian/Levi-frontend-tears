@@ -62,6 +62,9 @@
     - [使用分包](#使用分包)
     - [独立分包](#独立分包)
     - [分包预下载](#分包预下载)
+  - [`uni-app`](#uni-app)
+    - [创建与简介](#创建与简介)
+    - [`tabBar`](#tabbar-1)
 
 <!-- /TOC -->
 
@@ -1539,10 +1542,59 @@
 3. 分包预下载限制
     - 同一分包中的页面享有共同的预下载大小限额 **`2M`**.
     - 即如果 `home` 页面预下载分包 `A`, `message` 预下载 `B`, 那么 `A` 和 `B` 的大小之和要小于 `2M`
-![](../../image/)
-![](../../image/)
-![](../../image/)
-![](../../image/)
+## `uni-app`
+### 创建与简介
+1. 打开 `HBuilderX` 后, 选择`文件->新建项目`, 按照下面的方式创建项目
+    - ![](../../image/Snipaste_2022-08-09_15-34-58.png)
+2. 项目结构
+    - ![](../../image/Snipaste_2022-08-09_15-42-27.png)
+3. 配置
+    - 配置微信小程序 ID
+      - ![](../../image/Snipaste_2022-08-10_08-54-51.png)
+    - 配置小程序开发者工具的安装位置
+      - ![](../../image/Snipaste_2022-08-10_08-57-40.png)
+    - 设置微信开发者工具的服务端口
+      - ![](../../image/Snipaste_2022-08-10_09-07-36.png)
+    - 启动 `uni-app` 程序
+      - 文件选中 `main.js` 然后运行. `HBuilder` 中的是源代码, 小程序开发者工具中的代码是编译过的代码哦(位置是 `unpackage/dist` 下). 如果要修改, 只能直接修改 `HBuilder` 中的代码
+      - ![](../../image/Snipaste_2022-08-10_09-23-10.png)
+      - ![](../../image/Snipaste_2022-08-10_09-24-34.png)
+### `tabBar`
+1. 创建页面
+    - 在 `pages` 目录中右键选择**新建页面**, 在弹出的窗口中填写页面名称, 勾选 `scss` 模板. 一共创建四个页面
+    - ![](../../image/Snipaste_2022-08-10_09-58-54.png)
+2. 增加配置
+    - ```json
+      "tabBar": {
+        "selectedColor": "#C00000",
+        "list": [{
+            "pagePath": "pages/home/home",
+            "text": "首页",
+            "iconPath": "static/tab_icons/home.png",
+            "selectedIconPath": "static/tab_icons/home-active.png"
+          },
+          {
+            "pagePath": "pages/cate/cate",
+            "text": "分类",
+            "iconPath": "static/tab_icons/cate.png",
+            "selectedIconPath": "static/tab_icons/cate-active.png"
+          },
+          {
+            "pagePath": "pages/cart/cart",
+            "text": "购物车",
+            "iconPath": "static/tab_icons/cart.png",
+            "selectedIconPath": "static/tab_icons/cart-active.png"
+          },
+          {
+            "pagePath": "pages/my/my",
+            "text": "我的",
+            "iconPath": "static/tab_icons/my.png",
+            "selectedIconPath": "static/tab_icons/my-active.png"
+          }
+        ]
+      }
+    - 📕如果需要页面显示 `tabBar`, 记得 `pages` 这个配置项的第一项不能使非 `tabBar` 页面哦~
+    - ![](../../image/Snipaste_2022-08-10_11-48-49.png)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
