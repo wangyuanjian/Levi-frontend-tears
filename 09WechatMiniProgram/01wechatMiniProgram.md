@@ -65,6 +65,8 @@
   - [`uni-app`](#uni-app)
     - [创建与简介](#创建与简介)
     - [`tabBar`](#tabbar-1)
+    - [使用网络请求](#使用网络请求)
+    - [小程序分包](#小程序分包)
 
 <!-- /TOC -->
 
@@ -1595,8 +1597,71 @@
       }
     - 📕如果需要页面显示 `tabBar`, 记得 `pages` 这个配置项的第一项不能使非 `tabBar` 页面哦~
     - ![](../../image/Snipaste_2022-08-10_11-48-49.png)
-![](../../image/)
-![](../../image/)
+### 使用网络请求
+1. 初始化项目为 `npm` 项目
+    - ```shell
+      npm init -y
+2. 安装依赖
+    - ```shell
+      npm install @escook/request-miniprogram
+    - 在 `main.js` 中引入并使用
+    - ```js
+      import { $http } from '@escook/request-miniprogram'
+
+      uni.$http = $http
+
+      $http.baseUrl = 'https://api-ugo-web.itheima.net'
+3. 增加请求的 `loading`
+    - ```js
+      uni.$http = $http
+
+      $http.beforeRequest = function(options) {
+        uni.showLoading({
+          title: 'loading...'
+        })
+      }
+      $http.afterRequest = function() {
+        uni.hideLoading()
+      }
+4. 配置请求
+    - ```js
+      export default {
+        data() {
+          return {
+            swiperList: [],
+          };
+        },
+        onLoad() {
+          this.getSwiperList()
+        },
+        methods: {
+          async getSwiperList() {
+            const { data: res } = await uni.$http.get('/api/public/v1/home/swiperdata');
+            if (res.meta.status !== 200) {
+              return uni.showToast({
+                title: '获取首页滚动失败',
+                duration: 500,
+                icon: "none",
+              });
+            }
+            this.swiperList = res.message
+          }
+        }
+      }
+### 小程序分包
+1. 为了优化首页加载, 在项目中将 `tabBar` 相关的 `4` 个页面放在主包中, 其他页面(例如商品详情页, 商品列表页)放在分包. 设置分包步骤如下
+    - 在项目根目录中, 创建分包的根目录 `subpkg`
+    - 在 `pages.json` 中, 和 pages 节点平级的位置声明节点 `subPackages` 节点.
+      - ```json
+        "subPackages": [
+          {
+            "root": "subpkg",
+            "pages": [],
+          }
+        ],
+    - 右键 `subpkg` 新建页面, 新建之后在 `pages.json` 中就会自动加上刚刚创建的页面啦
+    - ![](../../image/Snipaste_2022-08-10_17-06-30.png)
+    - ![](../../image/Snipaste_2022-08-10_17-08-23.png)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)
