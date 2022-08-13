@@ -67,6 +67,7 @@
     - [`tabBar`](#tabbar-1)
     - [使用网络请求](#使用网络请求)
     - [小程序分包](#小程序分包)
+    - [写页面](#写页面)
 
 <!-- /TOC -->
 
@@ -1662,6 +1663,24 @@
     - 右键 `subpkg` 新建页面, 新建之后在 `pages.json` 中就会自动加上刚刚创建的页面啦
     - ![](../../image/Snipaste_2022-08-10_17-06-30.png)
     - ![](../../image/Snipaste_2022-08-10_17-08-23.png)
+### 写页面
+1. 获取页面的高度
+    - 在布局页面时, 需要在可以绘制的页面设置内容, 这时候就可以调用 uni 的 api
+    - ```js
+      onLoad() {
+        const sysInfo = uni.getSystemInfoSync();
+        this.wh = sysInfo.windowHeight;
+      }
+    - ```html
+      <view class="scroll-view-container" :style="{height: wh + 'px'}"></view>
+    - ![](../../image/Snipaste_2022-08-13_19-06-46.png)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
+![](../../image/)
 ![](../../image/)
 ![](../../image/)
 ![](../../image/)

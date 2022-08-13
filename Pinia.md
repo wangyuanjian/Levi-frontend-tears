@@ -54,8 +54,8 @@
     - ![](../image/Snipaste_2022-07-29_15-09-00.png)
 ## 核心概念
 ### `Store`
-1. `Store` 是保存状态(`state`)和业务逻辑的实体, store 不应该与我们的组件绑定. 换句话说, `store` 就是全局状态.
-2. store 有三个关键概念, 分别是 `state`, `getters` 和 `actions`, 这与 `Vue` 组件中的 `data`, `computed` 和 `methods` 是相等的概念.
+1. `Store` 是保存状态(`state`)和业务逻辑的实体, `store` 不应该与我们的组件绑定. 换句话说, `store` 就是全局状态.
+2. `store` 有三个关键概念, 分别是 `state`, `getters` 和 `actions`, 这与 `Vue` 组件中的 `data`, `computed` 和 `methods` 是相等的概念.
 #### 定义 `store`
 1. 通过 `defineStore` 函数定义 `store`.
     - `defineStore` 接收两个参数
@@ -102,7 +102,7 @@
           }
         });
 #### 使用 `store`
-1. 无论定义 store 时传入的参数是对象类型还是函数类型, 调用方法一致的. 我们需要在 `setup()` 函数或 `<script setup>` 中使用
+1. 无论定义 `store` 时传入的参数是对象类型还是函数类型, 调用方法一致的. 我们需要在 `setup()` 函数或 `<script setup>` 中使用
     - ```js
       import { useCounterStore } from '../store';
       import { useNameStore } from '../store/index2'
@@ -119,7 +119,7 @@
         name1.setName('jerry1' + Math.random())
       }
     - 📕`store` 实例并不会被创建直到调用 `useNameStore`
-    - 可以直接通过 **`store.`** 的方式访问 store 的 state, 和 
+    - 可以直接通过 **`store.`** 的方式访问 `store` 的 `state`, 和 
     - ```html
       <h2>{{store.count}}</h2>
       <button @click="countPlus">countPlus</button>
@@ -141,7 +141,7 @@
       <button @click="updateName">updateName</button>
     - ![](../image/Snipaste_2022-07-29_17-25-51.png)
 3. `storeToRefs`
-    - 为了从 `store` 中解构出属性并且保持其响应式, 需要调用 `storeToRefs`. storeToRefs 将为每个响应式数据创建 `ref`.
+    - 为了从 `store` 中解构出属性并且保持其响应式, 需要调用 `storeToRefs`. `storeToRefs` 将为每个响应式数据创建 `ref`.
     - 先看传入函数类型的 `store`
       - ```js
         const nameStore2 = storeToRefs(useNameStore());
@@ -352,7 +352,7 @@
       - ![](../image/Snipaste_2022-07-30_10-08-42.png)
     - 📕如果传递参数, `getters` 就不会再缓存了❗❗❗.
 4. 使用其他 `store` 中的 `getters`
-    - 直接在 getter 内部使用即可
+    - 直接在 `getter` 内部使用即可
     - ```js
       import { useCounterStore } from './index'
 
@@ -516,7 +516,7 @@
 3. 给 `store` 添加参数
     - 可以直接通过 `store.[属性]` 的方式给 `store` 添加参数, 但是官网建议尽量使用返回值的方式来从而被开发者工具跟踪
       - 📕这种方式同样每个 `store` 都有自己的数据, 互不影响.
-      - 📕这种方式其实就是给 store 添加新的 `state`
+      - 📕这种方式其实就是给 `store` 添加新的 `state`
       - ```js
         export default function (context: PiniaPluginContext) {
 
@@ -568,7 +568,7 @@
             secret: 'don\'t tell anyone!'
           }
         }
-    - 在组建中
+    - 在组件中
       - ```html
         <h2>By Plugin nonReactive: {{ user.bad }}</h2>
         <button @click="updateRefBad">updateRefBad</button>
@@ -579,7 +579,7 @@
         } 
       - ![](../image/Snipaste_2022-08-01_10-08-53.png)   
 5. 给 `store` 添加新的 `state`
-    - 如果想给 store 添加新的 state property 可以通过下面两种方式
+    - 如果想给 `store` 添加新的 `state property` 可以通过下面两种方式
       - 直接通过 `store.[属性名]`
       - 通过 `store.$state` 这样才能在开发者工具中使用, 并且在 `SSR` 过程中被序列化.
     - 下面看第二种
@@ -655,3 +655,36 @@
 
         if (to.meta.requiresAuth && !store.isLoggedIn) return '/login'
       })
+## `Pinia` 的持久化
+1. 插件的安装与使用
+    - 安装插件
+      - ```shell
+        npm i  pinia-plugin-persistedstate
+    - 使用插件
+      - ```js
+        import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+
+        const pinia = createPinia();
+        pinia.use(piniaPluginPersistedstate);
+    - 接着, 在想要持久化的 `store` 中增加 `persist: `true`` 这个配置项
+      - ```js
+        export const useCounterStore = defineStore('counter', {
+          state: () => {
+            return {
+              count: 0,
+            }
+          },
+          getters: {
+            doubleCount: (state) => {
+              return state.count * 2;
+            }
+          },
+          actions: {
+            increment(a: number) {
+              this.count += a
+            }
+          },
+          persist: true
+        });
+    - ![](../image/Snipaste_2022-08-13_21-31-57.png)
+    - ![](../image/pinia_persistence.gif)
