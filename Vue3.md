@@ -2164,7 +2164,84 @@
       - `aborted`: 在路由导航中返回 false, 中断了本次导航
       - `cancelled`: 在当前导航还没有完成之前又有了新的导航. 比如在导航守卫中又调用了 `router.push`
       - `duplicated`: 导航被阻止, 因为已经在目标位置了
-    - 
+    - 先看一下路由导航的代码
+      - ```js
+        async function goRouter(newRoute) {
+          const navigationResult = await router.push(newRoute);
+          console.log('navigationResult', navigationResult);
+
+          if (isNavigationFailure(navigationResult, NavigationFailureType.aborted)) {
+            console.log('返回了false');
+          } else if (isNavigationFailure(navigationResult, NavigationFailureType.cancelled)) {
+            console.log('其他地方又来导航');
+          } else if (isNavigationFailure(navigationResult, NavigationFailureType.duplicated)) {
+            console.log('导航到当前位置, 重复啦');
+            console.log(navigationResult.to);
+          } else {
+            console.log('导航成功');
+          }
+        }
+    - 第一种情况
+      - 下面是路由守卫的代码
+      - ```js
+        router.beforeEach((to, from) => {
+          if (to.path === '/test/test1') {
+            console.log('NOT GOING ANYWHERE!');
+            return false;
+          }
+          return true;
+        })
+      - ![](../image/Snipaste_2022-08-17_08-47-53.png)
+    - 第二种情况
+      - 下面是路由守卫的代码
+      - ```js
+        router.beforeEach((to, from) => {
+          if (to.path === '/test/test1') {
+            console.log('NOT GOING ANYWHERE!');
+            
+            router.push('/')
+          }
+          return true;
+        })
+      - ![](../image/Snipaste_2022-08-17_08-49-11.png)
+    - 第三种情况
+      - 只需要点两次路由导航的按钮即可
+      - ![](../image/Snipaste_2022-08-17_08-52-00.png)
+3. 导航故障的属性
+    - 虽然上面打印的结果没有属性, 但是所有导航失败都会暴露 `to` 和 `from` 属性, 以反映失败导航的当前位置和目标位置. 在所有情况下, `to` 和 `from` 都是规范化的路由地址.
+    - ```js
+      if (isNavigationFailure(navigationResult, NavigationFailureType.duplicated)) {
+        console.log('导航到当前位置, 重复啦');
+        console.log(navigationResult.to);
+        console.log(navigationResult.from);
+      }
+    - ![](../image/Snipaste_2022-08-17_08-56-41.png)
+4. 检测重定向
+    - 如果在导航守卫中返回了一个新的位置, 那么就会触发一个新的导航覆盖正在进行的导航. 与其他返回值不同的是, 重定向不会阻止导航而是创建新的导航. 通过 `redirectedFrom` 属性即可
+    - 下面的测试
+      - 在路由导航中返回 `/` 新的地址
+      - ```js
+        router.beforeEach((to, from) => {
+          if (to.path === '/test/test1') {
+            console.log('NOT GOING ANYWHERE!');
+
+            return {
+              path: '/'
+            }
+          }
+          return true;
+        })
+      - 在路由导航函数中 📕在路由导航中返回 `/` 不属于路由导航故障的三种情况之一哦~
+      - ```js
+        async function goRouter(newRoute) {
+          const navigationResult = await router.push(newRoute);
+
+          console.log('router.currentRoute', router.currentRoute)
+        }
+      - 从下图可以看到, 跳转到 `/` 之后从 `redirectedFrom` 中读取到跳转之前的路由
+      - ![](../image/Snipaste_2022-08-17_22-52-21.png)
+![](../image/)
+![](../image/)
 ![](../image/)
 ![](../image/)
 ![](../image/)
