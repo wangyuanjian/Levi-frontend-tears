@@ -414,7 +414,7 @@
 ### `Vue2` 和 `Vue3` 的响应式原理
 1. `Vue2`
     - 实现原理
-      - 对象类型: 通过 `Object.defineProperty` 对属性的读取, 修改进行拦截(数据劫持);
+      - 对象类型: 通过 `Object.defineProperty` 对属性的读取, 修改进行拦截(数据劫持)
       - 数组类型: 通过重写更新数组的一系列方法
     - 存在问题
       - 新增或删除属性, 界面不会更新
@@ -801,7 +801,7 @@
       - ```html
         <div>
           <h2>Mouse Click at, X:{{point.x}}, Y:{{point.y}}</h2>
-        </div>\
+        </div>
       - ```js
         <script setup>
           import usePoint from '../hooks/usePoint'
@@ -1234,7 +1234,7 @@
     - ![](../image/Snipaste_2022-07-15_17-40-57.png)
 ## 新的组件
 ### `Fragment`
-1. 在 Vue2 中组件必须有一个跟标签, 在 Vue3 中组件可以没有跟标签, 内部会将多个标签包含在一个 Fragment 的虚拟元素中.
+1. 在 `Vue2` 中组件必须有一个跟标签, 在 `Vue3` 中组件可以没有跟标签, 内部会将多个标签包含在一个 `Fragment` 的虚拟元素中.
     - 好处, 减少标签层级, 减少内存占用
     - ```html
       <template>
@@ -1256,7 +1256,7 @@
 1. `<Teleport>` 是一个内置组件, 使我们可以将一个组件的一部分模板"传送"到该组件的 `DOM` 层次结构之外的 `DOM` 节点中.
 2. 有时我们可能会遇到一下情况: 组件模板的一部分在逻辑上属于它, 但是从视图角度来看, 在 `DOM` 中它应该显示在 `Vue` 应用之外的其他地方.
     - 最常见的例子是构建一个全屏的模态框. 理想情况下, 模态框的按钮和模态框本身是在同一个组件, 因为他们都与组件的开关状态有关.
-    - 但是这意味着模态框与打开模态框的按钮要一起出现, 并且位于应用程序的 DOM 更深层次的结构. 想要通过 CSS 选择器定位该模态框时非常困难.
+    - 但是这意味着模态框与打开模态框的按钮要一起出现, 并且位于应用程序的 `DOM` 更深层次的结构. 想要通过 `CSS` 选择器定位该模态框时非常困难.
     - 下面时经常实现的模态框写法
       - ```html
         <template>
@@ -1402,7 +1402,7 @@
 3. 递归组件
     - 一个单文件组件是可以通过文件名被自己引用. 例如, 名为 `FooBar.vue` 的组件可以在其模板中用 `<FooBar/>` 引用自己.
 ### `defineProps()` 和 `defineEmits()`
-1. 为了在声明 props 和 emits 选项时获得完整的类型推断支持, 可以使用 `defineProps` 和 `defineEmits`
+1. 为了在声明 `props` 和 `emits` 选项时获得完整的类型推断支持, 可以使用 `defineProps` 和 `defineEmits`
     - 他们都是只能在 `<script setup>` 中使用的编译器宏, 不需要导入.
     - 传入到 `defineProps()` 和 `defineEmits()` 的选项会从 `setup` 中提升到模块的作用域, 因此传入的选项`不能`引用在 `setup` 作用域中声明的局部变量, 但是可以引用 `import` 的绑定.
 2. `defineProps()`
@@ -1503,7 +1503,7 @@
     - ```html
       <div>{{ $attrs.sayBye }}</div>
     - ![](../image/Snipaste_2022-07-25_11-01-27.png)
-    - slots 一般用在手写 render 函数渲染, 所以没法在模板渲染.
+    - `slots` 一般用在手写 `render` 函数渲染, 所以没法在模板渲染.
 ### 与普通的 `<script>` 一起使用
 1. 普通的 `<script>` 在有些情况下或许会被使用得到
     - 无法在 `<script setup>` 声明的选项, 例如 `inheritAttrs` 或通过插件启动的自定义选项.
@@ -2161,7 +2161,7 @@
 2. 鉴别导航故障
     - `Navigation Failure` 是带有一些额外属性的 Error 实例, 从而让我们可以知道哪些导航被阻止了以及为什么被阻止, 要检查导航结果的性质, 可以使用 `isNavigationFailure` 函数
     - 总共有三个不同类型的失败, 可以使用 `NavigationFailureType` 区分
-      - `aborted`: 在路由导航中返回 false, 中断了本次导航
+      - `aborted`: 在路由导航中返回 `false`, 中断了本次导航
       - `cancelled`: 在当前导航还没有完成之前又有了新的导航. 比如在导航守卫中又调用了 `router.push`
       - `duplicated`: 导航被阻止, 因为已经在目标位置了
     - 先看一下路由导航的代码
