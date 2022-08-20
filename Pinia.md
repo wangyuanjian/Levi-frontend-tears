@@ -275,7 +275,7 @@
           })
           function stopSubscribe() {
             stopSubscribeFunc()
-        }
+          }
     - 📕如果在组件内调用 `store.$subscribe()`, 那么组件卸载时会自动清理定于, 除非将 `detached` 设置为 `true`
       - ```js
         user.$subscribe((mutation, state) => {
