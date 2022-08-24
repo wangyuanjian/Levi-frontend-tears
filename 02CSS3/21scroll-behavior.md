@@ -2,8 +2,8 @@
 > 当滚动通过导航或者 `CSSOM` 滚动 `API` 触发时的滚动行为
 
 只有两个关键字属性值.
-  - `auto`: 
-  - `smooth`: 
+  - `auto`: 立刻滚动到目标位置
+  - `smooth`: 平滑的滚动.
 
 📕注意除了上面两种滚动触发外的任何滚动, 比如用户使用鼠标滚动, 都不会被这个属性影响. 
 
@@ -44,5 +44,35 @@
 ![](../../image/scroll_behavior_1.gif)
 接下来通过 `JavaScript` 修改网页 `URL` 中的 `hash` 部分实现滚动, 再来看效果
 ![](../../image/scroll_behavior_2.gif)
-![](../../image/)
-![](../../image/)
+📕不仅仅纵向可以滚动, 横向也可以哦
+![](../../image/scroll_behavior_3.gif)
+
+
+## 回到顶部
+因此, 可以实现简单的回到顶部的效果. 只需要将 `<a>` 标签的 `href` 属性设置为 `#` 或者 `#top` 即可
+```html
+<div class="back-to-top">
+  <a href="#">⬆️</a>
+</div>
+```
+```css
+.back-to-top {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  border-radius: 50%;
+  background-color: #e74c3c;
+  box-shadow: 1px 1px 10px 10px rgba(0, 0, 0, .1);
+}
+.back-to-top a {
+  line-height: 50px;
+}
+html {
+  scroll-behavior: smooth;
+}
+```
+👷注意, 如果要实现平滑的滚动, 一定要给 `html` 添加 `scroll-behavior` 而不是给 `body` 添加!!!不然没有效果的
+![](../../image/scroll_behavior_4.gif)
