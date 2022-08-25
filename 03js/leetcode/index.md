@@ -1,5 +1,16 @@
-## `Leetcode`
+<!-- TOC -->
 
+- [Leetcode](#leetcode)
+- [数据结构](#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
+  - [链表](#%E9%93%BE%E8%A1%A8)
+  - [二叉树](#%E4%BA%8C%E5%8F%89%E6%A0%91)
+  - [数组](#%E6%95%B0%E7%BB%84)
+- [算法](#%E7%AE%97%E6%B3%95)
+  - [Boyer-Moore 摩尔投票算法](#boyer-moore-%E6%91%A9%E5%B0%94%E6%8A%95%E7%A5%A8%E7%AE%97%E6%B3%95)
+
+<!-- /TOC -->
+
+## `Leetcode`
 ## 数据结构
 ### 链表
 1. 删除链表的某个节点, 返回链表头节点
@@ -30,6 +41,11 @@
     - [👉剑指 Offer 32 - II. 从上到下打印二叉树 II👈]https://leetcode.cn/problems/cong-shang-dao-xia-da-yin-er-cha-shu-ii-lcof/)
       - 💡思路: `BFS(广度优先遍历)`
         - 重点在于分层. 就是两个循环.
+### 数组
+1. (有序)寻找两数之和
+    - [👉剑指 Offer 57. 和为s的两个数字👈](https://leetcode.cn/problems/he-wei-sde-liang-ge-shu-zi-lcof/comments/)
+      - 双指针法, 时间复杂度 `O(N)`, 空间复杂度 `O(1)`
+      - 💡思路: 两个指针, 分别从数组的开始和结束向中间移动. 如果指针对应两数之和大于目标值, 尾指针--; 如果两数之和小鱼目标值, 头指针++
 ## 算法
 ### `Boyer-Moore` 摩尔投票算法
 1. 算法的大致思路
