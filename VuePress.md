@@ -7,6 +7,7 @@
     - [配置文件](#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6)
     - [应用级别的配置](#%E5%BA%94%E7%94%A8%E7%BA%A7%E5%88%AB%E7%9A%84%E9%85%8D%E7%BD%AE)
   - [静态资源](#%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90)
+  - [Markdown 扩展](#markdown-%E6%89%A9%E5%B1%95)
 
 <!-- /TOC -->
 
@@ -134,7 +135,48 @@
 3. 基础路径
     - 如果你的网站被部署到一个非根路径, 需要在 `.vuepress/config.js` 中设置 `base`, 比如, 如果你希望将网络部署到 `https://foo.github.io/bar/` 那么 `base` 的值就应该设置为 `/bar/`(以斜杠开始, 以斜杠结束)
     - 有了基础路径, 如果希望引用一张放在 `.vuepress/public` 中的图片, 就需要使用 `/bar/xxx.png`, `VuePress` 提供了一个内置的 `$withBase` (已经被注入到了 `Vue` 的原型对象)来帮助我们生成正确的路径.
+      - ```js
+        module.exports = {
+          base: '/v1/',
+        }
+      - ```html
+        <img :src="$withBase('/w644.jpeg')" alt="sunset" />
+        <img :src="$withBase('/img/sunset.jpg')" alt="sunset" />
+      - ![](../image/Snipaste_2022-09-02_07-57-32.png)
+      - 一件很奇怪的事情就是, 头天晚上 img 路径下的图片怎么都加载不出来, 第二天早上就好了
 4. 最后, 一旦 `base` 路径被设置, 它将会自动地作为前缀插入到 `.vuepress/config.js` 中所有以 `/` 开始的资源路径中
+## `Markdown` 扩展
+1. `Header Anchors`
+    - 所有的标题都会自动地应用 `anchor` 链接, `anchor` 的渲染可以通过 `markdown.anchor` 配置
+    - ![](../image/Snipaste_2022-09-02_08-20-15.png)
+2. 链接
+    - 内部链接
+      - 网站内部的链接, 会被转换为 `<router-link>` 用于 `SPA` 导航.
+      - 同时, 站内每个文件夹下的 `README.md` 或者 `index.md` 都会被自动编译为 `index.html` 对应的链接将被视为 `/`
+      - ```md
+        [to dairy](./dairy/README.md)
+      - ![](../image/Snipaste_2022-09-02_20-53-48.png)
+    - 页面后缀
+      - 生成页面和内部链接时, 默认使用 `.html` 作为后缀
+      - 可以通过 `markdown.pageSuffix` 自定义配置
+    - 外部链接
+      - 外部的链接将会被自动被设置为 `target="_blank" rel="noopener noreferrer"`
+      - ```md
+        [https://cn.bing.com/](https://cn.bing.com/)
+      - ![](../image/Snipaste_2022-09-02_20-58-38.png)
+3. `Front Matter`
+    - `VuePress` 提供了对 `YAML front matter` 开箱即用的支持
+    - ```md
+      ---
+      title: Blogging
+      lang: zh-CN
+      ---
+    - ![](../image/Snipaste_2022-09-02_21-18-07.png)
+4. `Emoji`
+    - ```md
+      :sparkling_heart: :raising_hand_woman:
+    - ![](../image/Snipaste_2022-09-02_21-34-12.png)
+    - 可以在 [这个列表](https://github.com/markdown-it/markdown-it-emoji/blob/master/lib/data/full.json) 找到所有可用的 `Emoji`
 ![](../image/)
 ![](../image/)
 ![](../image/)
