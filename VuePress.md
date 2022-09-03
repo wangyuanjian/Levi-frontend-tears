@@ -177,6 +177,124 @@
       :sparkling_heart: :raising_hand_woman:
     - ![](../image/Snipaste_2022-09-02_21-34-12.png)
     - 可以在 [这个列表](https://github.com/markdown-it/markdown-it-emoji/blob/master/lib/data/full.json) 找到所有可用的 `Emoji`
+5. 目录
+    - ```md
+      [[toc]]
+      # ❤️
+      ## 😄
+      ### 🀄️
+      ## 🌹
+    - ![](../image/Snipaste_2022-09-03_10-20-43.png)
+    - 📕如果只有一级标题的话, 是不会展示目录结构的, 如果想要展示一级标题或者自定义展示标题, 可以在 config.js 中增加配置
+      - ```js
+        module.exports = {
+          markdown: {
+            toc: {
+              includeLevel: [1, 2, 3, 4, 5]
+            }
+          }
+        }
+      - ![](../image/Snipaste_2022-09-03_10-56-08.png)
+6. 自定义容器
+    - ```md
+      ::: tip
+      这是提示
+      :::
+
+      ::: warning
+      这是警告
+      :::
+
+      ::: danger
+      这是危险
+      :::
+
+      ::: details
+      让我猜猜你是属
+      :::
+    - ![](../image/Snipaste_2022-09-03_10-26-36.png)
+    - 也可以自定义块中的标题
+    - ```md
+      ::: danger 禁止通行
+      这是危险
+      :::
+
+      ::: details 点击查看细节
+      让我猜猜你是属
+      :::
+    - ![](../image/Snipaste_2022-09-03_10-28-50.png)
+7. 代码块中的行高亮
+    - 单行高亮
+      - ```md
+        ``` js {4}
+        export default {
+          data () {
+            return {
+              msg: 'Highlighted!'
+            }
+          }
+        }
+        ```
+      - ![](../image/Snipaste_2022-09-03_10-46-32.png)
+    - 行数区间高亮
+      - ```md
+        ``` js{6-7}
+        export default {
+          data () {
+            return {
+              msg: `123!
+              This line isn't 345,
+              but this and the next 2 are.`,
+              motd: 'VuePress is awesome',
+              lorem: 'ipsum',
+            }
+          }
+        }
+        ```
+      - ![](../image/Snipaste_2022-09-03_10-56-57.png)
+    - 多个单行高亮
+      - 📕注意多个逗号之间不要有空格
+      - ```md
+        ``` js{1,4,6}
+        export default {
+          data () {
+            return {
+              msg: `123!
+              This line isn't 345,
+              but this and the next 2 are.`,
+              motd: 'VuePress is awesome',
+              lorem: 'ipsum',
+            }
+          }
+        }
+        ```
+      - ![](../image/Snipaste_2022-09-03_10-49-48.png)
+    - 上面的集中组合
+      - ```md
+        ``` js{1,4,6-8}
+        export default {
+          data () {
+            return {
+              msg: `123!
+              This line isn't 345,
+              but this and the next 2 are.`,
+              motd: 'VuePress is awesome',
+              lorem: 'ipsum',
+            }
+          }
+        }
+        ```
+      - ![](../image/Snipaste_2022-09-03_10-51-06.png)
+8. 代码块行号
+    - ```js
+      module.exports = {
+        markdown: {
+          lineNumbers: true
+        }
+      }
+    - ![](../image/Snipaste_2022-09-03_10-53-21.png)
+![](../image/)
+![](../image/)
 ![](../image/)
 ![](../image/)
 ![](../image/)
