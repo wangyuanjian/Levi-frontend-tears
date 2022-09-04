@@ -8,6 +8,9 @@
     - [应用级别的配置](#%E5%BA%94%E7%94%A8%E7%BA%A7%E5%88%AB%E7%9A%84%E9%85%8D%E7%BD%AE)
   - [静态资源](#%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90)
   - [Markdown 扩展](#markdown-%E6%89%A9%E5%B1%95)
+  - [主题](#%E4%B8%BB%E9%A2%98)
+    - [默认主题配置](#%E9%BB%98%E8%AE%A4%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE)
+    - [导航栏](#%E5%AF%BC%E8%88%AA%E6%A0%8F)
 
 <!-- /TOC -->
 
@@ -293,7 +296,64 @@
         }
       }
     - ![](../image/Snipaste_2022-09-03_10-53-21.png)
-![](../image/)
+## 主题
+### 默认主题配置
+1. 首页
+    - ```md
+      ---
+      home: true
+      heroImage: ./w644.jpeg
+      heroText: I'm Levi
+      tagline: null
+      actionText: visit now →
+      actionLink: ./diary/README.md
+      features:
+      - title: Front-end Developer
+        details: It's interesting.
+      - title: Christian
+        details: Jesus ❤️ You.
+      - title: Blogger
+        details: I write blogs.
+      footer: Copyright © 2022-present Levi
+      ---
+    - ![](../image/Snipaste_2022-09-03_16-22-20.png)
+    - 📕需要注意的是, 官网说要在根级 `README.md` 使用, 但实际上应该是 `docs` 下的 `README.md`
+    - 另外, 图片中的链接应该放在 `docs/.vuepress/public` 下面, 因为打包完成后, `public` 目录下文件会原封不动地移动到 `dist` 目录下, 而 `docs/REAMDME.md` 会被打包为 `dist/index.html`, 这样他们就成为了同级目录下
+    - `YAML front matter` 之后的额外内容将会以普通的 `markdown` 被渲染, 并被插入到 `features` 的后面
+2. 富文本 `footer`
+    - 使用 `markdown` 的 `Slot` 语法设置富文本 `footer`
+    - ```md
+      ::: slot footer
+      Copyright © 2022-present [Levi](https://wangyuanjian.github.io/)
+      :::
+    - ![](../image/Snipaste_2022-09-03_16-45-44.png)
+### 导航栏
+1. 导航栏`logo`
+    - 通过 `themeConfig.logo` 增加导航栏 `logo`, `logo` 可以放在 `.vuepress/public`
+    - ```js
+      module.exports = {
+        themeConfig: {
+          logo: 'favicon.png'
+        }
+      }
+    - ![](../image/Snipaste_2022-09-03_17-01-26.png)
+    - 📕同样注意的是, 目前将 `logo` 位置是 `./vuepress/public/favicon.png`, 打包之后 `logo` 就在 `dist` 的根目录哦
+    - ![](../image/Snipaste_2022-09-03_17-04-16.png)
+2. 导航栏链接
+    - 通过 `themeConfig.nav` 增加一些导航栏链接
+      - ```js
+        themeConfig: {
+          nav: [
+            { text: 'Home', link: '/' },
+            { text: 'Guide', link: '/dairy/' },
+            { text: 'Github', link: 'https://github.com/wangyuanjian' },
+          ]
+        }
+      - ![](../image/Snipaste_2022-09-04_21-16-16.png)
+    - 外部链接 `<a>` 标签的特性将默认包含 `target="_blank" rel="noopener noreferrer"` 我们可以提供 `target` 和 `rel`, 它们将被作为特性被增加到 `<a>` 上
+      - ```js
+        
+- ```md
 ![](../image/)
 ![](../image/)
 ![](../image/)
