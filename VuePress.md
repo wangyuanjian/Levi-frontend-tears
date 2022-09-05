@@ -352,8 +352,46 @@
       - ![](../image/Snipaste_2022-09-04_21-16-16.png)
     - 外部链接 `<a>` 标签的特性将默认包含 `target="_blank" rel="noopener noreferrer"` 我们可以提供 `target` 和 `rel`, 它们将被作为特性被增加到 `<a>` 上
       - ```js
-        
+        nav: [
+          { text: 'Home', link: '/', target: '_blank', rel: 'noopener noreferrer' },
+        ]
+    - 当提供了一个 `items` 数组而不是一个单一的 `link` 时, 它将显示为一个下拉列表
+      - ```js
+        nav: [
+          { text: 'Home', link: '/', target: '_blank', rel: 'noopener noreferrer' },
+          { text: 'Guide', link: '/dairy/' },
+          { 
+            text: 'My',
+            ariaLabel: 'My',
+            items: [
+              { text: 'Github', link: 'https://github.com/wangyuanjian' },
+              { text: 'CSDN', link: 'https://blog.csdn.net/broken_promise' },
+              { text: '掘金', link: 'https://juejin.cn/user/3227821868068184' },
+            ]
+          },
+        ]
+      - ![](../image/Snipaste_2022-09-05_21-20-10.png)
+3. 禁用导航栏
+    - 使用 `themeConfig.navbar` 禁用页面所有的导航栏
+      - ```js
+        themeConfig: {
+          logo: 'favicon.png',
+          navbar: false
+        }
+      - ![](../image/Snipaste_2022-09-05_21-23-44.png)
+    - 或者使用 `YAML front matter` 来禁用某个指定页面的导航栏
+      - ```md
+        ---
+        navbar: false
+        ---
+      - ![](../image/Snipaste_2022-09-05_21-29-16.png)
+### 侧边栏
+1. 
 - ```md
+
+
+![](../image/)
+![](../image/)
 ![](../image/)
 ![](../image/)
 ![](../image/)
