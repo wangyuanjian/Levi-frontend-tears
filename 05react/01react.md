@@ -1,83 +1,85 @@
 <!-- TOC -->
 
-- [`React基础@2022/04/16`](#react基础20220416)
+- [React基础@2022/04/16](#react%E5%9F%BA%E7%A1%8020220416)
   - [Hello World](#hello-world)
-    - [创建虚拟 DOM 的第二种方式](#创建虚拟-dom-的第二种方式)
+    - [创建虚拟 DOM 的第二种方式](#%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F-dom-%E7%9A%84%E7%AC%AC%E4%BA%8C%E7%A7%8D%E6%96%B9%E5%BC%8F)
     - [JSX](#jsx)
-    - [元素](#元素)
-  - [组件](#组件)
-    - [函数式组件](#函数式组件)
-    - [类式组件](#类式组件)
+    - [元素](#%E5%85%83%E7%B4%A0)
+  - [组件](#%E7%BB%84%E4%BB%B6)
+    - [函数式组件](#%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BB%84%E4%BB%B6)
+    - [类式组件](#%E7%B1%BB%E5%BC%8F%E7%BB%84%E4%BB%B6)
     - [state](#state)
       - [setState](#setstate)
-      - [state 的简写方式](#state-的简写方式)
+      - [state 的简写方式](#state-%E7%9A%84%E7%AE%80%E5%86%99%E6%96%B9%E5%BC%8F)
     - [Props](#props)
       - [children](#children)
-    - [`Refs`](#refs)
-      - [字符串型 `Refs`](#字符串型-refs)
-      - [回调型`Refs`](#回调型refs)
-      - [`createRef()`](#createref)
-    - [事件处理](#事件处理)
-      - [改变 `this` 之使用 `bind`](#改变-this-之使用-bind)
-      - [改变 `this` 之使用 `箭头函数`](#改变-this-之使用-箭头函数)
-      - [向事件处理函数传递参数](#向事件处理函数传递参数)
-    - [表单处理](#表单处理)
-      - [受控组件](#受控组件)
-      - [非受控组件](#非受控组件)
-      - [`textarea`](#textarea)
-      - [`select`](#select)
-      - [`<input type="file">`](#input-typefile)
-    - [生命周期](#生命周期)
-      - [旧的生命周期钩子](#旧的生命周期钩子)
-      - [新的生命周期钩子](#新的生命周期钩子)
-  - [脚手架](#脚手架)
-    - [文件项目介绍](#文件项目介绍)
-    - [严格模式](#严格模式)
-    - [样式模块化](#样式模块化)
-    - [子组件给父组件传值](#子组件给父组件传值)
-    - [使用 confirm/alert 等函数前需要加上 window](#使用-confirmalert-等函数前需要加上-window)
-    - [使用代理服务器](#使用代理服务器)
-      - [方式一: 写在 `package.json`](#方式一-写在-packagejson)
-      - [方式二: 写在 `setupProxy.js` 中](#方式二-写在-setupproxyjs-中)
-      - [消息订阅与发布](#消息订阅与发布)
-    - [`<Fragment>`](#fragment)
-    - [`Context`](#context)
-    - [`PureComponent`](#purecomponent)
-    - [`Render Props`](#render-props)
-    - [`Error Boundaries`](#error-boundaries)
-  - [`react-router@5.3.0`](#react-router530)
-    - [路由组件和一般组件](#路由组件和一般组件)
-    - [`NavLink`](#navlink)
-    - [懒加载`lazy`](#懒加载lazy)
-    - [`Switch`](#switch)
-    - [解决样式丢失的问题](#解决样式丢失的问题)
-    - [路由的模糊匹配和严格匹配](#路由的模糊匹配和严格匹配)
-    - [`Redirect` 的使用](#redirect-的使用)
-    - [嵌套路由](#嵌套路由)
-    - [传递路由参数](#传递路由参数)
-      - [`params` 参数](#params-参数)
-      - [`search` 参数](#search-参数)
-      - [`state` 参数](#state-参数)
-    - [`push` 和 `replace` 模式](#push-和-replace-模式)
-    - [编程式路由导航](#编程式路由导航)
-    - [`withRouter`](#withrouter)
-  - [`Ant Design@4.8.2`](#ant-design482)
-  - [`Redux`](#redux)
-    - [基础](#基础)
-    - [简易版求和案例](#简易版求和案例)
-    - [完整版求和案例](#完整版求和案例)
-    - [`combineReducers`](#combinereducers)
-    - [纯函数](#纯函数)
-    - [`redux` 开发者工具](#redux-开发者工具)
-    - [异步 `action`](#异步-action)
-    - [`react-redux`](#react-redux)
-      - [基础](#基础-1)
-      - [优化](#优化)
-  - [`Hooks`](#hooks)
-    - [`useState`](#usestate)
-    - [`useEffect`](#useeffect)
-    - [`useRef`](#useref)
-    - [`useContext`](#usecontext)
+    - [Refs](#refs)
+      - [字符串型 Refs](#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%9E%8B-refs)
+      - [回调型Refs](#%E5%9B%9E%E8%B0%83%E5%9E%8Brefs)
+      - [createRef](#createref)
+    - [事件处理](#%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86)
+      - [改变 this 之使用 bind](#%E6%94%B9%E5%8F%98-this-%E4%B9%8B%E4%BD%BF%E7%94%A8-bind)
+      - [改变 this 之使用 箭头函数](#%E6%94%B9%E5%8F%98-this-%E4%B9%8B%E4%BD%BF%E7%94%A8-%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0)
+      - [向事件处理函数传递参数](#%E5%90%91%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0)
+    - [表单处理](#%E8%A1%A8%E5%8D%95%E5%A4%84%E7%90%86)
+      - [受控组件](#%E5%8F%97%E6%8E%A7%E7%BB%84%E4%BB%B6)
+      - [非受控组件](#%E9%9D%9E%E5%8F%97%E6%8E%A7%E7%BB%84%E4%BB%B6)
+      - [textarea](#textarea)
+      - [select](#select)
+      - [<input type="file">](#input-typefile)
+    - [生命周期](#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F)
+      - [旧的生命周期钩子](#%E6%97%A7%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E9%92%A9%E5%AD%90)
+      - [新的生命周期钩子](#%E6%96%B0%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E9%92%A9%E5%AD%90)
+  - [脚手架](#%E8%84%9A%E6%89%8B%E6%9E%B6)
+    - [文件项目介绍](#%E6%96%87%E4%BB%B6%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D)
+    - [严格模式](#%E4%B8%A5%E6%A0%BC%E6%A8%A1%E5%BC%8F)
+    - [样式模块化](#%E6%A0%B7%E5%BC%8F%E6%A8%A1%E5%9D%97%E5%8C%96)
+    - [子组件给父组件传值](#%E5%AD%90%E7%BB%84%E4%BB%B6%E7%BB%99%E7%88%B6%E7%BB%84%E4%BB%B6%E4%BC%A0%E5%80%BC)
+    - [使用 confirm/alert 等函数前需要加上 window](#%E4%BD%BF%E7%94%A8-confirmalert-%E7%AD%89%E5%87%BD%E6%95%B0%E5%89%8D%E9%9C%80%E8%A6%81%E5%8A%A0%E4%B8%8A-window)
+    - [使用代理服务器](#%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8)
+      - [方式一: 写在 package.json](#%E6%96%B9%E5%BC%8F%E4%B8%80-%E5%86%99%E5%9C%A8-packagejson)
+      - [方式二: 写在 setupProxy.js 中](#%E6%96%B9%E5%BC%8F%E4%BA%8C-%E5%86%99%E5%9C%A8-setupproxyjs-%E4%B8%AD)
+      - [消息订阅与发布](#%E6%B6%88%E6%81%AF%E8%AE%A2%E9%98%85%E4%B8%8E%E5%8F%91%E5%B8%83)
+    - [<Fragment>](#fragment)
+    - [Context](#context)
+    - [PureComponent](#purecomponent)
+    - [Render Props](#render-props)
+    - [Error Boundaries](#error-boundaries)
+  - [react-router@5.3.0](#react-router530)
+    - [路由组件和一般组件](#%E8%B7%AF%E7%94%B1%E7%BB%84%E4%BB%B6%E5%92%8C%E4%B8%80%E8%88%AC%E7%BB%84%E4%BB%B6)
+    - [NavLink](#navlink)
+    - [懒加载lazy](#%E6%87%92%E5%8A%A0%E8%BD%BDlazy)
+    - [Switch](#switch)
+    - [解决样式丢失的问题](#%E8%A7%A3%E5%86%B3%E6%A0%B7%E5%BC%8F%E4%B8%A2%E5%A4%B1%E7%9A%84%E9%97%AE%E9%A2%98)
+    - [路由的模糊匹配和严格匹配](#%E8%B7%AF%E7%94%B1%E7%9A%84%E6%A8%A1%E7%B3%8A%E5%8C%B9%E9%85%8D%E5%92%8C%E4%B8%A5%E6%A0%BC%E5%8C%B9%E9%85%8D)
+    - [Redirect 的使用](#redirect-%E7%9A%84%E4%BD%BF%E7%94%A8)
+    - [嵌套路由](#%E5%B5%8C%E5%A5%97%E8%B7%AF%E7%94%B1)
+    - [传递路由参数](#%E4%BC%A0%E9%80%92%E8%B7%AF%E7%94%B1%E5%8F%82%E6%95%B0)
+      - [params 参数](#params-%E5%8F%82%E6%95%B0)
+      - [search 参数](#search-%E5%8F%82%E6%95%B0)
+      - [state 参数](#state-%E5%8F%82%E6%95%B0)
+    - [push 和 replace 模式](#push-%E5%92%8C-replace-%E6%A8%A1%E5%BC%8F)
+    - [编程式路由导航](#%E7%BC%96%E7%A8%8B%E5%BC%8F%E8%B7%AF%E7%94%B1%E5%AF%BC%E8%88%AA)
+    - [withRouter](#withrouter)
+  - [Ant Design@4.8.2](#ant-design482)
+  - [Redux](#redux)
+    - [基础](#%E5%9F%BA%E7%A1%80)
+    - [简易版求和案例](#%E7%AE%80%E6%98%93%E7%89%88%E6%B1%82%E5%92%8C%E6%A1%88%E4%BE%8B)
+    - [完整版求和案例](#%E5%AE%8C%E6%95%B4%E7%89%88%E6%B1%82%E5%92%8C%E6%A1%88%E4%BE%8B)
+    - [combineReducers](#combinereducers)
+    - [纯函数](#%E7%BA%AF%E5%87%BD%E6%95%B0)
+    - [redux 开发者工具](#redux-%E5%BC%80%E5%8F%91%E8%80%85%E5%B7%A5%E5%85%B7)
+    - [异步 action](#%E5%BC%82%E6%AD%A5-action)
+    - [react-redux](#react-redux)
+      - [基础](#%E5%9F%BA%E7%A1%80)
+      - [优化](#%E4%BC%98%E5%8C%96)
+  - [Hooks](#hooks)
+    - [useState](#usestate)
+    - [useEffect](#useeffect)
+    - [useRef](#useref)
+    - [useContext](#usecontext)
+  - [其他](#%E5%85%B6%E4%BB%96)
+    - [使用 sass](#%E4%BD%BF%E7%94%A8-sass)
 
 <!-- /TOC -->
 
@@ -1162,7 +1164,7 @@
       }
     - ![](../../image/Snipaste_2022-05-02_09-09-46.png)
 #### `textarea`
-1. 在 `HTML` 中使用 `<textarea>` 和 `<input>` 不同, 因为 `<input>` 的值由 value 属性控制, 而 `<textarea>` 其子元素定义其文本
+1. 在 `HTML` 中使用 `<textarea>` 和 `<input>` 不同, 因为 `<input>` 的值由 `value` 属性控制, 而 `<textarea>` 其子元素定义其文本
     - ```html
       <input type="text" value="Hello, World" />
       <textarea name="info" id="info" cols="30" rows="10">Hello, World</textarea>
@@ -1770,8 +1772,8 @@
         // new
         <div className={welcome.title}>Welcome</div>
     - ![](../../image/Snipaste_2022-05-08_09-00-53.png)
-    - 可以看到真实的  class 都发生了改变
-    - 下面我们打印一下引入的 hello, 看看他们究竟是什么?
+    - 可以看到真实的  `class` 都发生了改变
+    - 下面我们打印一下引入的 `hello`, 看看他们究竟是什么?
     - ![](../../image/Snipaste_2022-05-08_09-31-25.png)
 3. 更多的问题, 如果有两个或多个类应该怎么写? 如果类名中有 `-` 应该怎么写?
     - 首先给出正确答案, 因为我试了好多次
@@ -1840,7 +1842,7 @@
         }
       }
     - ![](../../image/Snipaste_2022-05-09_22-05-44.png)
-### 使用 confirm/alert 等函数前需要加上 window
+### 使用 `confirm/alert` 等函数前需要加上 `window`
 ### 使用代理服务器
 1. 如下代码, 点击按钮登录
     - ```jsx
@@ -2340,7 +2342,7 @@
           </div>
         );
       }
-    - 因为 children 时函数, 因此可以直接通过 `props.children()` 的方式调用
+    - 因为 `children` 时函数, 因此可以直接通过 `props.children()` 的方式调用
     - ![](../../image/Snipaste_2022-06-07_18-06-29.png)
 ### `Error Boundaries`
 1. 部分 `UI` 的 `JavaScript` 错误不应该导致整个应用崩溃, 为了解决这个问题, `React 16` 引入了一个新的概念 —— `错误边界`
@@ -4010,6 +4012,50 @@
 3. 调用了 `useContext` 的组件总会在 `context` 值变化时重新渲染. 如果重渲染组件的开销较大, 你可以通过使用 `memoization` 来优化.
 4. 💡如果你在接触 `Hook` 前已经对 `context` `API` 比较熟悉, 那应该可以理解, `useContext(MyContext)` 相当于 `class` 组件中的 `static contextType = MyContext` 或者 `<MyContext.Consumer>`.
     - `useContext(MyContext)` 只是让你能够读取 `context` 的值以及订阅 `context` 的变化. 你仍然需要在上层组件树中使用 `<MyContext.Provider>` 来为下层组件提供 `context`
+## 其他
+### 使用 `sass`
+1. 网上有很多关于如何在 `react` 中使用 `sass` 的文章, 但是他们好像都安装了很多多余的东西. 项目是使用 `create-react-app` 创建的, `package.json` 信息如下
+    - ```json
+      "dependencies": {
+        "@testing-library/jest-dom": "^5.16.5",
+        "@testing-library/react": "^13.4.0",
+        "@testing-library/user-event": "^13.5.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-scripts": "5.0.1",
+        "web-vitals": "^2.1.4"
+      },
+      "devDependencies": {
+        "sass": "^1.54.9",
+      }
+    - 安装 `sass`: `npm i -D sass`. 不需要安装 `sass-loader` 的原因是 `create-react-app` 创建的项目中已经有 `sass-loader` 了
+2. 步骤
+    - 创建 `App.module.scss`
+      - ```scss
+        ul {
+          li.item {
+            background-color: #0be881;
+          } 
+        }
+    - 在 `App.jsx` 中引入并使用
+      - ```jsx
+        import React from 'react'
+        import style from './App.module.scss'
+
+        console.log('style', style)
+        export default function App() {
+          return (
+            <>
+              <div className='text-4xl text-green-400 font-bold'>
+                <span>App</span>
+              </div>
+              <ul>
+                <li className={style.item}>hhh</li>
+              </ul>
+            </>
+          )
+        }
+    - ![](../../image/Snipaste_2022-09-09_08-50-50.png)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
