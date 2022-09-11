@@ -4,23 +4,24 @@
 
 <!-- TOC -->
 
-- [`react-router-6`](#react-router-6)
-    - [`BrowserRouter`](#browserrouter)
-    - [`<Navigate>`](#navigate)
-    - [`useRoutes`](#useroutes)
-    - [嵌套路由](#嵌套路由)
-    - [路由传参](#路由传参)
-      - [`params` 参数](#params-参数)
-      - [`search` 参数](#search-参数)
-      - [`state` 参数](#state-参数)
-    - [编程式路由导航 `useNavigate()`](#编程式路由导航-usenavigate)
-    - [`useInRouterContext()`](#useinroutercontext)
-    - [`useNavigationType`](#usenavigationtype)
-    - [`useOutlet`](#useoutlet)
-    - [`useResolvedPath`](#useresolvedpath)
+- [react-router-6](#react-router-6)
+  - [BrowserRouter](#browserrouter)
+    - [<Navigate>](#navigate)
+  - [useRoutes](#useroutes)
+  - [嵌套路由](#%E5%B5%8C%E5%A5%97%E8%B7%AF%E7%94%B1)
+  - [路由传参](#%E8%B7%AF%E7%94%B1%E4%BC%A0%E5%8F%82)
+    - [params 参数](#params-%E5%8F%82%E6%95%B0)
+    - [search 参数](#search-%E5%8F%82%E6%95%B0)
+    - [state 参数](#state-%E5%8F%82%E6%95%B0)
+  - [编程式路由导航 useNavigate](#%E7%BC%96%E7%A8%8B%E5%BC%8F%E8%B7%AF%E7%94%B1%E5%AF%BC%E8%88%AA-usenavigate)
+  - [useInRouterContext](#useinroutercontext)
+  - [useNavigationType](#usenavigationtype)
+  - [useOutlet](#useoutlet)
+  - [useResolvedPath](#useresolvedpath)
+  - [路由懒加载](#%E8%B7%AF%E7%94%B1%E6%87%92%E5%8A%A0%E8%BD%BD)
 
 <!-- /TOC -->
-### `BrowserRouter`
+## `BrowserRouter`
 1. 使用 `BrowserRouter` 包裹 `<App />`
     - `index.js`
     - ```jsx
@@ -105,7 +106,7 @@
     - ![](../../image/react-router-navigate.gif)
     - 可以看到, 当点击按钮, 页面从 `0` 变为 `1` 导致 `<Navigate>` 渲染时, 整个页面发生了改变
 3. 支持 `replace` 取消 `push` 而是用 `replace` 模式
-### `useRoutes`
+## `useRoutes`
 1. 下面代码中是重复的模式,
     - ```jsx
       <Routes>
@@ -160,7 +161,7 @@
       }
     - 打印一下看看 elements 究竟是什么
     - ![](../../image/Snipaste_2022-06-12_09-56-37.png)
-### 嵌套路由
+## 嵌套路由
 1. 创建两个子页面作为 `Home` 的二级页面
     - ![](../../image/Snipaste_2022-06-12_10-06-41.png)
     - 修改路由表, 引入二级组件: `children`
@@ -199,7 +200,7 @@
           </div>
         )
       }
-### 路由传参
+## 路由传参
 1. 创建 `Detail` 组件用来展示 `News` 传来的参数
     - ```jsx
       import React from 'react'
@@ -262,7 +263,7 @@
           }
         ]
       },
-#### `params` 参数
+### `params` 参数
 1. 使用 `/detail/:id/:title` 使用这种形式, 传递 `params` 参数. 首先修改 `News` 组件
     - ```jsx
       return (
@@ -363,7 +364,7 @@
           )
         }
     - 这样就可以了, 只是写法有些怪, 会让人担心这样的写法究竟对不对.
-#### `search` 参数
+### `search` 参数
 1. 使用 `search` 参数的形式 `/detail?id=001&title=hello`
     - `News.jsx`
     - ```jsx
@@ -424,7 +425,7 @@
     - ```jsx
       <button onClick={() => setSearchParams(`id=999&title=blahblah`)}>更新search参数</button> 
     - ![](../../image/react-router-setSearchParams.gif)
-#### `state` 参数
+### `state` 参数
 1. 修改 `News` 组件. 将 `state` 这个 `prop` 写成对象形式.
     - ```jsx
       {
@@ -455,7 +456,7 @@
         )
       }
     - ![](../../image/Snipaste_2022-06-14_17-41-16.png)
-### 编程式路由导航 `useNavigate()`
+## 编程式路由导航 `useNavigate()`
 1. 编程式路由导航需要使用 `useNavigate` 钩子, 返回一个函数 `NavigateFunction`. 通过调用这个函数, 实现导航.
     - 这个函数接收两个参数
       - `to`: 表示要去的路由地址, 如果需要传递 `params` 或 `query` 参数, 也得把参数拼好赋值给 `to`
@@ -524,7 +525,7 @@
       <button onClick={refresh}>刷新</button>
       <button onClick={forward}>前进</button>
     - ![](../../image/Snipaste_2022-06-14_18-13-52.png)
-### `useInRouterContext()`
+## `useInRouterContext()`
 1. 这个钩子返回 `true` 如果组件在路由环境被渲染, 否则返回 `false`. 主要是第三方组件来用, 一般情况下, 如果 `App` 组件被包含在 `BrowserRouter` 中, 那么 `App` 及其下面的组件都会返回 `true`
     - 首先创建 `Demo` 组件, 并在 `index.js` 中引入 `Demo`
     - ```jsx
@@ -550,7 +551,7 @@
         </React.StrictMode>
       );
     - ![](../../image/Snipaste_2022-06-15_19-32-56.png)
-### `useNavigationType`
+## `useNavigationType`
 1. 这个钩子返回导航的类型, 或者说用户式如何进入当前页面的.
     - `pop`: 刷新浏览器
     - `push`: `push` 路由
@@ -573,7 +574,7 @@
         )
       }
     - ![](../../image/react-router-useNavigationType.gif)
-### `useOutlet`
+## `useOutlet`
 1. 返回当前路由层级的子层级的元素. 如果当前路由当前组件, 就返回 `null`. 这个组件用在 `<Outlet />` 组件内部渲染子路由的
     - 我们在 `Home` 组件中打印
     - ```jsx
@@ -583,7 +584,7 @@
     - ![](../../image/Snipaste_2022-06-15_19-50-57.png)
     - 当前路由为 `/home/news` 时, 输出具体内容
     - ![](../../image/Snipaste_2022-06-15_19-53-05.png)
-### `useResolvedPath`
+## `useResolvedPath`
 1. 解析浏览器 `location` 的 `pathname`
     - ```jsx
       import React from 'react'
@@ -597,4 +598,44 @@
         )
       }
     - ![](../../image/Snipaste_2022-06-15_19-57-02.png)
+## 路由懒加载
+1. 在路由表中, 使用 lazy 结合 import 的形式加载路由
+    - ```js
+      import { lazy } from 'react'
+
+      const Login = lazy(() => import('../views/login'))
+      const NewSandbox = lazy(() => import('../views/newSandbox'))
+
+      const routes = [
+        {
+          path: '/',
+          element: <NewSandbox />
+        },
+        {
+          path: '/login',
+          element: <Login />
+        }
+      ]
+      export default routes
+    - 在 `App` 组件外层也没有使用 `Suspense` 包裹
+    - ```jsx
+      import React, { useEffect } from 'react'
+      import routes from './router'
+      import { useRoutes } from 'react-router-dom'
+
+      export default function App() {
+        useEffect(() => {
+        }, [])
+
+        const elements = useRoutes(routes)
+        return (
+          <>
+            {
+              elements
+            }
+          </>
+        )
+      }
+    - ![](../../image/Snipaste_2022-09-10_09-17-04.png)
+
 ![](../../image/)
