@@ -80,6 +80,7 @@
     - [useContext](#usecontext)
   - [其他](#%E5%85%B6%E4%BB%96)
     - [使用 sass](#%E4%BD%BF%E7%94%A8-sass)
+    - [CRA 不使用 eject 覆盖 webpack 配置](#cra-%E4%B8%8D%E4%BD%BF%E7%94%A8-eject-%E8%A6%86%E7%9B%96-webpack-%E9%85%8D%E7%BD%AE)
 
 <!-- /TOC -->
 
@@ -4056,6 +4057,45 @@
           )
         }
     - ![](../../image/Snipaste_2022-09-09_08-50-50.png)
+### `CRA` 不使用 `eject` 覆盖 `webpack` 配置
+1. 使用步骤
+    - 安装依赖: `npm install react-app-rewired --save-dev`
+    - 在根目录创建 `config-overrides.js`
+      - ```js
+        const path = require('path')
+
+        module.exports = function override(config, env) {
+          config.mode = 'development'
+          config.resolve.alias = {
+            '@': path.resolve(__dirname, './src')
+          }
+
+          return config
+        }
+    - 修改 `package.json` 中的内容
+      - ```json
+        "scripts": {
+          "start": "react-app-rewired start",
+          "build": "react-app-rewired build",
+          "test": "react-app-rewired test",
+          "eject": "react-scripts eject"
+        },
+    - 使用别名
+      - ```jsx
+        import React from 'react'
+        import TopHeader from '@/components/topHeader'
+
+        export default function NewSandbox() {
+          return (
+            <div>
+              <TopHeader></TopHeader>
+              <h3 className='text-green-400'>123</h3>
+            </div>
+          )
+        }
+    - ![](../../image/Snipaste_2022-09-12_22-25-33.png)
+- ![](../../image/)
+- ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
