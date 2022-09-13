@@ -4094,7 +4094,26 @@
           )
         }
     - ![](../../image/Snipaste_2022-09-12_22-25-33.png)
-- ![](../../image/)
+2. 上面的写法在路由懒加载部分遇到了问题
+    - ```js
+      const Login = lazy(() => import('@/views/login'))
+      const NewSandbox = lazy(() => import('@/views/newSandbox'))
+      const Home = lazy(() => import('@/views/newSandbox/home'))
+    - ![](../../image/Snipaste_2022-09-13_21-21-18.png)
+    - 要做的仅仅是覆盖 `webpack` 默认配置时指定省略的文件后缀
+      - ```js
+        const path = require('path')
+
+        module.exports = function override(config, env) {
+          config.mode = 'development'
+          config.resolve = {
+            alias: {
+              '@': path.resolve(__dirname, './src')
+            },
+            extensions: ['.js', '.jsx', '.ts', '.tsx']
+          }
+          return config
+        }
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
