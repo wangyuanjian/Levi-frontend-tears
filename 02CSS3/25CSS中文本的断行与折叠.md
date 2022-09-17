@@ -1,5 +1,5 @@
 ## 文本的换行与包裹 之 简介
-> 介绍在 `CSS` 中溢出文本的各种处理访问
+> 介绍在 `CSS` 中溢出文本的各种处理方式
 
 ### 文本的溢出
 在 `CSS` 中, 如果有一个不可断开的字符串(比如很长的单词), 但是包裹字符串的容器宽度有限, 那么字符串就会在水平方向溢出. 如下
@@ -102,8 +102,13 @@
 ### `<wbr>` 元素
 如果你知道你想要一段长文字在何处断行 , 就可以在哪里使用 `<wbr>` 元素. 很显然, `wbr` 代表的是 `word break`, 一个可能换行的机会.
 
-当在页面展示一个很长的 ``URL`` 时这回很有用. 下图, 虽然本文的盒子有宽度, 但是因为这个 URL 没有可以换行的地方因此第一个 `URL` 就溢出展示了. 但是如果加入 `wbr` 就可以自由换行啦
+当在页面展示一个很长的 `URL` 时很有用. 下图, 虽然本文的盒子有宽度, 但是因为这个 URL 没有可以换行的地方因此第二个 `URL` 就溢出展示了. 但是如果加入 `wbr` 就可以自由换行啦
+
+📕注意 `<wbr>` 表示的是换行的**机会**, 因此第一个 `URL` 即便中加入了 `<wbr>` 也不会换行, 因为 `URL` 并没有长到溢出.
 ```html
+<div class="box8">
+  <a href="#">https://reactrouter<wbr>.com</a>
+</div>
 <div class="box8">
   <a href="#">https://reactrouter.com/en/main/components/navigate</a>
 </div>
@@ -111,5 +116,5 @@
   <a href="#">https://reactrouter.com<wbr>/en/main/components<wbr>/navigate</a>
 </div>
 ```
-![](../../image/Snipaste_2022-09-17_10-08-44.png)
+![](../../image/Snipaste_2022-09-17_10-20-17.png)
 
