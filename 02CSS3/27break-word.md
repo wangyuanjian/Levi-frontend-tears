@@ -48,9 +48,57 @@
 ![](../../image/Snipaste_2022-09-20_22-06-03.png)
 
 
+再一次强调的是 `word-break: break-all`, 和 `overflow-wrap: break-word` 的区别
+- `word-break: break-all` 会在文本溢出显示的地方精确换行, 即便文本如果在新的一行显示可能就不会溢出了
+- `overflow-wrap: break-word` 不论文本在新的一行显示会不会溢出, 都将这个要换行的文本在新的一行显示
+
+```html
+<div class="box" style="word-break: break-all;">
+  你好，我是Levi，欢迎你来到这个城市哈哈。感谢，感谢，我想希望自己可以在这里有一番作为加油加油。
+</div>
+<div class="box" style="overflow-wrap: break-word;">
+  你好，我是Levi，欢迎你来到这个城市哈哈。感谢，感谢，我想希望自己可以在这里有一番作为加油加油。
+</div>
+<div class="box" style="word-break: break-all;">
+  hello, Jay, HowAreYouFeeling, long no see, HowIsYourFatherAndYouDearMother
+</div>
+<div class="box" style="overflow-wrap: break-word;">
+  hello, Jay, HowAreYouFeeling, long no see, HowIsYourFatherAndYouDearMother
+</div>
+```
+![](../../image/Snipaste_2022-09-21_08-52-30.png)
+从图片中可以看出, 两个属性对中文没有影响, 表现一致. 只有英文时, 首先 `HowAreYouFeeling` 如果在新的一行显示完全不用换行, 但是 `break-word: break-all;` 还是在原行显示. 其次, `HowIsYourFatherAndYouDearMother` 就算放在新的一行显示还是会断行, 但是 `overflow-wrap: break-word;` 还是将其放在新的一行.
+
+
+最后再来看看 `word-break: break-word;` 这个已被弃用的属性吧. 前面说过这个属性的效果与 `word-break`: `normal` 和 `overflow-wrap: anywhere` 共同作用效果相同, 而不论 `overflow-wrap` 的值是什么. 有趣的在后半句, 因为 `overflow-wrap: anywhere` 和 `overflow-wrap: break-word` 的区别在计算 `min-content` 时不一样
 
 ```css
+.boxb {
+  border: 3px solid salmon;
+  width: min-content;
+}
+.box5 {
+  word-break: break-word;
+  /* 
+  与下面的两者效果之和相同
+  word-break: normal; 
+  overflow-wrap: anywhere;
+  */
+}
+.box6 {
+  word-break: normal;
+  overflow-wrap: break-word;
+}
 ```
 ```html
+<div class="boxb box5">
+  This, longhistoryPlease
+</div>
+<div class="boxb box6">
+  This, longhistoryPlease
+</div>
 ```
-![](../../image/)
+因为 `overflow-wrap: anywhere` 在计算时 `min-content` 时考虑到了软换行机会所以任何地方都可以换行, 而 `overflow-wrap: break-word` 在计算时 `min-content` 时不考虑软换行, 因此表现与预期相似
+![](../../image/Snipaste_2022-09-21_21-02-53.png)
+
+谢谢你看到这里😊
