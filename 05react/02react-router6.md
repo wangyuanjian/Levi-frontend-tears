@@ -599,7 +599,7 @@
       }
     - ![](../../image/Snipaste_2022-06-15_19-57-02.png)
 ## 路由懒加载
-1. 在路由表中, 使用 lazy 结合 import 的形式加载路由
+1. 在路由表中, 使用 `lazy` 结合 `import` 的形式加载路由
     - ```js
       import { lazy } from 'react'
 
@@ -637,5 +637,5 @@
         )
       }
     - ![](../../image/Snipaste_2022-09-10_09-17-04.png)
-
+2.
 ![](../../image/)
