@@ -1,4 +1,4 @@
-## hyphens
+## hyphens & hy
 > 告诉浏览器在换行时如何使用连字符. 
 
 可以完全不使用连字符, 可以让浏览器决定什么时候连字符, 可以也可以手动控制什么时候使用.
@@ -59,5 +59,22 @@
 
 接着, 对于 `manual` 的表现: 在硬断行处一定插入连字符, 即便这里压根不可能换行(`1`处). 如果是软换行, 如果软换行处不会换行, 也不会插入连字符(`2`处), 但是如果软换行处所在的单词会换行, 那么就会在软换行处换行并插入换行连字符(`3`处)
 ![](../../image/Snipaste_2022-10-04_11-01-38.png)
+
+最后值得注意的是, 当 `HTML` 的 `<wbr>` 元素导致换行时, 不会添加连字符的. 从截图中可以看出, 如果是 `Edge` 或者 `Chrome` 浏览器, `hyphens` 值为 `auto` 时甚至会破坏原有的 `<wbr>` 效果, 但是在 `Safari` 浏览器中就不会这样.
+```html
+<div class="box box1">
+  <code><strong>none:</strong></code>
+  Hello, World, uncondi<wbr>tionalunconditional
+</div>
+<div class="box box2">
+  <code><strong>auto:</strong></code>
+  Hello, World, uncondi<wbr>tionalunconditional
+</div>
+<div class="box box3">
+  <code><strong>manual:</strong></code>
+  Hello, World, uncondi<wbr>tionalunconditional
+</div>
+```
+![](../../image/Snipaste_2022-10-04_14-53-39.png)
 
 谢谢你看到这里😊
