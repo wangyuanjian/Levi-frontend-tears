@@ -68,3 +68,5 @@ axios.put('http://localhost:8000/posts/2', {
 })
 ```
 ![](../../image/Snipaste_2022-09-17_16-25-15.png)
+
+谢谢你看到这里😊
