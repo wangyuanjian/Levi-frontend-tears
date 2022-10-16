@@ -107,12 +107,22 @@ console.log('re1',re1); // re1 /ab+c/
   - ![](../../image/Snipaste_2022-10-09_08-52-50.png)
   - ```js
     /\t\w+/.exec('	foo')
-		// [ '\tfoo', index: 0, input: '\tfoo', groups: undefined ]
+    // [ '\tfoo', index: 0, input: '\tfoo', groups: undefined ]
 - `\r` `\n`
-  - `\r` 匹配回车符(`Carriage Return`). 回车的意思就是将光标移动到当前行的第一个位置, 也就是开头.
-  - `\n` 匹配换行符(`Line Feed`). 换行的意思是将光标移动到下一行的同样位置.
+  - `\r` 匹配回车符(`CR, Carriage Return`). 回车的意思就是将光标移动到当前行的第一个位置, 也就是开头.
+  - `\n` 匹配换行符(`LF, Line Feed`). 换行的意思是将光标移动到下一行的同样位置.
   - 在不同的系统中, 当你摁下回车键时, 对应加入的是换行还是回车是不一样的. 
+    - 在 `macOS` 系统中, 摁下回车键时插入的是 `\n`;
+    - 在 `Linux` 系统中, 摁下回车键时插入的是 `\n`;
+    - 在 `Windows` 系统中, 摁下回车键时插入的是 `\r\n`;
+  - 所以下面的代码可以看到
+  - ```js
+    let result = /\n/.exec(`
 
+    `)
+    console.log('result',result)
+  - ![](../../image/Snipaste_2022-10-11_09-07-55.png)
+  - ![](../../image/)
 
 ### 量词(Quantifiers)
 ### 组和范围(Groups and Ranges)
