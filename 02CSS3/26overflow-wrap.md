@@ -6,7 +6,7 @@
 属性值有三个
 - `normal`: 仅在正常的单词断点处中断, 比如连个单词之间空格
 - `anywhere`: 为了防止溢出, 可以在单词的任何位置断开, 并且不添加连字符.
-- `break-word`: 和 `anywhere` 相同, 但是在计算 `min-content` 时**不考虑**软换行机会, 而 `anywhere` 在计算 min-content 时考虑软换行.
+- `break-word`: 和 `anywhere` 相同, 但是在计算 `min-content` 时**不考虑**软换行机会, 而 `anywhere` 在计算 `min-content` 时考虑软换行.
 
 ```css
 .box {
