@@ -81,6 +81,7 @@
   - [其他](#%E5%85%B6%E4%BB%96)
     - [使用 sass](#%E4%BD%BF%E7%94%A8-sass)
     - [CRA 不使用 eject 覆盖 webpack 配置](#cra-%E4%B8%8D%E4%BD%BF%E7%94%A8-eject-%E8%A6%86%E7%9B%96-webpack-%E9%85%8D%E7%BD%AE)
+    - [forwardRef](#forwardref)
 
 <!-- /TOC -->
 
@@ -4114,6 +4115,49 @@
           }
           return config
         }
+
+### `forwardRef`
+1. `forwardRef` 会创建一个 `React` 组件, 这个组件能够将其接受的 `ref` 属性转发到其组件树的另一个组件. 在下面两个场景特别有用
+    - 转发 `refs` 到 `DOM` 组件
+    - 在高阶组件中转发 `refs`
+2. `forwardRef` 接收渲染函数作为参数, 该渲染函数会接收到 `props` 和 `ref` 两个参数, 渲染函数应该返回 `React` 节点.
+    - 创建子组件, 使用 `forwardRef` 包裹
+      - ```jsx
+        import { forwardRef } from "react";
+
+        const FancyButton = forwardRef((props, ref) => {
+          return (
+            <button
+              onClick={() => console.log('我是子组件的Button')}
+              className="border-2 py-2 px-6"
+              ref={ref}
+            >{ props.children }</button>
+          )
+        })
+
+        export default FancyButton
+    - 创建父组件, 在父组件中使用子组件的时候, 传递 `ref` 作为子组件的一个 `prop`, 然后点击父组件的按钮🔘, 查看结果
+      - ```jsx
+        import React, { useRef } from 'react'
+        import FancyButton from './FancyButton'
+
+        export default function Home() {
+          const btnRef = useRef()
+          function clickHandler() {
+            console.log('btnRef', btnRef)
+            btnRef.current.click()
+          }
+          return (
+            <>
+              <FancyButton ref={btnRef}>Son Button</FancyButton>
+              <button
+                onClick={() => clickHandler()}
+                className='border-2 bg-green-300 py-2 px-6'
+              >Parent Button</button>
+            </>
+          )
+        }
+    - - ![](../../image/Snipaste_2022-11-05_09-40-37.png)
 - ![](../../image/)
 - ![](../../image/)
 - ![](../../image/)
