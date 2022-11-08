@@ -1,3 +1,20 @@
+<!-- TOC -->
+
+- [正则表达式](#%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F)
+  - [第一章 创建一个正则表达式](#%E7%AC%AC%E4%B8%80%E7%AB%A0-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F)
+    - [编写正则表达式](#%E7%BC%96%E5%86%99%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F)
+      - [简单模式](#%E7%AE%80%E5%8D%95%E6%A8%A1%E5%BC%8F)
+      - [使用特殊字符](#%E4%BD%BF%E7%94%A8%E7%89%B9%E6%AE%8A%E5%AD%97%E7%AC%A6)
+  - [第二章 正则表达式中的特殊字符](#%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%B8%AD%E7%9A%84%E7%89%B9%E6%AE%8A%E5%AD%97%E7%AC%A6)
+    - [字符类Character Classes](#%E5%AD%97%E7%AC%A6%E7%B1%BBcharacter-classes)
+      - [十六进制字符匹配与 \p](#%E5%8D%81%E5%85%AD%E8%BF%9B%E5%88%B6%E5%AD%97%E7%AC%A6%E5%8C%B9%E9%85%8D%E4%B8%8E-%5Cp)
+    - [量词Quantifiers](#%E9%87%8F%E8%AF%8Dquantifiers)
+    - [组和范围Groups and Ranges](#%E7%BB%84%E5%92%8C%E8%8C%83%E5%9B%B4groups-and-ranges)
+    - [断言Assertions](#%E6%96%AD%E8%A8%80assertions)
+    - [Unicode 属性转义Unicode Property Escapes](#unicode-%E5%B1%9E%E6%80%A7%E8%BD%AC%E4%B9%89unicode-property-escapes)
+
+<!-- /TOC -->
+
 # 正则表达式
 > 正则表达式是用于匹配字符串中字符组合的模式. 在 `JavaScript` 中, 正则表达式也是对象. 这些模式被用于 `RegExp` 的 `exec` 和 `test` 方法, 以及 `String` 的 `match`, `matchAll`, `replace`, `search` 和 `split` 方法.
 
@@ -12,12 +29,12 @@ console.log('re',re) // re /ab+c/
 const re1 = new RegExp('ab+c');
 console.log('re1',re1); // re1 /ab+c/
 ```
-## 编写正则表达式
+### 编写正则表达式
 一个正则表达式模式由简单的字符组成, 比如 `/123/`, 或者由简单和特殊的字符组成, 比如 `/123+/`, `/123(asd)+/`. 后面的例子中用到了括号`()`, 括号在正则表达式中通常被用做记忆设备(`memory device`), 意思是括号匹配的内容将会被记住供后续使用,
 
-### 简单模式
+#### 简单模式
 简单模式由你想要直接找到的字符串组成. 例如, `/123/` 仅匹配在某个字符串中 `123` 这三个数字组成的字符串(顺序固定、大小写固定). 
-### 使用特殊字符
+#### 使用特殊字符
 当我们需要匹配一个不确定的字符串, 比如匹配一个或者多个 `2` 时, 可以在模式中使用特殊字符. 例如使用 `/12*3/` 匹配一个单独的 `1` 后面跟着零个或多个 `2` 同时后面跟着一个单独的 `3`
 
 ## 第二章 正则表达式中的特殊字符
@@ -132,8 +149,12 @@ console.log('re1',re1); // re1 /ab+c/
   - 匹配一个 `NUL` 字符, 不要在后面加上另一个数字
 - `\cX`
   - 使用插入符号匹配控制字符, 其中 `X` 是 `A-Z` 中的一个字母, 对应 `U+0001-U+001F`.
+- `\`
+  - 转义符, 表示 `\` 后面的字符将被特殊对待
+  - 1️⃣第一种
+  - 2️⃣第二种
 #### 十六进制字符匹配与 `\p`
-`JavaScript` 中使用 `Unicode` 对字符串编码, 大多数字符使用 `2` 个字节(16比特)编码, 还有其他的字符使用 `4` 个字符(32比特)编码
+`JavaScript` 中使用 `Unicode` 对字符串编码, `Unicode` 的一种实现方式就是 `UTF-16`, 而 `UTF-16` 中大多数字符使用 `2` 个字节(16比特)编码, 还有其他的字符使用 `4` 个字符(32比特)编码.
   - ![](../../image/)
 
 ### 量词(Quantifiers)
