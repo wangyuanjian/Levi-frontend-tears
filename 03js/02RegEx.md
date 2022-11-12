@@ -9,7 +9,7 @@
     - [字符类Character Classes](#%E5%AD%97%E7%AC%A6%E7%B1%BBcharacter-classes)
       - [十六进制字符匹配与 \p](#%E5%8D%81%E5%85%AD%E8%BF%9B%E5%88%B6%E5%AD%97%E7%AC%A6%E5%8C%B9%E9%85%8D%E4%B8%8E-%5Cp)
     - [量词Quantifiers](#%E9%87%8F%E8%AF%8Dquantifiers)
-    - [组和范围Groups and Ranges](#%E7%BB%84%E5%92%8C%E8%8C%83%E5%9B%B4groups-and-ranges)
+    - [组和反向引用Groups and backreferences](#%E7%BB%84%E5%92%8C%E5%8F%8D%E5%90%91%E5%BC%95%E7%94%A8groups-and-backreferences)
     - [断言Assertions](#%E6%96%AD%E8%A8%80assertions)
     - [Unicode 属性转义Unicode Property Escapes](#unicode-%E5%B1%9E%E6%80%A7%E8%BD%AC%E4%B9%89unicode-property-escapes)
 
@@ -151,14 +151,53 @@ console.log('re1',re1); // re1 /ab+c/
   - 使用插入符号匹配控制字符, 其中 `X` 是 `A-Z` 中的一个字母, 对应 `U+0001-U+001F`.
 - `\`
   - 转义符, 表示 `\` 后面的字符将被特殊对待
-  - 1️⃣第一种
-  - 2️⃣第二种
+  - 1️⃣第一种是后面的字符本身没有特别的意思, 但是加上 `\` 后表示有特殊意义, 例如 `/b/` 匹配字符 `b`, 但是 `/\b/` 匹配词边界
+  - 2️⃣第二种是后面的字符本身就特别意义, 但是加上 `\` 之后反而失去特别意义而按字面解释. 比如 `*` 匹配 `*` 前面的字符出现 0 次火多次, 但是 `/a\*/` 就匹配字符 `a*`
+  - 不要忘记如果匹配 `\` 本身, 也需要转义 `/\\/`
+- `x|y`
+  - 匹配字符 `x` 或字符 `y`. 由管道符分开的每一部分叫做「可选项」
+  - 
 #### 十六进制字符匹配与 `\p`
 `JavaScript` 中使用 `Unicode` 对字符串编码, `Unicode` 的一种实现方式就是 `UTF-16`, 而 `UTF-16` 中大多数字符使用 `2` 个字节(16比特)编码, 还有其他的字符使用 `4` 个字符(32比特)编码.
   - ![](../../image/)
 
 ### 量词(Quantifiers)
-### 组和范围(Groups and Ranges)
+### 组和反向引用(Groups and backreferences)
+`组`将多个模式作为一个整体组合起来, 在正则表达式中呢, 使用括号`()`将模式的某部分括起来, 被括起来的部分就称为`捕获组`. 在使用常规模式匹配字符串时, 捕获组提供额外的子匹配信息. `反向引用`指向在相同的正则表达式中前一个被捕获的组.
+
+- `(x)`
+  - **捕获组**用来匹配 `x` 并记住匹配的内容. 比如 `/(hello)/` 匹配并记住 `'hello world'` 中的 `hello`. 字符串的 `match` 方法可以做到这点
+  - ```js
+    'hello world'.match(/hello/)
+    'hello world'.match(/(hello)/)
+    /*
+    [ 'hello', index: 0, input: 'hello world', groups: undefined ]
+    [ 'hello', 'hello', index: 0, input: 'hello world', groups: undefined ]
+    */
+  - `match` 方法如果其正则表达式参数没有修饰符 `g`, 它将查找数组返回匹配结果. 因此用捕获组的结果比没有使用捕获组返回的结果多一个内容. 多出的内容就是括号中匹配的结果
+    - 索引`0`, 完整的匹配项
+    - 索引`1`, 第一个括号匹配的内容
+    - 所以`2`, 第二个括号匹配的内容.
+    - 以此类推
+  - 正则表达式中可能含有多个捕获组, 因此结果往往是数组, 数组的元素的顺序就是正则表达式中左括号出现的顺序. 这在嵌套捕获组中特别重要.
+  - 捕获组会带来性能消耗.
+- `(?<Name>x)`
+  - **具名捕获组**: 匹配 `x` 并在结果中通过 `<Name>` 访问 `x` 的匹配结果. 其中尖括号是必须的.
+  - 比如下面的例子, 我们使用具名捕获组来匹配固定电话的区号
+  - ```js
+    '0221-2637489'.match(/\b(?<code>\d{4})-(\d+)/)
+    // 结果
+    [
+      '0221-2637489',
+      '0221',
+      '2637489',
+      index: 0,
+      input: '0221-2637489',
+      groups: [Object: null prototype] { code: '0221' }
+    ]
+  - 可以看到数组中第一个元素(索引`0`)是表达式匹配的整个结果, 第二个元素(索引`1`) 是第一个捕获组的结果, `groups` 是保存的具名捕获组的内容.
+- `(?:x)`
+  - **非捕获组**: 匹配 `x` 但是结果中不记录.
 ### 断言(Assertions)
 ### Unicode 属性转义(Unicode Property Escapes)
 ``
