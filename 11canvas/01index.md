@@ -226,13 +226,55 @@ ctx.fill()
     ctx.fill()
   - ![](../image/Snipaste_2022-11-17_21-47-33.png)
 ### `Path2D` 对象
-``
+在之前的例子中, 绘制图形需要一系列路径和命令, 为了简化代码和提高性能, 可以使用 `Path2D` 对象.
 
+`Path2D` 这个接口用来声明一个路径, 这个路径之后可以被 `canvas` 对象使用. `canvas` 对象的绘制路径的方法也存在 `Path2D` 上.
+- `Path2D()`
+  - 构造函数返回一个刚刚初始化的 `Path2D` 对象. 可以接受另一个 `path` 或 `SVG` `path` 字符串作为可选参数.
+所有的路径方法, 比如 `moveTo`, `rect`, `arc` 等同样存在于 `Path2D` 对象上. 
+  - ```js
+    const rect = new Path2D()
+    rect.rect(100, 100, 200, 200)
+
+    const circle = new Path2D()
+    circle.arc(200, 200, 100, 0, Math.PI * 2)
+
+    ctx.stroke(rect)
+    ctx.stroke(circle)
+    ```
+  - ![](../image/Snipaste_2022-11-26_10-41-37.png)
+  - 在构建 `Path2D` 对象时, 同样可以传递 `SVG` 路径字符串作为参数. 
+  - ```js
+    const heart = new Path2D(`M 10,30
+          A 20,20 0,0,1 50,30
+          A 20,20 0,0,1 90,30
+          Q 90,60 50,90
+          Q 10,60 10,30 z`)
+    ctx.stroke(heart)
+  - ![](../image/Snipaste_2022-11-26_11-01-45.png)
+
+`Path2D API` 同样需要使用 `addPath()` 方法将不同的路径结合起来. 
+
+- `addPath(path, transform)`
+  - 添加一个 `Path2D` 对象到另一个 `Path2D` 对象上.
+  - `transform` 是一个可选的矩阵参数.
+  - ```js
+    const rect = new Path2D()
+    rect.rect(100, 100, 200, 200)
+    
+    const rect2 = new Path2D()
+    rect2.arc(400, 200, 100, 0, Math.PI * 2)
+
+    rect.addPath(rect2)
+    ctx.stroke(rect)
+  - ![](../image/Snipaste_2022-11-26_10-50-57.png)
 
 ```js
 ```
 ```html
 ```
+
+
 
 
 
