@@ -12,6 +12,14 @@
     - [绘制贝塞尔曲线](#%E7%BB%98%E5%88%B6%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF)
     - [绘制矩形](#%E7%BB%98%E5%88%B6%E7%9F%A9%E5%BD%A2)
     - [Path2D 对象](#path2d-%E5%AF%B9%E8%B1%A1)
+  - [应用样式和颜色](#%E5%BA%94%E7%94%A8%E6%A0%B7%E5%BC%8F%E5%92%8C%E9%A2%9C%E8%89%B2)
+    - [颜色](#%E9%A2%9C%E8%89%B2)
+    - [透明](#%E9%80%8F%E6%98%8E)
+    - [线的样式](#%E7%BA%BF%E7%9A%84%E6%A0%B7%E5%BC%8F)
+    - [渐变](#%E6%B8%90%E5%8F%98)
+    - [模式](#%E6%A8%A1%E5%BC%8F)
+    - [阴影](#%E9%98%B4%E5%BD%B1)
+    - [Canvas 填充规则](#canvas-%E5%A1%AB%E5%85%85%E8%A7%84%E5%88%99)
 
 <!-- /TOC -->
 
@@ -269,10 +277,56 @@ ctx.fill()
     ctx.stroke(rect)
   - ![](../image/Snipaste_2022-11-26_10-50-57.png)
 
+## 应用样式和颜色
+屏幕阅读器无法读取 `<canvas>` 的内容. 如果 `<canvas>` 仅仅用做装饰页面, 那么可以在开始标签上增加 `role="presentation"` 属性.
+
+### 颜色
+如果想要对图形应用颜色, 可以使用 `fillStyle` 和 `strokeStyle`
+- `fillStyle`
+  - 填充图形的颜色或渐变. 默认值为 `#000`, 黑色
+  - 任何合法的 `CSS` 颜色值的字符串都可以作为 `fillStyle` 的值.
+  - ```js
+    function fillStyleTest(context) {
+      for (let i = 0; i < 15; i++) {
+        for (let j = 0; j < 15; j++) {
+          context.fillStyle = `#${toHex(i * 17)}${toHex(j * 17)}bb`
+          context.fillRect(i * 17, j * 17, 25, 25)
+        }
+      }
+    }
+
+    function toHex(num) {
+      return num.toString(16).padStart(2, '0')
+    }
+  - ![](../image/Snipaste_2022-11-29_21-32-19.png)
+- `strokeStyle`
+  - 勾勒图形轮廓的颜色或渐变. 默认值为 `#000`, 黑色
+  - 任何合法的 `CSS` 颜色值的字符串都可以作为 `strokeStyle` 的值.
+  - ```js
+    function strokeStyleTest(context) {
+      for (let i = 0; i < 15; i++) {
+        for (let j = 0; j < 15; j++) {
+          context.strokeStyle = `#${toHex(i * 17)}${toHex(j * 17)}bb`
+          context.strokeRect(300 + i * 17, j * 17, 17, 17)
+        }
+      }
+    }
+  - ![](../image/Snipaste_2022-11-29_21-38-15.png)
+### 透明
+### 线的样式
+### 渐变
+### 模式
+### 阴影
+### Canvas 填充规则
+
 ```js
+```
+
 ```
 ```html
 ```
+
+
 
 
 
