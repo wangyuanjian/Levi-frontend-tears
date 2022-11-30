@@ -312,6 +312,55 @@ ctx.fill()
       }
     }
   - ![](../image/Snipaste_2022-11-29_21-38-15.png)
+
+从上面的例子中可以看到, 当设置了 `fillStyle` 或 `strokeStyle` 之后, 新的值就会成为之后绘制图形的默认值. 但是在路径中就有些不一样
+```js
+// fill
+context.beginPath()
+context.moveTo(100, 100)
+context.fillStyle = 'lightblue'
+context.rect(100, 100, 100, 100)
+context.fill()
+context.fillStyle = 'pink'
+context.arc(150, 50, 50, 0, Math.PI * 2)
+context.fill()
+context.closePath()
+
+// stroke
+context.beginPath()
+context.moveTo(300, 100)
+context.lineWidth = 10
+context.lineTo(300, 200)
+context.stroke()
+context.lineWidth = 2
+context.lineTo(400, 100)
+context.stroke()
+```
+从下图看出, 虽然两次调用 `fill()` 之前都设置了不同的 `fillStyle` 但是只有最后一个生效了. 但是 `stroke()` 就不是这样, 每次调用 `stroke()` 之前设置的 `lineWidth` 都生效了
+![](../image/Snipaste_2022-11-30_22-23-49.png)
+
+另外, 既然说到 `stroke`, 调用 `stroke()` 和 `fill()` 的顺序不一样也会造成不同的绘制效果.
+
+先 `stroke()` 后 `fill()`, `fill()` 的蓝色就覆盖了 `stroke()` 的粉色; 翻过来 `stroke()` 的粉色覆盖了 `fill()` 的蓝色, 这一点要注意, 特别在 `lineWidth` 值越大差异越明显.
+```js
+context.beginPath()
+context.moveTo(100, 100)
+context.rect(100, 100, 100, 100)
+context.fillStyle = 'lightblue'
+context.strokeStyle = 'pink'
+context.lineWidth = 20
+context.stroke()
+context.fill()
+context.closePath()
+
+context.beginPath()
+context.moveTo(300, 100)
+context.rect(300, 100, 100, 100)
+context.fill()
+context.stroke()
+context.closePath()
+```
+![](../image/Snipaste_2022-11-30_22-35-19.png)
 ### 透明
 ### 线的样式
 ### 渐变
@@ -321,15 +370,8 @@ ctx.fill()
 
 ```js
 ```
-
-```
 ```html
 ```
-
-
-
-
-
 
 
 ![](../image/)
