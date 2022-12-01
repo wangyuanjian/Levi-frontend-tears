@@ -362,6 +362,35 @@ context.closePath()
 ```
 ![](../image/Snipaste_2022-11-30_22-35-19.png)
 ### 透明
+通过设置 `globalAlpha` 属性或使用带有透明通道的颜色(比如, `rgba(100, 128, 87, 0.5)` 或 `#fa982100`)来绘制透明的效果.
+- `globalAlpha`
+  - 可选值在 `0.0` 到 `1.0` 之间. `0.0` 表示全透明, `1.0` 表示完全不透明. 默认值为 `1.0`. 在这个范围之外的值, 包括 `Infinity` 和 `NaN` 都会被忽略.
+  - ```js
+    context.globalAlpha = 0.5
+
+    context.fillStyle = 'orange'
+    context.fillRect(100, 100, 100, 100)
+    context.fillStyle = 'skyblue'
+    context.fillRect(150, 150, 100, 100)
+  - ![](../image/Snipaste_2022-12-01_21-58-07.png)
+  - ```js
+    // 完全不透明画个蓝色的底
+    context.globalAlpha = 1
+    context.fillRect(300, 100, 100, 100)
+
+    // 0.3 透明度填充1/4的圆
+    context.globalAlpha = 0.3
+    context.fillStyle = '#000'
+    for (let i = 1; i < 6; i++) {
+      context.beginPath()
+      context.moveTo(300, 100)
+      context.lineTo(300 + 20 * i, 100)
+      context.arc(300, 100, 20 * i, 0, Math.PI / 2)
+      context.lineTo(300, 100 + 20 * i)
+      context.fill()
+    }
+  - 同样的, 如果相同透明度的图形堆叠在一起, 那么越在下方的图形, 就会变得越不透明. 在这个例子中, 就是半径越小的善行, 最后展示的效果就越不透明.
+  - ![](../image/Snipaste_2022-12-01_22-09-04.png)
 ### 线的样式
 ### 渐变
 ### 模式
@@ -372,6 +401,8 @@ context.closePath()
 ```
 ```html
 ```
+
+
 
 
 ![](../image/)
