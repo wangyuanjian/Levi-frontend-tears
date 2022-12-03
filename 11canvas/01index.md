@@ -16,6 +16,7 @@
     - [颜色](#%E9%A2%9C%E8%89%B2)
     - [透明](#%E9%80%8F%E6%98%8E)
     - [线的样式](#%E7%BA%BF%E7%9A%84%E6%A0%B7%E5%BC%8F)
+      - [miterLimit](#miterlimit)
     - [渐变](#%E6%B8%90%E5%8F%98)
     - [模式](#%E6%A8%A1%E5%BC%8F)
     - [阴影](#%E9%98%B4%E5%BD%B1)
@@ -392,15 +393,69 @@ context.closePath()
   - 同样的, 如果相同透明度的图形堆叠在一起, 那么越在下方的图形, 就会变得越不透明. 在这个例子中, 就是半径越小的善行, 最后展示的效果就越不透明.
   - ![](../image/Snipaste_2022-12-01_22-09-04.png)
 ### 线的样式
+下面的属性可以用来设置线的样式
+- `lineWidth`
+  - 设置线的宽度. 使用 `stroke()`, `strokeRect()`, 和 `strokeText()` 都可以画线
+  - ```js
+    [1, 2, 5].forEach((width, index) => {
+      context.lineWidth = width
+      context.beginPath()
+      context.moveTo(100, 100 + index * 100)
+      context.lineTo(100, 100 + index * 100 + 70)
+      context.stroke()
+      context.closePath()
+
+      context.strokeRect(150, 100 + index * 100, 50, 50)
+      context.font = '40px serif'
+      context.strokeText('Hello 早上好', 200, 100 + index * 100)
+    });
+  - ![](../image/Snipaste_2022-12-03_08-53-18.png)
+- `lineCap`
+  - 设置线端点的形状. 可选的值有下
+    - `butt`: 默认值. 端点为方形.
+    - `round`: 端点为圆形.
+    - `square`: 端点为方形, 但是额外加上一个长方形, 和线一样宽, 但只有线宽度的一半
+  - ```js
+    ['butt', 'round', 'square'].forEach((lineCap, i) => {
+      context.beginPath()
+      context.lineCap = lineCap
+      context.lineWidth = 20
+      context.moveTo(100, 100 + i * 50)
+      context.lineTo(200, 100 + i * 50)
+      context.stroke()
+      context.closePath()
+    })
+  - ![](../image/Snipaste_2022-12-03_09-10-46.png)
+- `lineJoin`
+  - 设置两条端点相交时的形状. 如果两条线方向相同, 那么 `lineJoin` 在连接处没有效果. 如果一条线退化为宽度 `0` 那么 `lineJoin` 同样没有效果
+  - `lineJoin` 可以选择以下的属性
+    - `round`: 以线共同端点为中心, 填充一个扇形, 半径等于线宽.
+    - `bevel`: 在线共同端点填充一个三角形.
+    - `miter`: 默认值. 延长线的两端直到相交, 效果是填充额外的菱形. 这个值受 `miterLimit` 的影响.
+  - ```js
+    ['round', 'bevel', 'miter'].forEach((lineJoin, i) => {
+      context.beginPath()
+      context.lineWidth = 20
+      context.lineJoin = lineJoin
+      context.moveTo(100, 100 + i * 100)
+      context.lineTo(200, 150 + i * 100)
+      context.lineTo(250, 100 + i * 100)
+      context.stroke()
+      context.closePath()
+    })
+  - ![](../image/Snipaste_2022-12-03_09-51-56.png)
+#### `miterLimit`
+正如上面的图片, 当 lineJoin 为 miter 时,   
 ### 渐变
 ### 模式
 ### 阴影
 ### Canvas 填充规则
 
-```js
+```js 
 ```
 ```html
 ```
+
 
 
 
