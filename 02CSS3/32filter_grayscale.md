@@ -35,19 +35,10 @@
 百度并没有简单地只在 `html` 上加上 `filter` 效果, 而是针对特定的元素应用了灰度效果.
 ![](../image/Snipaste_2022-12-04_16-57-13.png)
 
-首先我们看到了一个在 `MDN` 上查不到的用法 `filter: gray;` 和微软的私有属性值 `filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=1)`. 根据 [stack overflow](https://stackoverflow.com/questions/609273/convert-an-image-to-grayscale-in-html-css/8612047#8612047) 上的介绍, `filter: gray;` 是为了支持 `IE 6-9`. 那 IE 10-11 怎么办呢? 😬不好意思, 根据 [stack overflow](https://stackoverflow.com/questions/14813142/internet-explorer-10-how-to-apply-grayscale-filter/14818991#14818991) IE 10-11 并不向 IE 9 和更早的 IE 版本支持 filter 了
+首先我们看到了一个在 `MDN` 上查不到的用法 `filter: gray;` 和微软的私有属性值 `filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=1)`. 根据 [stack overflow](https://stackoverflow.com/questions/609273/convert-an-image-to-grayscale-in-html-css/8612047#8612047) 上的介绍, `filter: gray;` 是为了支持 `IE 6-9`. 那 `IE 10-11` 怎么办呢? 😬不好意思, 根据 [stack overflow](https://stackoverflow.com/questions/14813142/internet-explorer-10-how-to-apply-grayscale-filter/14818991#14818991) `IE 10-11` 并不像 `IE 9` 和更早的 `IE` 版本支持 `DX filters` 了. 所以在 `IE 11` 上百度首页右上角的登录按钮仍然是蓝色, 但是如果换成 `IE 9`, 登录按钮就变灰了.
 
-
- 大家可以访问 [这个链接🔗](https://learn.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/ms532847(v=vs.85)?redirectedfrom=MSDN#Downlevel_Support) 和 [stack overflowde 这个链接🔗](https://stackoverflow.com/questions/21813872/filter-gray-image-black-around-png-ie8). 在微软的这篇文章中可以看到 `filter: gray;` 是 `IE 4` 的语法, 在 `IE 5.5` 以后就变成后面的私有属性值语法. 可以看到, 这是网站为了兼容 `IE` 浏览器做出的努力.
-
-![](../image/Snipaste_2022-12-04_20-26-24.png)
-
-
-
-
-[](https://learn.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/ms532972(v=vs.85))
-
-
+![](../image/Snipaste_2022-12-05_20-59-39.png)
+![](../image/Snipaste_2022-12-05_21-00-06.png)
 
 ### `saturate()`
 其实嘞, 使用另一个 `filter` 的属性 `saturate(0)` 也可以实现灰度效果. 但是我也不知道为啥没有人用, 当然还可以看到最后一张图是 `200%` 的饱和度, 颜色更加鲜艳了.
@@ -67,10 +58,4 @@
 ```
 ![](../image/Snipaste_2022-12-04_20-09-41.png)
 
-
-
-```css
-```
-
-
-![](../image/)
+谢谢你看到这里😊
