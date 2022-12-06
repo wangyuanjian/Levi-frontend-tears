@@ -445,7 +445,30 @@ context.closePath()
     })
   - ![](../image/Snipaste_2022-12-03_09-51-56.png)
 #### `miterLimit`
-正如上面的图片, 当 lineJoin 为 miter 时,   
+正如上面的图片, 当 `lineJoin` 为 `miter` 时, 相交线的外侧边缘延长至相交. 如果两条线之间的角度较大, 那么这个外侧边缘交点离内侧边缘焦点不会太远. 但是如果角度较小, 那么内侧焦点和外侧焦点之间的距离(`miter length`, `miter` 是「锯齿」的意思)就会指数级增长.
+
+`miterLimit` 属性决定了外侧焦点距离内侧焦点可以多远. 如果超过了, 那么就会使用 `bevel` 的效果. `miterLimit` 属性的默认值为 `10`. 这个属性只影响最后的渲染效果, 如果当前显示有缩放或者其他变换, 也不会影响 `miterLimit` 的效果.
+
+![](../image/Snipaste_2022-12-05_22-29-29.png)
+从上面看到, 一个公式
+> `miterLimit = max minterLength / lineWidth = 1 / sin( min(θ / 2) )`
+
+所以, 将默认值 `10` 带入上面的公式, 可以得到 `min(θ / 2) = 0.2`, `θ` 约为 `11` 度, 也就是默认值 `10` 可以阻止所有角度小于 `11` 的度的相交线的效果. 如果 `miterLimit` 是 `√2` 可以阻止所有的锐角. `miterLimit` 小于 `1` 是不合法的因为 `sin` 值不可能大于 `1`. 所以总结一下就是 `θ` 越大, `miterLimit` 越大;
+
+```js
+context.lineWidth = 20;
+[1, 1.5, 2, 3, 6, 10].forEach((limit, i) => {
+  context.beginPath()
+  context.miterLimit = limit
+  context.moveTo(0 + i * 100, 0)
+  context.lineTo(100 + i * 100, 100)
+  context.lineTo(100 + i * 100 - i * 10, 20)
+  context.stroke()
+  context.closePath()
+})
+```
+![](../image/Snipaste_2022-12-06_21-14-27.png)
+
 ### 渐变
 ### 模式
 ### 阴影
@@ -455,6 +478,7 @@ context.closePath()
 ```
 ```html
 ```
+
 
 
 
