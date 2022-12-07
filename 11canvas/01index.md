@@ -17,6 +17,7 @@
     - [透明](#%E9%80%8F%E6%98%8E)
     - [线的样式](#%E7%BA%BF%E7%9A%84%E6%A0%B7%E5%BC%8F)
       - [miterLimit](#miterlimit)
+    - [虚线](#%E8%99%9A%E7%BA%BF)
     - [渐变](#%E6%B8%90%E5%8F%98)
     - [模式](#%E6%A8%A1%E5%BC%8F)
     - [阴影](#%E9%98%B4%E5%BD%B1)
@@ -469,6 +470,62 @@ context.lineWidth = 20;
 ```
 ![](../image/Snipaste_2022-12-06_21-14-27.png)
 
+### 虚线
+`setLineDash` 和 `lineDashOffset` 方法用来绘制虚线.
+- `setLineDash`
+  - 指定如何绘制虚线. 接收数组为参数. 数组的前两个元素分别制定虚线中实线部分的长度和实线与实线之间的间隔.
+  - 如果数组为空, 那么画出来就是实线. 如果数组中元素的个数为基数, 那么数组元素就会被整体扩充编程偶数个数. 比如 `[1, 3, 2]` 就会被扩充为 `[1, 3, 2, 1, 3, 2]`
+  - ```js
+    [
+      [5, 10],
+      [5, 2, 10, 2, 5, 20],
+      [20, 6],
+      []
+    ].forEach((array, i) => {
+      context.beginPath()
+      context.lineWidth = 5
+      context.setLineDash(array)
+      context.moveTo(100, 100 + i * 20)
+      context.lineTo(300, 100 + i * 20)
+      context.stroke()
+    })
+
+    context.setLineDash([5, 10])
+    context.strokeRect(400, 100, 100, 100)
+    context.beginPath()
+    context.arc(600, 150, 50, 0, Math.PI * 2)
+    context.stroke()
+  - ![](../image/Snipaste_2022-12-07_21-55-56.png)
+- `lineDashOffset`
+  - 设置虚线的偏移. 默认值是 `0.0`. 先看例子, 不然感觉很多人会误解这个偏移是什么意思
+  - ```js
+    // 正的offset
+    for (let i = 0; i < 20; i++) {
+      context.beginPath()
+      context.setLineDash([90, 10])
+      context.lineWidth = 3
+      context.lineDashOffset = i * 10
+      context.moveTo(100, 50 + i * 10)
+      context.lineTo(400, 50 + i * 10)
+      context.stroke()
+      context.closePath()
+    }
+    // 负的offset
+    for (let i = 0; i < 20; i++) {
+      context.beginPath()
+      context.setLineDash([90, 10])
+      context.lineWidth = 3
+      context.lineDashOffset = i * -10
+      context.moveTo(500, 50 + i * 10)
+      context.lineTo(800, 50 + i * 10)
+      context.stroke()
+      context.closePath()
+    }
+  - ![](../image/Snipaste_2022-12-07_22-10-06.png)
+  - 所以, 偏移 `100` 的意思不是先空 `100` 再划线, 而是从线的 `100` 处开始画, 或者说把划线的起点向左⬅️移动了 `100`.
+
+上面不同的 offset 连接起来有种连续的感觉, 没错, 我们可以修改 offset 的值来实现一些动画效果.
+
 ### 渐变
 ### 模式
 ### 阴影
@@ -478,11 +535,11 @@ context.lineWidth = 20;
 ```
 ```html
 ```
-
-
-
-
-
-
 ![](../image/)
+
+
+
+
+
+
 
