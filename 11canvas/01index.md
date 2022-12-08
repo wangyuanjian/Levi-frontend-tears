@@ -524,7 +524,27 @@ context.lineWidth = 20;
   - ![](../image/Snipaste_2022-12-07_22-10-06.png)
   - 所以, 偏移 `100` 的意思不是先空 `100` 再划线, 而是从线的 `100` 处开始画, 或者说把划线的起点向左⬅️移动了 `100`.
 
-上面不同的 offset 连接起来有种连续的感觉, 没错, 我们可以修改 offset 的值来实现一些动画效果.
+上面不同的 `offset` 连接起来有种连续的感觉, 没错, 我们可以修改 `offset` 的值来实现一些动画效果.
+
+```js
+let offset = 0;
+
+function draw() {
+  context.clearRect(0, 0, canvas.width, canvas.height)
+  context.setLineDash([5, 10])
+  offset = offset < 15 ? offset + 1 : 0
+  context.lineDashOffset = offset;
+  context.strokeRect(100, 100, 100, 100)
+
+  requestAnimationFrame(draw)
+}
+
+draw()
+```
+
+![](../image/canvas-line-dash-offset.gif)
+
+在绘制的时候有一些需要注意的地方, 首先 offset
 
 ### 渐变
 ### 模式
