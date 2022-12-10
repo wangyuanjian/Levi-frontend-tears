@@ -542,11 +542,36 @@ function draw() {
 draw()
 ```
 
-![](../image/canvas-line-dash-offset.gif)
-
-在绘制的时候有一些需要注意的地方, 首先 offset
+![](../image/canvas-line-dash-offset3.gif)
 
 ### 渐变
+我们也可以在 `canvas` 中使用线形, 扩散形和锥形渐变. 下面三个方法可以返回一个 `CanvasGradient` 对象, 将这个对象赋值给 `fillStyle` 或 `strokeStyle` 即可.
+- `createLinearGradient(x0, y0, x1, y1)`
+  - 创建一个沿着 `(x0, y0)` 和 `(x1, y1)` 连线方向的线形渐变.
+  - 📖渐变的坐标是全局的. 相对于当前的坐标空间, 如果在一个图形上应用渐变, 渐变的坐标并不变成图形的渐变.
+  - `CanvasGradient` 对象有一个方法 `addColorStop()` 用来添加颜色
+  - ```html
+    <canvas width="500" height="400" role="presentation"></canvas>
+  - ```js
+    const linearGradient = context.createLinearGradient(0, 0, canvas.width, canvas.height)
+    linearGradient.addColorStop(0, '#ff3f34')
+    linearGradient.addColorStop(14 / 100, '#ffa801')
+    linearGradient.addColorStop(14*2 / 100, '#ffd32a')
+    linearGradient.addColorStop(14*3 / 100, '#05c46b')
+    linearGradient.addColorStop(14*4 / 100, '#0fbcf9')
+    linearGradient.addColorStop(14*5 / 100, '#00d8d6')
+    linearGradient.addColorStop(14*6 / 100, '#3c40c6')
+
+    context.fillStyle = linearGradient
+    context.strokeStyle = linearGradient
+    context.lineWidth = 20
+    context.strokeRect(250, 250, 100, 100)
+    context.fillRect(100, 100, 100, 100)
+    // context.fillRect(0, 0, canvas.width, canvas.height)
+  - ![](../image/Snipaste_2022-12-10_10-26-45.png)
+  - 我先准备了一个填满了整个 `canvas` 的线形渐变, 然后绘制了一个和 `canvas` 大小相同的矩形来展示渐变, 然后绘制一个小区域的矩形, 可以看到这个渐变的坐标没有适应小矩形的坐标, 小矩形只是展示了整个渐变的一部分.
+  - 整个渐变沿着左上到右下的方向.
+- 
 ### 模式
 ### 阴影
 ### Canvas 填充规则
@@ -555,6 +580,9 @@ draw()
 ```
 ```html
 ```
+
+```
+
 ![](../image/)
 
 
