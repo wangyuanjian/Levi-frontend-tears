@@ -545,7 +545,7 @@ draw()
 ![](../image/canvas-line-dash-offset3.gif)
 
 ### 渐变
-我们也可以在 `canvas` 中使用线形, 扩散形和锥形渐变. 下面三个方法可以返回一个 `CanvasGradient` 对象, 将这个对象赋值给 `fillStyle` 或 `strokeStyle` 即可.
+我们也可以在 `canvas` 中使用线形, 径向和锥形渐变. 下面三个方法可以返回一个 `CanvasGradient` 对象, 将这个对象赋值给 `fillStyle` 或 `strokeStyle` 即可.
 - `createLinearGradient(x0, y0, x1, y1)`
   - 创建一个沿着 `(x0, y0)` 和 `(x1, y1)` 连线方向的线形渐变.
   - 📖渐变的坐标是全局的. 相对于当前的坐标空间, 如果在一个图形上应用渐变, 渐变的坐标并不变成图形的渐变.
@@ -571,7 +571,34 @@ draw()
   - ![](../image/Snipaste_2022-12-10_10-26-45.png)
   - 我先准备了一个填满了整个 `canvas` 的线形渐变, 然后绘制了一个和 `canvas` 大小相同的矩形来展示渐变, 然后绘制一个小区域的矩形, 可以看到这个渐变的坐标没有适应小矩形的坐标, 小矩形只是展示了整个渐变的一部分.
   - 整个渐变沿着左上到右下的方向.
-- 
+- `createRadialGradient(x0, y0, r0, x1, y1, r1)`
+  - 创建径向渐变, 需要制定两个圆的大小和圆心坐标.
+  - 前三个参数指定径向渐变开始的圆, 分别为圆心坐标和半径(非负), 后三个参数指定径向渐变结束的圆, 分别为圆心坐标和半径(非负)
+  - ```js
+    let outerSize = 150
+    let stop1 = 0.5
+    let stop2 = 0.7
+    let stop3 = 0.9
+    const radialGradient = context.createRadialGradient(200, 200, 0, 200, 200, outerSize)
+    radialGradient.addColorStop(stop1, 'pink')
+    radialGradient.addColorStop(stop2, 'lightblue')
+    radialGradient.addColorStop(stop3, 'orange')
+
+    context.fillStyle = radialGradient
+    context.beginPath()
+    context.arc(200, 200, 1000, 0, Math.PI * 2)
+    context.fill()
+    context.closePath()
+
+    context.beginPath()
+    context.arc(200, 200, 3, 0, Math.PI * 2)
+    context.arc(200 + stop1 * outerSize, 200, 3, 0, Math.PI * 2)
+    context.arc(200 + stop2 * outerSize, 200, 3, 0, Math.PI * 2)
+    context.arc(200 + stop3 * outerSize, 200, 3, 0, Math.PI * 2)
+    context.arc(200, 200, outerSize, 0, Math.PI * 2)
+    context.stroke()
+  - 可以看到渐变与 `CSS` 中的渐变规则一致
+  - ![](../image/Snipaste_2022-12-11_22-15-18.png)
 ### 模式
 ### 阴影
 ### Canvas 填充规则
