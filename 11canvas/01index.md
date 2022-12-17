@@ -599,7 +599,44 @@ draw()
     context.stroke()
   - 可以看到渐变与 `CSS` 中的渐变规则一致
   - ![](../image/Snipaste_2022-12-11_22-15-18.png)
+- `createConicGradient(startAngle, x, y)`
+  - 围绕一个点创建锥形渐变. startAngle 是渐变开始的弧度, 弧度从 3 点钟方向开始计算, 顺时针.
+  - ```js
+    const conicGradient = context.createConicGradient(0, 200, 200)
+    conicGradient.addColorStop(0, '#fff')
+    conicGradient.addColorStop(1, '#111')
+    context.fillStyle = conicGradient
+    context.fillRect(0, 0, canvas.width, canvas.height)
+  - ![](../image/Snipaste_2022-12-15_21-51-34.png)
 ### 模式
+- `createPattern(image, repetition)` 
+  - 这个方法使用给定的图像和重复次数创建一个模式(`pattern`), 返回 `CanvasPattern` 类型的对象.
+  - 这个方法也不会直接绘制任何内容, 必须将返回值赋值给 `fillStyle` 或 `strokeStyle` 才行.
+  - 参数介绍
+    - `image`: 可以是下面的类型
+      - `HTMLImageElement` (`<img>`)
+      - `SVGImageElement` (`<image>`)
+      - `HTMLVideoElement` (`<video>`)
+      - `HTMLCanvasElement` (`<canvas>`)等
+    - `repetition`: 模式如何重复
+      - `repeat`: 在 `x` 和 `y` 两个方向重复
+      - `repeat-x`: 在 `x` 方向重复
+      - `repeat-y`: 在 `y` 方向重复
+      - `no-repeat`: 不重复
+      - 如果这个值是空字符串(`''`)或者 `null`, 值将会是 `repetition`.
+  - 如果图像没有完全加载, 那么 `createPattern` 将返回 `null`
+  - ```html
+    <img src="" alt="" id="repeat" width="200" height="200" srcset="https://avatars.githubusercontent.com/u/25260234?v=4">
+    <canvas width="600" height="500" role="presentation"></canvas>
+  - ```js
+    const img = document.getElementById('repeat')
+    img.onload = () => {
+      const pattern = context.createPattern(img, 'repeat')
+      context.fillStyle = pattern
+      context.fillRect(0, 0, canvas.width, canvas.height)
+    }
+  - 可以看到的是, 虽然我们限制了 `<img>` 的大小, 但是 createPattern 使用的是图片的原始大小.
+  - ![](../image/Snipaste_2022-12-17_20-10-20.png)
 ### 阴影
 ### Canvas 填充规则
 
