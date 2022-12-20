@@ -638,6 +638,45 @@ draw()
   - 可以看到的是, 虽然我们限制了 `<img>` 的大小, 但是 createPattern 使用的是图片的原始大小.
   - ![](../image/Snipaste_2022-12-17_20-10-20.png)
 ### 阴影
+使用阴影需要下面四个属性
+- `shadowOffsetX` 和 `shadowOffsetY`
+  - 水平/垂直方向阴影的偏移
+  - 当且仅当 `shadowColor` 属性为非透明颜色时才会绘制阴影. 另外 `shadowOffsetX`, `shadowBlur`, 或 `shadowOffsetY` 三个属性中必须有一个不是 `0`.
+  - `shadowOffsetX`: 这个属性值是浮点数. 正数表示阴影向右偏移, 负数阴影向左偏移. 默认值为 `0`, 不偏移. `Infinity` 或者 `NaN` 的值将被忽略.
+  - `shadowOffsetY`: 正数表示阴影向下偏移, 负数向上偏移
+  - ```js
+    // 阴影
+    context.shadowColor = 'pink'
+    context.shadowOffsetX = 20
+    context.shadowOffsetY = 20
+
+    context.fillRect(100, 100, 100, 100)
+
+    context.shadowOffsetX = -20
+    context.shadowOffsetY = -20
+    context.beginPath()
+    context.arc(300, 200, 50, 0, Math.PI * 2)
+    context.fill()
+    context.closePath()
+
+    // 取消阴影
+    context.shadowOffsetX = 0
+    context.shadowOffsetY = 0
+    context.fillRect(300, 0, 100, 100)
+  - ![](../image/Snipaste_2022-12-18_09-16-45.png)
+- `shadowBlur`
+  - 设置阴影的模糊大小. 默认值为 0, 即阴影不模糊.
+  - 这个值不能是非负, 这个值并不是像素值, 也不会收到当前变换矩阵的影响.
+  - ```js
+    context.shadowColor = 'pink';
+    context.shadowOffsetX = 20;
+    context.shadowOffsetY = 20;
+
+    [2, 5, 10, 20, 30].forEach((shadowBlur, index) => {
+      context.shadowBlur = shadowBlur
+      context.fillRect(0 + index * 130, 100, 100, 100);
+    })
+  - ![](../image/Snipaste_2022-12-20_09-04-05.png)
 ### Canvas 填充规则
 
 ```js 
