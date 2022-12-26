@@ -639,6 +639,17 @@ draw()
   - ![](../image/Snipaste_2022-12-17_20-10-20.png)
 ### 阴影
 使用阴影需要下面四个属性
+- `shadowColor`
+  - 指定阴影的颜色, 默认颜色是黑色(`#00000000`, 全 透明黑). 注意阴影的透明度会受到 `fillStyle` 或者 `strokeStyle` 的影响.
+  - ```js
+    // 阴影
+    context.shadowColor = 'pink';
+    context.shadowOffsetX = 5;
+    context.shadowOffsetY = 2;
+
+    context.font = '35px PingFang'
+    context.fillText('Merry Christmas', 100, 100)
+  - ![](../image/Snipaste_2022-12-20_21-33-55.png)
 - `shadowOffsetX` 和 `shadowOffsetY`
   - 水平/垂直方向阴影的偏移
   - 当且仅当 `shadowColor` 属性为非透明颜色时才会绘制阴影. 另外 `shadowOffsetX`, `shadowBlur`, 或 `shadowOffsetY` 三个属性中必须有一个不是 `0`.
@@ -678,13 +689,32 @@ draw()
     })
   - ![](../image/Snipaste_2022-12-20_09-04-05.png)
 ### Canvas 填充规则
+当调用 fill 方法时, 可以提供一个可选的参数, 参数指定了填充的算法. 这个算法决定了一个点(point)是在一个路径的内部还是外部, 从而是否绘制这个点. 当路径与自己相交或嵌套时会特别有用.
+
+这个参数仅有两个可选值
+- `nonzero`: 默认填充规则.
+- `evenodd`: 另一种填充规则. 随便在平面找一点, 通过这点向任意方向画一条无限远的直线箭头, 看这个箭头穿过了几条路径. 如果是奇数, 这个点就是在图形内部, 否则在外部.
+```js
+context.beginPath();
+[4, 3, 2, 1].forEach(radius => {
+  context.arc(200, 200, radius * 30, 0, Math.PI * 2)
+})
+context.fill('evenodd')
+
+context.beginPath();
+[4, 3, 2, 1].forEach(radius => {
+  context.arc(450, 200, radius * 30, 0, Math.PI * 2)
+})
+context.fill()
+```
+![](../image/Snipaste_2022-12-26_22-08-24.png)
 
 ```js 
 ```
 ```html
 ```
 
-```
+```·
 
 ![](../image/)
 
