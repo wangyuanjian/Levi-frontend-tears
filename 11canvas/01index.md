@@ -22,6 +22,11 @@
     - [模式](#%E6%A8%A1%E5%BC%8F)
     - [阴影](#%E9%98%B4%E5%BD%B1)
     - [Canvas 填充规则](#canvas-%E5%A1%AB%E5%85%85%E8%A7%84%E5%88%99)
+  - [文字](#%E6%96%87%E5%AD%97)
+    - [绘制文字](#%E7%BB%98%E5%88%B6%E6%96%87%E5%AD%97)
+    - [文字样式](#%E6%96%87%E5%AD%97%E6%A0%B7%E5%BC%8F)
+    - [高级文字测量](#%E9%AB%98%E7%BA%A7%E6%96%87%E5%AD%97%E6%B5%8B%E9%87%8F)
+    - [可访问性](#%E5%8F%AF%E8%AE%BF%E9%97%AE%E6%80%A7)
 
 <!-- /TOC -->
 
@@ -709,12 +714,37 @@ context.fill()
 ```
 ![](../image/Snipaste_2022-12-26_22-08-24.png)
 
+## 文字
+### 绘制文字
+绘制文字有两个方法 `fillText` 和 `strokeText`
+- `fillText(text, x, y, [maxWidth])`
+  - 在指定的作为填充文字, 根据当前的 `fillStyle` 为填充颜色. 一个可选的参数是 `maxWidth`, 用来指定文字的最大宽度. 如果超过这个参数浏览器可能使用更小的字号或者紧凑文字来达到要求. 如果没有指明这个参数, 那么文字没有最大宽度限制.
+  - 这个方法不会直接在 `canvas` 上绘制文字而不修改当前的路径, 因此后续调用的 `fill()` 或 `stroke()` 对文字无影响.
+  - ```js
+    context.font = '20px PingFang';
+    [80, 100, 120, 160].forEach((maxWidth, index) => {
+      context.fillStyle = '#111'
+      context.fillText('Happy New Year', 100, 100 + index * 20, maxWidth)
+      context.fillStyle = 'red'
+      context.fillRect(100, 100 + index * 20, 3, 3)
+    })
+
+    context.fillText('Hello, World', 0, 0)
+  - 从下面的文字可以看出来, `fillText` 的 `x` 和 `y` 参数不是文字的左上角, 而是左下角. 而且在宽度不够时, 文字被「挤压」
+  - ![](../image/Snipaste_2022-12-27_21-09-56.png)
+- `strokeText`: 同上
+### 文字样式
+- `font`
+  - 指定当前文字的字体. 和 CSS font 属性语法相同. 默认值是 `10px sans-serif`
+- `textAlign`
+- `textBaseline`
+- `direction`
+### 高级文字测量
+### 可访问性
 ```js 
 ```
 ```html
 ```
-
-```·
 
 ![](../image/)
 
