@@ -1,3 +1,17 @@
+<!-- TOC -->
+
+- [Promise 之基础](#promise-%E4%B9%8B%E5%9F%BA%E7%A1%80)
+  - [Promise 构造函数](#promise-%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0)
+    - [参数 executor](#%E5%8F%82%E6%95%B0-executor)
+    - [返回值](#%E8%BF%94%E5%9B%9E%E5%80%BC)
+    - [总结流程](#%E6%80%BB%E7%BB%93%E6%B5%81%E7%A8%8B)
+  - [thenable 对象](#thenable-%E5%AF%B9%E8%B1%A1)
+  - [resolve 函数](#resolve-%E5%87%BD%E6%95%B0)
+  - [then](#then)
+    - [返回值](#%E8%BF%94%E5%9B%9E%E5%80%BC)
+
+<!-- /TOC -->
+
 ## Promise 之基础
 这里强烈推荐 [B站技术蛋老师](https://www.bilibili.com/video/BV1QV411a7Hu) 关于 `Promise` 的介绍, 很好懂哦.
 
@@ -104,11 +118,94 @@ setTimeout(() => {
   - 调用 `resolve` 或 `reject` 并不会让 `promise` 立刻变成 `settled` 状态(`fulfilled` 或 `rejected`), 因为如果调用 `resolve` 时传入的是另一个 `thenable` 对象, 那么 `promise` 的最终状态还是会匹配 `thenable` 的最终状态.
 - 一旦 `promise` 变为 `settled`, 那么它就会调用那些由 `then()`, `catch()` 或 `finally()` 注册的处理函数. 并且 `promise` `resolve` 的参数或 `reject` 的参数都会成为这些注册的处理函数的输入.
 
-#### 啥是 thenable
+### thenable 对象
+上面说了很多 `thenable` 对象, 那么什么是 `thenable` 呢? 答案很简单, 属性包含 `then` 并且 `then` 是可调用函数的对象就是 `thenable` 对象.
+### `resolve` 函数
+`resolve` 函数有如下一些特征
+- 如果 `resolve` 的参数是 `p`(也就是 `new Promise` 的返回值), 那么 `p` 就会变成 `rejected` 并抛出 `TypeError`. 下面的代码中我特意加了延迟, 不然 `resolve` 调用时的 `p` 的值还是 `undefined` 呢.
+  - ```js
+    let p;
+    p = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(p)
+      }, 1000)
+    })
+    p.then(res => { console.log('---', res) })
+    .catch(err => { console.log('what happened ? ', err) })
+  - ![](../image/Snipaste_2022-12-29_22-05-20.png)
+- 如果 `resolve` 的参数不是 `thenable` 对象, 即是原始类型或者不是 `thenable` 对象(对象没有属性的名字为 `then` 或者属性 `then` 不是可调用方法), 那么 `promise` 的状态就立刻变为 `fulfilled`.
+- 如果 `resolve` 的参数是一个 `thenable` 值(包括另一个 `Promise` 对象), 那么 `thenable` 的 `then` 方法就会被保存起来并在将来被调用. `then` 方法和 `executor` 一样也会接收两个函数为参数, 这两个函数与 `resolve` 和 `reject` 的行为完全相同. 如果调用 `then` 方法时抛出了异常, 那么当前的 `promise` 会变成 `rejected`.
 
+### then()
+`then()` 方法接收两个函数作为参数, 这两个函数分别是 `Promise` 完成和失败的处理函数.
+- `onFulfilled`: 参数可选. 在 `Promise` 完成时异步调用的函数. 这个函数有一个参数, 就是 `Promise` 完成时调用 `resolve` 的参数. 如果 `onFulfilled` 不是函数, 那么它就会被内部替换为箭头函数(`(x) => x`) 并传入 `onFulfilled`
+- `onRejected`: 参数可选, 在 `Promise` 变为 `rejected` 状态时异步调用的函数. 这个函数只有一个参数, 就是 `Promise` 失败的原因. 如果 `onRejected` 不是函数, 处理同上.
+```js
+new Promise(resolve => {
+  resolve(1)
+}).then(
+  value => { console.log('Promise fulfilled with ', value) },
+  err => { console.log('Promise rejected with reason ', err) }
+)
+```
+#### 返回值
+`then()` 会立刻返回一个新的 `Promise` 对象 `p`, `p` 被返回时总是 pending 状态.
+
+`then()` 的两个函数参数总有一个会异步执行. `p` 的行为取决于这两个函数的执行状态, 规则如下
+- `返回一个值`: `p` 变为 `fulfilled` 并且返回值就是 `p` 的值
+  - ```js
+    let p1 = Promise.resolve(1).then(value => value)
+    console.log('p1',p1)
+    setTimeout(() => {
+      console.log('p1',p1)
+    }, 1000)
+    
+    let p2 = Promise.reject('Boom').then(null, err => err)
+    console.log('p2',p2)
+    setTimeout(() => {
+      console.log('p2',p2)
+    }, 1000)
+  - 正如规则中所说, `p` 返回时总是 `pending`. 并且 `onFulfilled` 和 `onRejected` 都是异步调用的, 所以我们没办法知道 `p` 的状态什么时候会变成 `resolved`.
+  - ![](../image/Snipaste_2022-12-30_09-55-03.png)
+- `什么也不返回`: `p` 变成 `fulfilled` 并且 `p` 的值为 `undefined`
+- `抛出异常`: `p` 便成 `rejected` 并且 `p` 的值为异常
+  - ```js
+    let p = Promise.resolve(1).then(() => {
+      throw new Error('What happened.')
+    })
+    setTimeout(() => {
+      console.log('p',p)
+    }, 1000)
+  - ![](../image/Snipaste_2022-12-30_18-24-19.png)
+- `返回一个状态为 fulfilled 的 promise`: `p` 变为 `fulfilled` 并且 `p` 的值就是返回的 `promise` 的值 
+- `返回一个状态为 rejected 的 promise`: `p` 变为 `rejected` 并且 `p` 的值就是返回的 `promise` 的值
+  - ```js
+    let p = Promise.resolve(1).then(() => Promise.resolve(10))
+    setTimeout(() => {
+      console.log('p',p)
+    }, 1000)
+
+    let p1 = Promise.resolve(1).then(() => Promise.reject('SAD'))
+    setTimeout(() => {
+      console.log('p1',p1)
+    }, 1000)
+  - ![](../image/Snipaste_2022-12-30_18-29-59.png)
+- `返回另一个状态为 pending 的 promise`: `p` 的状态跟随 `promise` 的状态变化. `p` 的完成值与 `promise` 的值相同.
+  - ```js
+    let person = {
+      name: 'Levi'
+    }
+    let p = Promise.resolve(1).then(() => new Promise(resolve => {
+      resolve(person)
+    }))
+    p.then(value => {
+      console.log(value === person) // true
+    })
+- ``: 
 ```js
 ```
 
 ![](../image/)
+
 
 谢谢你看到这里😊
