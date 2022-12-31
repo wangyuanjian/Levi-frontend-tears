@@ -10,6 +10,7 @@
   - [then](#then)
     - [返回值](#%E8%BF%94%E5%9B%9E%E5%80%BC)
     - [链式调用](#%E9%93%BE%E5%BC%8F%E8%B0%83%E7%94%A8)
+  - [catch](#catch)
 
 <!-- /TOC -->
 
@@ -240,6 +241,53 @@ Promise.resolve(1)
   console.log('value',value) // 3
 })
 ```
+### catch()
+`catch()` 处理 `rejected` 状态的 `promise` 并返回一个 `promise`, 允许链式调用其他的 `Promise` 的方法.
+
+和 `then()` 不同 `catch()` 方法只接收一个错误处理函数 `onRejected`, 这个函数的参数就是 `promise` `reject` 的原因.
+
+`catch()` 返回一个新的 `Promise` `p`. 刚返回时, `p` 状态总是 `pending`. 如果 `onRejected` 抛出了异常或者 `onRejected` 返回了一个已经 `rejected` 的 `Promise`, 那么 `p` 最终变为 `rejected`, 否则, `p` 为 `fulfilled`.
+```js
+let p = new Promise(() => {
+  throw new Error('Bad Weather.')
+}).catch(err => {
+  console.log('Trip is cancelled because of', err.message)
+})
+```
+如果异常是在 `executor` 的内部异步函数抛出, 异常将不会被捕获
+```js
+new Promise((_, reject) => {
+  setTimeout(() => {
+    throw new Error('asd')
+  })
+}).catch(err => {
+  console.log('err',err) // never print
+})
+```
+
+在 `Promise` 的使用中, `catch()` 方法用于错误处理. 如果一个 `promise` 变为 `rejected` 但是没有错误处理函数, 那么错误就会被抛出. 当然可以在 `unhandledrejection` 这个事件中捕获到错误.
+```js
+Promise.reject('Errrr')
+window.addEventListener('unhandledrejection', err => {
+  console.log('err',err)
+})
+```
+![](../image/Snipaste_2022-12-31_15-05-06.png)
+如果一个处理函数被添加到状态已经为 `rejected` 的 `promise` 上并且这个 `promise` 已经触发了 `unhandledrejection` 事件, 那么此时会触发另一个事件 `rejectionhandled` 
+```js
+let p = Promise.reject('Errrr')
+window.addEventListener('rejectionhandled', err => {
+  console.log('err --- ',err)
+})
+setTimeout(() => {
+  p.catch(err => {})
+}, 1000)
+```
+从下图中, 刷新页面后首先报错(因为没有错误处理函数, 所以触发了 `unhandledrejection` 事件但是没有对应的 `unhandledrejection` 处理函数), 然后一秒后添加了添加了错误处理函数, 触发另一个事件 rejectionhandled
+![](../image/rejection_handled2.gif)
+
+🧊📖另一个冷知识是 `catch`() 会在内部调用 `then`() 方法, 并传递 `null`, `onRejected` 作为参数. 调用的值直接返回.
+
 ```js
 ```
 
