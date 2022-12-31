@@ -9,6 +9,7 @@
   - [resolve 函数](#resolve-%E5%87%BD%E6%95%B0)
   - [then](#then)
     - [返回值](#%E8%BF%94%E5%9B%9E%E5%80%BC)
+    - [链式调用](#%E9%93%BE%E5%BC%8F%E8%B0%83%E7%94%A8)
 
 <!-- /TOC -->
 
@@ -138,7 +139,7 @@ setTimeout(() => {
 
 ### then()
 `then()` 方法接收两个函数作为参数, 这两个函数分别是 `Promise` 完成和失败的处理函数.
-- `onFulfilled`: 参数可选. 在 `Promise` 完成时异步调用的函数. 这个函数有一个参数, 就是 `Promise` 完成时调用 `resolve` 的参数. 如果 `onFulfilled` 不是函数, 那么它就会被内部替换为箭头函数(`(x) => x`) 并传入 `onFulfilled`
+- `onFulfilled`: 参数可选. 在 `Promise` 完成时异步调用的函数. 这个函数有一个参数, 就是 `Promise` 完成时调用 `resolve` 的参数. 如果 `onFulfilled` 不是函数, 那么它就会被内部替换为箭头函数(`(x) => x`) 其中 x 就是 Promise 完成时的值.
 - `onRejected`: 参数可选, 在 `Promise` 变为 `rejected` 状态时异步调用的函数. 这个函数只有一个参数, 就是 `Promise` 失败的原因. 如果 `onRejected` 不是函数, 处理同上.
 ```js
 new Promise(resolve => {
@@ -148,6 +149,28 @@ new Promise(resolve => {
   err => { console.log('Promise rejected with reason ', err) }
 )
 ```
+在实际代码中, 我们更倾向于使用 `catch` 处理状态为 `rejected` 的 `promise` 而不是 `then` 中同时处理成功和失败两种情况.
+```js
+new Promise(resolve => {
+  resolve(1)
+}).then(value => { 
+  console.log('Promise fulfilled with ', value) 
+}).catch(err => {
+  console.log('Promise rejected with reason ', err)
+})
+```
+📖前面提过, 如果在一个 `promise` 对象上调用 `N` 个 `then` 方法, 那么这个 `promise` 最多会有 `N` 个 `onFulfilled` 和 `N` 个 `onRejected`. 所有的处理函数会按照他们被添加的顺序调用.
+📖还有就是添加 `then` 的时机, 即便 `promise` 在变为 `fulfilled` 后调用 `then`, 对应的处理函数还是可以执行.
+```js
+let p = new Promise(resolve => {
+  resolve(1)
+})
+for (let i = 0; i < 5; i++) {
+  p.then(() => { console.log(i) })
+}
+Promise.resolve(1).then(() => { console.log('我还是可以执行哦~') })
+```
+![](../image/Snipaste_2022-12-30_18-59-23.png)
 #### 返回值
 `then()` 会立刻返回一个新的 `Promise` 对象 `p`, `p` 被返回时总是 pending 状态.
 
@@ -201,7 +224,22 @@ new Promise(resolve => {
     p.then(value => {
       console.log(value === person) // true
     })
-- ``: 
+#### 链式调用
+因为 then() 方法返回新的 Promise 所以可以链式调用.
+```js
+Promise.resolve(1)
+.then(value => {
+  console.log('value',value) // 1
+  return value * 2
+})
+.then(value => {
+  console.log('value',value) // 2
+  return value + 1
+})
+.then(value => {
+  console.log('value',value) // 3
+})
+```
 ```js
 ```
 
