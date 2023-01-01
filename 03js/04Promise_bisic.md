@@ -11,6 +11,7 @@
     - [返回值](#%E8%BF%94%E5%9B%9E%E5%80%BC)
     - [链式调用](#%E9%93%BE%E5%BC%8F%E8%B0%83%E7%94%A8)
   - [catch](#catch)
+  - [finally](#finally)
 
 <!-- /TOC -->
 
@@ -287,7 +288,58 @@ setTimeout(() => {
 ![](../image/rejection_handled2.gif)
 
 🧊📖另一个冷知识是 `catch`() 会在内部调用 `then`() 方法, 并传递 `null`, `onRejected` 作为参数. 调用的值直接返回.
+### finally()
+finally() 接收函数 onFinally 为参数, onFinally 会在 promise 的状态变为 settled(fulfilled 或 rejected) 时调用, onFinally 没有参数. finally() 返回一个 Promise 对象, 从而允许链式调用.
 
+如果某些逻辑无论在 then() 中还是 catch() 中都会出现, 那么可以把这些逻辑写在 finally() 中, 就像 try...catch...finally 一样, finally() 中的逻辑总会执行. 所以如果想在 promise 状态变为 settled 是做些处理或清理工作, 就写在 onFinally 中.
+```js
+new Promise((resolve, reject) => {
+  if (new Date().getDay() === 1) {
+    reject('I hate Monday')
+  } else {
+    resolve('Let us work')
+  }
+}).finally(() => {
+  console.log('打工仔就是要工作')
+})
+```
+finally() 返回一个 Promise 对象 p. 如果 onFinally 抛出异常或者返回一个状态为 rejected 的 Promise, 那么 p 就会变成 rejected 并且 p 的值就是异常原因. 否则 onFinally 返回的值不会影响 p 的状态.
+```js
+let p = Promise.resolve(1).finally(() => {
+  return Promise.reject('coding...')
+})
+let p1 = Promise.resolve(1).finally(() => {
+  return 234
+})
+let p2 = Promise.resolve(1).finally(() => {
+  return Promise.resolve(234)
+})
+setTimeout(() => {
+  console.log('p',p) // p Promise {<rejected>: 'coding...'}
+  console.log('p1',p1) // p1 Promise {<fulfilled>: 1}
+  console.log('p2',p2) // p2 Promise {<fulfilled>: 1}
+})
+```
+finally() 与 then(onFinally, onFinally) 非常相似, 但是还有些不同
+- finally() 中当创建一个处理函数, 你可以只传递一次. 而不是像在 then() 中需要将函数声明两次或者单独为函数创建一个变量.
+- onFinally 中不接收任何参数, 使用场景就是不在乎 promise 成功的值或者失败原因.
+- finally() 的调用通常是透明的并且不修改最初的 Promise 的值.
+  - 与 `Promise.resolve(2).then(() => 77, () => {})` 不同, 这段代码返回了值最终为 77 的 promise, 而 `Promise.resolve(2).finally(() => 77)` 返回的是值最终为 2 的 promise.
+  - 类似的 `Promise.reject(3).then(() => {}, () => 88)` 返回值最终为 88 的 fulfilled promise, 但是 `Promise.reject(3).finally(() => 88)` 返回键值最终为 3 的 rejected promise.
+
+
+与 catch() 一样, finally() 也会在内部调用 then() 方法. 如果 onFinally 不是一个函数, 那么 then() 就会将 onFinally 作为 onFulfilled 和 onRejected 两个参数. 否则, then() 就会内部创建两个函数, MDN 上写了类似下面代码(代码复制自 MDN)
+```js
+promise.then(
+  (value) => Promise.resolve(onFinally()).then(() => value),
+  (reason) =>
+    Promise.resolve(onFinally()).then(() => {
+      throw reason;
+    }),
+);
+```
+📖上面的内容没写错, 我自己也是看了好几遍. 如果 onFinally 是函数, 那么要保证 onFinally 正常返回值(不是返回 rejected 的 promise 或抛出异常)跟调用 finally() 的 promise 的值相同, 那么必须写成 `then(() => value)`.
+![](../image/)
 ```js
 ```
 
