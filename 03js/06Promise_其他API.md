@@ -48,7 +48,46 @@ Promise {<pending>}
 ```
 上面的代码就是很好的示范, `Promise.resolve()` 的参数是 `thenable` 对象 `t`, `t` 的 `then` 方法的参数 `resolve` 又接收了另一个 `thenable` 对象.
 
-🚔但是不要在
+🚔但是不要在 `Promise.resolve()` 中调用一个解析自己的 thenable 对象, 这将导致无限递归.
+```js
+let thenable = {
+  then(resolve) {
+    resolve(thenable)
+  }
+}
+
+let p = Promise.resolve(thenable)
+```
+
+因为 `Promise.resolve()` 是泛型方法, 因此它可以在任何与 `Promise` 构造函数相同签名的构造函数上调用.
+```js
+function NonPromiseConstructor(executor) {
+  executor(
+    value => { console.log('Success.', value) },
+    err => { console.log('Failed!', err) }
+  )
+}
+Promise.resolve.call(NonPromiseConstructor, '2023')
+```
+![](../image/Snipaste_2023-01-05_21-57-23.png)
+在上面的代码中, `NonPromiseConstructor` 和 `Promise` 构造函数一样, 接收一个 `executor` 函数作为参数, 并且 `executor` 接受 `resolve` 和 `reject` 两个函数作为参数.
+
+但是如果这样写却失去了嵌套解析 `thenable` 的能力, 因为嵌套解析 `thenable` 是由 `Promise` 的 `resolve` 函数(就是 `executor` 的第一个参数) 实现的. 
+```js
+let thenable = {
+  then(resolve) {
+    resolve(
+      {
+        then(resolve2) {
+          resolve2(1)
+        }
+      }
+    )
+  }
+}
+Promise.resolve.call(NonPromiseConstructor, thenable)
+```
+![](../image/Snipaste_2023-01-05_22-06-49.png)
 
 ### Promise.reject
 ### Promise.race
