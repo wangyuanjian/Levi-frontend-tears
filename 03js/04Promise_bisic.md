@@ -51,6 +51,8 @@ let p = new Promise((resolve, reject) => {
 
 `resolve` 和 `reject` 是两个函数, 你可以给他们起任何名字, 在调用他们时也很简单, 他们只接收一个参数, 这个参数可以是任意类型. `resolve` 和 `reject` 分别在异步操作成功时和失败时调用. 如果调用 `resolve` 和 `reject` 时不传参数, 那么就相当于传了 `undefined`.
 
+📖`resolve` 和 `reject` 函数没有返回值.
+
 调用 `resolve` 可传入另一个 `Promise` 对象 `p1`, 此时 `new Promise` 返回的 `p` 的状态不会因为 `resolve` 的调用而变成 `fulfilled`, 而是会跟随 `resolve` 的参数 `p1` 的状态变换.
 
 另一个函数 `reject` 的语义类似抛出异常, 调用 `reject` 可以类似 `reject(new TypeError(...))`.

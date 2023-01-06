@@ -90,6 +90,36 @@ Promise.resolve.call(NonPromiseConstructor, thenable)
 ![](../image/Snipaste_2023-01-05_22-06-49.png)
 
 ### Promise.reject
+`Promise.reject(reason)` 静态方法返回带有失败原因的状态为 `rejected` 的 `Promise` 对象.
+
+为了调试, `reason` 可以是 `Error` 的一个实例. `Promise.reject()` 本质上是 `new Promise((resolve, reject) => reject(reason))` 的简写.
+```js
+let p = Promise.reject(1)
+let p1 = Promise.reject(new Promise(resolve => {
+  setTimeout(() => { resolve(1) }, 1)
+}))
+let p2 = Promise.reject({
+  then(resolve) {
+    resolve(2)
+  }
+})
+console.log('p',p) // p Promise {<rejected>: 1}
+console.log('p1',p1) // p1 Promise {<rejected>: Promise}
+console.log('p2',p2) // p2 Promise {<rejected>: {…}}
+```
+与 `Promise.resolve()` 不同, `Promise.reject()` 总是将 `reason` 包在一个新的 `Promise` 对象中, 即便 `reason` 就是 `Promise` 对象.
+
+我们也可以在非 `Promise` 的构造函数上调用 `Promise.reject()`, 前提是这个构造函数要与 `Promise` 构造函数有相同的签名.
+```js
+function NonPromiseConstructor(executor) {
+  executor(
+    value => { console.log('Success.', value) },
+    err => { console.log('Failed!', err) }
+  )
+}
+
+Promise.reject.call(NonPromiseConstructor, '为啥放假要调休')
+```
 ### Promise.race
 ### Promise.any
 ### Promise.all
