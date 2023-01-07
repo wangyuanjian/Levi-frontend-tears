@@ -189,6 +189,46 @@ let result = await promiseStatusIs(Promise.reject('Bad News'))
 console.log('result',result) // result {status: 'reject', err: 'Bad News'}
 ```
 ### Promise.any
+`Promise.any()` 静态方法接收可迭代的 `Promise` 对象集合为参数并返回一个 `Promise` 对象 `p`.
+
+返回值
+- `已经是 rejected`: 如果可迭代对象为空
+- `异步变为 fulfilled`: 当参数中的任何一个 `Promise` 变为 `fulfilled`. 并且 `p` 的值就是第一个 `fulfilled` 的 `Promise` 的值.
+- `异步变为 rejected`: 当参数中所有的 `Promise` 都变为 `rejected`. 失败的原因是一个 `AggregateError` 对象, 这个对象的 `errors` 属性为所有 `Promise` 失败原因的数组. 数组中的顺序是参数中 `Promise` 的添加顺序而不是完成顺序. 即便参数非空而且没有 `pending` 状态的 `Promise`, 返回值 `p` 仍然是异步变为 `rejected`.
+
+```js
+// 第一种返回值
+let p = Promise.any([])
+console.log('p', p) // p Promise {<rejected>: AggregateError: All promises were rejected}
+
+// 第二种返回值
+let p1 = new Promise(resolve => {
+  setTimeout(resolve, 100, '1')
+})
+let p2 = new Promise(resolve => {
+  setTimeout(resolve, 500, '2')
+})
+let p = Promise.any([p2, p1])
+console.log('p',p) // p Promise {<pending>}
+setTimeout(() => {
+  console.log('p',p) // p Promise {<fulfilled>: '1'}
+}, 1000)
+
+// 第三种情况
+let p = Promise.any([
+  Promise.reject('Monday dont want to work'),
+  Promise.reject('its raining')
+])
+console.log('p',p)
+setTimeout(() => {
+  console.log('p',p)
+}, 100)
+```
+![](../image/Snipaste_2023-01-07_09-24-10.png)
+
+`Promise.any()` 是 `Promise` 并发方法中的一个, 这个方法具有短路效应, 如果第一个 `Promise` 变为 `fulfilled`, 就不再等待参数中其他 `Promise` 完成.
+
+与 `Promise.race()` 返回第一个 `settled` 的 `Promise` 不同, `Promise.any()` 返回第一个 `fulfilled` 的 `Promise`, 它忽略所有 `rejected` 的 `Promise` 直到找到第一个 `fulfilled` 的 `Promise`.
 ### Promise.all
 ### Promise.allSettled
 ```js
