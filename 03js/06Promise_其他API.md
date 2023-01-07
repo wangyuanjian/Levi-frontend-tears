@@ -121,6 +121,73 @@ function NonPromiseConstructor(executor) {
 Promise.reject.call(NonPromiseConstructor, '为啥放假要调休')
 ```
 ### Promise.race
+`Promise.race()` 静态方法接收可迭代的 `Promise` 对象集合为参数, 并返回一个 `Promise`. 返回的 `Promise` 随着集合中第一个状态变为 `settled`(`fulfilled` 或 `rejected`) 的 `Promise` 也变为 `settled` 状态.
+
+`Promise.race()` 是 `Promise` 中的并发性方法之一. 当你关注许多异步任务中的第一个异步任务完成但是不关注这个任务是成功还是失败时, `Promise.race()` 很有用.
+```js
+let p1 = new Promise(resolve => {
+  setTimeout(resolve, 10000, 'Apple')
+})
+let p2 = new Promise(resolve => {
+  setTimeout(resolve, 1000, 'Banana')
+})
+let p = await Promise.race([p1, p2])
+console.log('p',p) // p Banana
+```
+当参数中第一个 `Promise` 变为 `settled` 时 `Promise.race()` 的返回值 `p` 才会**异步**变为 `settled`. 换句话说就是, 参数中第一个 `Promise` 变为 `fulfilled` 时参会值 `p` 变为 `fulfilled`, 或第一个 `Promise` 变为 `rejected` 时返回值 `p` 变为 `rejected`.
+
+如果参数为空, 比如空数组, 那么 `p` 将永远保持 `pending` 状态. 如果参数不为空且参数中的每一个 `Promise` 都不是 `pending` 状态, 返回值 `p` **仍然**是异步 `settle`.
+```js
+let p = Promise.race([1, Promise.resolve(2)])
+console.log('p', p)
+setTimeout(() => {
+  console.log('p after 1 second, ', p)
+}, 1000)
+```
+![](../image/Snipaste_2023-01-06_15-00-38.png)
+
+如果参数中有一个或多个非 `Promise` 值或者有一个状态已经为 `settled` 的 `Promise`, 那么 `Promise.race()` 将会找到第一个这样的值并 `settle`.
+```js
+let p1 = await Promise.race([1, Promise.resolve(2)])
+let p2 = await Promise.race([Promise.resolve(2), 1])
+console.log('p1',p1) // 1
+console.log('p2',p2) // 2
+```
+#### 应用
+可以使用 `Promise.race()` 实现网络请求超时限制.
+```js
+let rejectFallback = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    reject('Request Timeout')
+  }, 5000)
+})
+
+Promise.race([fetch('http://localhost:3000/roles'), rejectFallback])
+.then(async data => {
+  console.log('data.json()', await data.json())
+})
+.catch(err => err)
+```
+![](../image/Snipaste_2023-01-06_15-30-45.png)
+
+同样可以使用 `Promise.race()` 来侦测 `promise` 的状态.
+```js
+function promiseStatusIs(promise) {
+  const pendingStatus = {
+    status: 'pending'
+  }
+  return Promise.race([promise, pendingStatus])
+    .then(value => {
+      return value === pendingStatus ? pendingStatus : { status: 'fulfilled', value }
+    })
+    .catch(err => {
+      return { status: 'reject', err }
+    })
+} 
+
+let result = await promiseStatusIs(Promise.reject('Bad News'))
+console.log('result',result) // result {status: 'reject', err: 'Bad News'}
+```
 ### Promise.any
 ### Promise.all
 ### Promise.allSettled
