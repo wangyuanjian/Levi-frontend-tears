@@ -1,62 +1,90 @@
-# `Promise.all()`
+## `Promise.all()`
 
 来看这个的应该都在面试吧~~~😏
 
-`Promise.all()` 接收一组可迭代的 `Promise` 作为输入, 返回一个新的 `Promise` 对象, 其 `resolve` 回调的结果是输入的所有 `Promise` 的结果组成的数组.
+`Promise.all()` 接收一组可迭代的 `Promise` 作为输入, 返回一个新的 `Promise` 对象 p. 
 
-如果输入的参数为空的可迭代对象, 或者所有输入的 `Promise` 都变成已完成状态, 那么返回的 `Promise` 也会变成已完成状态.
+返回值
+- `已经变为状态 fulfilled`: 如果参数为空的可迭代集合.
+- `异步变为 fulfilled`: 参数中所有的 `Promise` 都变为 `fulfilled` 状态时, `p` 也变为 `fulfilled` 并且其值为参数所有 `Promise` `fulfilled` 的值组成的数组, 数组的顺序是 `Promise` 传递的顺序而不是完成的顺序. 即便参数不为空也没有 `pending` 状态的 `Promise`, 返回值 `p` 仍然是异步变为 `fulfilled` 状态.
+- `异步变为 rejected`: 如果参数中的任何 `Promise` 变为 `rejected` 状态并且其 `reject` 原因就是 `p` 的 `reject` 原因.
+
 ```js
-const promise1 = new Promise(resolve => {
+// 第一种返回值情况
+let p = Promise.all([])
+console.log('p',p) // p Promise {<fulfilled>: Array(0)}
+
+// 第二种返回值情况
+const p1 = new Promise(resolve => {
   setTimeout(() => {
     resolve('😀');
   }, 1000);
 });
-const promise2 = Promise.resolve(2);
-const promise3 = 1;
+const p2 = Promise.resolve(2);
+const p3 = 1;
+let p = Promise.all([p1, p2, p3])
+console.log('p',p) // p Promise {<pending>}
+setTimeout(() => {
+  console.log('p',p) // p Promise {<fulfilled>: Array(3)}
+}, 2000)
 
-
-Promise.all([promise1, promise2, promise3])
-.then((result) => {
-  console.log('result is', result);
-});
-
-// 空的可迭代对象
-Promise.all(new Set())
-.then(result => {
-  console.log('new Set() result is', result);
-});
+// 第三种返回值情况
+let p = Promise.all([
+  1,
+  Promise.reject(new Error('i broke up with ...')),
+  Promise.reject(new SyntaxError('unexpected token <'))
+])
+console.log('p',p) // p Promise {<pending>}
+setTimeout(() => {
+  console.log('p',p) // p Promise {<rejected>: Error: i broke up with ...
+}, 2000)
 ```
-![](../../image/Snipaste_2022-06-30_21-12-15.png)
+`Promise.all()` 是 `Promise` 并发方法之一. 当要依赖有很多互相关联的异步任务完成时这个方法很有用, 因为如果这些任务没完成我们不希望代码继续执行.
 
-📕虽然 `promise1` 最后才变成已完成状态, 但是在返回的结果中, 它仍然是第一个. 返回结果中的位置和其完成先后没关系, 和其在传入 `all()` 的位置有关系
+不过一旦输入的任何 `Promise` 对象变成 `rejected` 或者输入的参数非可迭代对象(比如 `null` 或者 `number` 类型),那么返回的 `Promise` 立即 `reject`, 并且 `reject` 回调的结果是第一个 `reject` 的信息或者报错信息. 而 `Promise.allSettled()` 等待参数中所有的 `Promise` 完成, 不论状态是 `fulfilled` 还是 `rejected`.
 
-不过一旦输入的任何 `Promise` 对象变成 `rejected` 或者输入的参数非可迭代对象(比如 `null` 或者 `number` 类型),那么返回的 `Promise` 立即 `reject`, 并且 `reject` 回调的结果是第一个 `reject` 的信息或者报错信息.
-
+### 短路行为
+如果参数中任何一个 `Promise` 变为 `rejected`, 那么 `Promise.all()` 会立刻变为 `rejected`.
 ```js
-const promise4 = new Promise(resolve => {
-  setTimeout(() => {
-    resolve(100);
-  }, 10000);
+let p1 = new Promise((_, reject) => {
+  setTimeout(reject, 1000, '1')
 })
-const promise5 = Promise.reject(200);
-
-Promise.all([promise4, promise5])
-.then(result => {
-  console.log('我不会执行的');
+let p2 = new Promise((_, reject) => {
+  setTimeout(reject, 2000, '2')
 })
-.catch(err => {
-  console.log('糟糕, ', err)
+let p3 = new Promise((_, reject) => {
+  setTimeout(reject, 3000, '3')
+})
+let startTime = new Date().getTime()
+Promise.all([p1, p2, p3]).catch(err => {
+  let endTime = new Date().getTime()
+  console.log('time span ', (endTime - startTime) / 1000)
+  console.log('err',err)
 })
 ```
-![](../../image/Snipaste_2022-06-30_21-14-07.png)
+![](../image/Snipaste_2023-01-07_17-14-15.png)
 
-## 输入
-`Promise.all()` 接收的是可迭代对象, 而不仅仅是数组, 数组虽然是可迭代对象, 但是 `set`, `string` 等都属于可迭代对象. 因此 `Promise.all('asd')` 会输出什么呢? 
-![](../../image/Snipaste_2022-06-30_21-15-40.png)
+当然可以改变这个结果, 参数中给每个 `Promise` 添加异常处理. 因为 `catch()` 只要返回的不是 `rejected` 的 `Promise` 或者没有抛出异常, 都会返回 `fulfilled` 的 `Promise`.
+```js
+let p1 = new Promise((_, reject) => {
+  setTimeout(reject, 1000, '1')
+})
+let p2 = new Promise((_, reject) => {
+  setTimeout(reject, 2000, '2')
+})
+let p3 = new Promise((_, reject) => {
+  setTimeout(reject, 3000, '3')
+})
+Promise.all([
+  p1.catch(error => error),
+  p2.catch(error => error),
+  p3.catch(error => error)
+]).then(value => {
+  console.log('value',value) // value (3) ['1', '2', '3']
+})
+```
 
-哈哈😄, 这是因为 `asd` 字符串类型可迭代的. 如果我们组成可迭代对象的数据(`a`, `s`, `d`)不是 `Promise` 对象, 就会被 `resolve` 变成已完成状态.
-
-## 手写 `Promise.all`
+### 手写 `Promise.all`
 面试中问到最多的就是被手写 `Promise.all` 实现
   - 首先: 判断传入的参数是否为可迭代对象, 关于可迭代对象判断, [👉请看MDN这里👈](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Iteration_protocols);
   - 其次, 如果是可迭代对象, 判断是否为空, `string` 和 `数组` 通过 `length` 属性判断, `Set` 和 `Map` 通过 `size` 属性判断;
