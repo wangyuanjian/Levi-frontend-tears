@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    a {
+      text-decoration: none;
+      color: #111;
+      font-size: 30px;
+      line-height: 1.7;
+    }
+    .text {
+      position: relative;
+    }
+    .text::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -4px;
+      height: 4px;
+      background-color: skyblue;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform ease .3s;
+    }
+    a:hover .text::before {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+  </style>
+</head>
+<body>
+  <a href="">
+    <span class="text">Happy New Year🐰</span>
+  </a>
+</body>
+</html>
