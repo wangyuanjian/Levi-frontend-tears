@@ -1,3 +1,16 @@
+<!-- TOC -->
+
+- [Promise 其他 API](#promise-%E5%85%B6%E4%BB%96-api)
+  - [Promise.resolve](#promiseresolve)
+  - [Promise.reject](#promisereject)
+  - [Promise.race](#promiserace)
+    - [应用](#%E5%BA%94%E7%94%A8)
+  - [Promise.any](#promiseany)
+  - [Promise.all](#promiseall)
+  - [Promise.allSettled](#promiseallsettled)
+
+<!-- /TOC -->
+
 ## Promise 其他 API
 ### Promise.resolve
 这个静态方法将「解析(resolve)」参数并返回 `Promise`. 
@@ -230,6 +243,7 @@ setTimeout(() => {
 
 与 `Promise.race()` 返回第一个 `settled` 的 `Promise` 不同, `Promise.any()` 返回第一个 `fulfilled` 的 `Promise`, 它忽略所有 `rejected` 的 `Promise` 直到找到第一个 `fulfilled` 的 `Promise`.
 ### Promise.all
+[在这里](./01Promise.all.md)
 ### Promise.allSettled
 ```js
 ```
