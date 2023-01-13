@@ -29,7 +29,7 @@ class Vue {
           _this._data[key] = newValue
           // 更新
           _this.deptMap.get(key).forEach(element => {
-            element.innerHTML = newValue
+            this.updateNode(element, key)
           })
         }
       }
@@ -61,9 +61,14 @@ class Vue {
   render() {
     for (let key in this._data) {
       this.deptMap.get(key).forEach(element => {
-        element.innerHTML = this._data[key]
+        this.updateNode(element, key)
       })
     }
+  }
+
+  updateNode(element, key) {
+    const deptValueReg = /\{\{(.+?)\}\}/
+    element.innerHTML = element.innerHTML.replace(deptValueReg, this._data[key])
   }
 
   bindEvent() {
