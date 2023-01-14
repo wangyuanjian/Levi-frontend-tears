@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .welcome {
+      text-decoration: none;
+      color: #111;
+      position: relative;
+      display: inline-block;
+    }
+    .welcome span {
+      margin: 2px;
+      padding: 0 1em;
+      font-size: 20px;
+      line-height: 1.5;
+      display: inline-block;
+      background-color: #fff;
+      position: relative;
+      z-index: 1;
+    }
+    .welcome::before,
+    .welcome::after {
+      content: '';
+      display: block;
+      position: absolute;
+      background-color: #ff5e57;
+      inset: 0;
+      transform: scaleX(0) scaleY(0);
+      transition: all .5s ease;
+    }
+    .welcome::before {
+      transform-origin: left bottom;
+    }
+    .welcome::after {
+      transform-origin: top right;
+    }
+    .welcome:hover::before,
+    .welcome:hover::after {
+      transform: scaleX(1) scaleY(1);
+    }
+  </style>
+</head>
+<body>
+  <a class="welcome">
+    <span>Happy New Year🐰</span>
+  </a>
+</body>
+</html>
