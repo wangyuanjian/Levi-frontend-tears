@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    a {
+      text-decoration: none;
+      color: #111;
+    }
+    .text {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      font-size: 20px;
+      line-height: 1.5;
+      width: 200px;
+      height: 30px;
+      background-color: salmon;
+      color: #fff;
+    }
+    .text::before, .text::after {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      transition: transform .5s ease;
+    }
+    .text::before {
+      content: attr(data-before);
+    }
+    .text::after {
+      left: 100%;
+      content: attr(data-after);
+    }
+    a:hover .text::before,
+    a:hover .text::after {
+      transform: translateX(-100%);
+    }
+  </style>
+</head>
+<body>
+  <a href="">
+    <span class="text" data-before="新春快乐" data-after="🐰年大吉"></span>
+  </a>
+</body>
+</html>
