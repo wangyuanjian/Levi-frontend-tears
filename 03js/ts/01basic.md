@@ -7,6 +7,7 @@
     - [TypeScript 的特性](#typescript-%E7%9A%84%E7%89%B9%E6%80%A7)
     - [安装 TypeScript](#%E5%AE%89%E8%A3%85-typescript)
   - [基础](#%E5%9F%BA%E7%A1%80)
+    - [简单命令](#%E7%AE%80%E5%8D%95%E5%91%BD%E4%BB%A4)
     - [tsconfig.json](#tsconfigjson)
     - [原始数据类型](#%E5%8E%9F%E5%A7%8B%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B)
     - [任意值any](#%E4%BB%BB%E6%84%8F%E5%80%BCany)
@@ -101,6 +102,10 @@
     - 我们约定使用 `TypeScript` 编写的文件以 `.ts` 为后缀, 用 `TypeScript` 编写 `React` 时，以 `.tsx` 为后缀. 
     - 📕即便编译报错, 仍能生成对应的 `JavaScript` 文件
 ## 基础
+### 简单命令
+1. `tsc --init`
+    - 在当前运行的命令的路径下生成 `tsconfig.json`.
+    - 我们修改 `rootDir` 和 `outDir` 两个配置项, 这两个配置项分别用于指定源文件目录和输出文件目录, 默认情况编译后的 `js` 文件会和 `ts` 文件同目录, 但是修改了这两个目录就可以的. 前提是使用 `tsc` 命令. 如果使用 `tsc` 编译某一个 `ts` 文件, 那么对应的 `js` 文件还是与 `ts` 同目录
 ### `tsconfig.json`
 1. `TypeScript` 默认将代码编译为 `ES3` 的 `JavaScript` 语法, 可以在编译选项中使用 `--target es2015` 改变其编译目标
     - ```shell
@@ -138,6 +143,8 @@
       - ```typescript
         let str1: string = 'hello'; // 'hello'
         let world: string = `hello, ${str1}`; // 'hello, hello'
+    - 📖 `name` 是一个已经定义的变量, 不能自己重新定义一个变量是 `name`
+    - ![](../../image/Snipaste_2023-02-16_21-01-21.png)
 5. `空值(void)`
     - `JavaScript` 中没有空值的概念, 在 `TypeScript` 中可以使用 `void` 表示函数没有任何返回值
       - ```typescript
