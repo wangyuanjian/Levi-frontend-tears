@@ -151,6 +151,7 @@
         function sayHello(): void {
           console.log('hello');
         }
+      - 可以在函数中 `return undefined;` 但是不能 `return` 其他任何类型, 包括 `null`
     - 声明一个 `void` 类型的变量没有任何用, 只能将 `undefined` 或 `null` 值赋给它
       - ```typescript
         let x1: void = '1'; // Type 'string' is not assignable to type 'void'
@@ -158,12 +159,14 @@
         let x3: void = null;
 6. `null` 和 `undefined`
     - 在 `TypeScript` 中, 使用 `null` 和 `undefined` 定义两个原始数据类型
-    - 和 `void` 的区别是, `null` 和 `undefined` 是所有类型的子类型, 而 `void` 类型的变量不能赋值给其他类型
+    - 和 `void` 的区别是, `null` 和 `undefined` 是所有类型的子类型, 可以赋值给所有其他类型, 但是 `void` 类型的变量不能赋值给其他类型
       - ```typescript
         a = 2;
         let x4: undefined = undefined;
         let x5: null = null;
         a = x4;
+    - 如果声明变量并赋值为 `null` 或 `undefined` 时没有为变量指定类型, 那么变量的类型为 `any`
+      - ![](../../image/Snipaste_2023-02-17_09-06-09.png)
     - `strictNullChecks`
       - 当开关是 `off`, 可能为 `null` 或 `undefined` 的值都可以正常访问, `null` 和 `undefined` 也可以被赋值给任意类型的属性.
       - 当开关是 `on`, 当一个值是 `null` 或 `undefined` 时, 需要在访问这个值的属性或方法前进行验证
