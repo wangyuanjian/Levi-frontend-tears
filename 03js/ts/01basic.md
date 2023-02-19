@@ -44,6 +44,7 @@
     - [typeof](#typeof)
     - [函数](#%E5%87%BD%E6%95%B0)
     - [函数类型表达式](#%E5%87%BD%E6%95%B0%E7%B1%BB%E5%9E%8B%E8%A1%A8%E8%BE%BE%E5%BC%8F)
+  - [- 📖忽略默认值的话, 写成这样](#--%E5%BF%BD%E7%95%A5%E9%BB%98%E8%AE%A4%E5%80%BC%E7%9A%84%E8%AF%9D-%E5%86%99%E6%88%90%E8%BF%99%E6%A0%B7)
       - [泛型函数Generic Function](#%E6%B3%9B%E5%9E%8B%E5%87%BD%E6%95%B0generic-function)
       - [重载](#%E9%87%8D%E8%BD%BD)
       - [函数中的 this](#%E5%87%BD%E6%95%B0%E4%B8%AD%E7%9A%84-this)
@@ -290,9 +291,10 @@
         color?: string;
       }
 5. `Index Signatures`
-    - 有时我们并不能提前知道一个类型的所有属性, 但是却这道这些属性值的 `shape`, 这种情况下, 可以使用 `index signature` 描述可能的值
+    - 有时我们并不能提前知道一个类型的所有属性, 但是却这道这些属性值的 `shape`, 这种情况下, 可以使用 `index signature` 描述可能的值.
       - ```typescript
         interface StringArray {
+          // [propName: propType]: valueType;
           [index: number]: string;
         }
 
@@ -314,6 +316,19 @@
         interface NumberDictionary1 {
           [index: number]: string;
           name: number;
+        }
+    - 再换一种思路理解 `index signature`. 我们知道 `JS` 中有 [类数组(array-like)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from) 的类型, 其就是有 `length` 属性又可以索引访问元素的对象, 比如函数中的 `arguments`
+      - ![](../../image/Snipaste_2023-02-19_16-39-36.png)
+      - 思考🤔如何给 `arguments` 类型注解, 首先其是对象, 有 `length` 属性, 然后可以下标访问. 答案👇.
+      - ```typescript
+        interface IArguments1 {
+          [index: number]: any;
+          length: number;
+          callee: Function;
+        }
+
+        function func() {
+          let args: IArguments1 = arguments;
         }
 6. 只读属性
     - 只读属性只能首次给对象赋值时赋值, 之后的赋值都不可以
@@ -404,6 +419,15 @@
       }
       let myArray: string[] = ['1', '2'];
       doSomething(myArray);
+    - 如果是联合类型, 就需要将联合类型加上圆括号
+    - ```typescript
+      let array: (string | number)[] = ['1', 2, '3']
+    - 如果用 interface 来对数组进行类型注解
+    - ```typescript
+      interface List {
+        [index: number]: number;
+      }
+      const list: List = [1, 2, 3]
 3. `ReadonlyArray`
     - `ReadonlyArray` 是特殊的类型, 描述的是只读的数组
     - ```typescript
@@ -2062,7 +2086,7 @@
             return _exhaustiveCheck;
         }
       }
-### 函数
+ ### 函数
 ### 函数类型表达式
 1. 描述函数最简单的方式就是`函数类型表达式`, 这种类型在语法上很像箭头函数
     - ```typescript
@@ -2082,7 +2106,21 @@
       function greeter1(fn: GreetFunction) {
         fn('Hello, World');
       }
-2. 可调用签名
+2. 结构赋值
+    - ```typescript
+      interface NameType {
+        first: string;
+        last: string
+      }
+      // 结构复制: 类型 = 默认值
+      function func1({first, last}: NameType = { first: 'zhang', last: 'san' }) {
+      }
+    - 📖忽略默认值的话, 写成这样
+      - 下面是解构赋值的语法, 即从对象中结构出 `first` 然后赋值给变量 `first`
+      - ```typescript
+        function func2({first: first = '2'}) {
+        }
+3. 可调用签名
     - 在 `JavaScript` 中, `functions` 是可以有属性以备调用的. 但是在上面的函数类型表达式是没办法添加额外属性的, 因此如果我们想要函数可调用, 可以在对象类型中增加 `可调用签名`
     - ```typescript
       type DescribableFunction = {
@@ -2116,7 +2154,7 @@
       );
       doSomething(isNegative);
     - 观察上面三种调用方式, 基本上 `DescribableFunction` 就是一个函数, 外加一个描述属性. 因此三种调用方式基本上都是围绕着函数构造的.
-3. 构造签名(`Construct Signatures`)
+4. 构造签名(`Construct Signatures`)
     - `JavaScript` 中函数仍然可使用 `new` 调用, `TypeScript` 在 `可调用签名` 之前加上 `new` 关键字即为 `构造签名` 
     - ```typescript
       type SomeConstructor = {
