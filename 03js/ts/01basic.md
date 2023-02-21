@@ -37,14 +37,13 @@
       - [成员可见性](#%E6%88%90%E5%91%98%E5%8F%AF%E8%A7%81%E6%80%A7)
       - [静态成员](#%E9%9D%99%E6%80%81%E6%88%90%E5%91%98)
       - [泛型类](#%E6%B3%9B%E5%9E%8B%E7%B1%BB)
-      - [this](#this)
+      - [ThisType](#thistype)
       - [抽象类和抽象方法](#%E6%8A%BD%E8%B1%A1%E7%B1%BB%E5%92%8C%E6%8A%BD%E8%B1%A1%E6%96%B9%E6%B3%95)
       - [其他](#%E5%85%B6%E4%BB%96)
     - [narrowing](#narrowing)
     - [typeof](#typeof)
     - [函数](#%E5%87%BD%E6%95%B0)
     - [函数类型表达式](#%E5%87%BD%E6%95%B0%E7%B1%BB%E5%9E%8B%E8%A1%A8%E8%BE%BE%E5%BC%8F)
-  - [- 📖忽略默认值的话, 写成这样](#--%E5%BF%BD%E7%95%A5%E9%BB%98%E8%AE%A4%E5%80%BC%E7%9A%84%E8%AF%9D-%E5%86%99%E6%88%90%E8%BF%99%E6%A0%B7)
       - [泛型函数Generic Function](#%E6%B3%9B%E5%9E%8B%E5%87%BD%E6%95%B0generic-function)
       - [重载](#%E9%87%8D%E8%BD%BD)
       - [函数中的 this](#%E5%87%BD%E6%95%B0%E4%B8%AD%E7%9A%84-this)
@@ -1684,7 +1683,7 @@
           this.contents = value;
         }
       }
-#### `this`
+#### `ThisType`
 1. `TypeScript` 不会改变 `JavaScript` 的运行时行为. 
     - ```typescript
       class MyClass2 {
@@ -1715,7 +1714,7 @@
       console.log(g === c4.getName); // true
       console.log('g in arrow', g()); // myClass
 3. `this` 参数
-    - 在方法或函数定义中, 有一个名为 `this` 的初始化参数在 `TypeScript` 中有特别的意义. 这个参数在编译器将将会被移除
+    - 在方法或函数定义中, 有一个名为 `this` 的初始化参数在 `TypeScript` 中有特别的意义. 这个参数在编译器编译将会被移除
     - ```typescript
       function fn1(this: boolean, x: number) {
       }
@@ -1736,8 +1735,8 @@
       const g5 = c5.getName;
       // The 'this' context of type 'void' is not assignable to method's 'this' of type 'MyClass5'
       console.log(g5());
-4. `this` 类型
-    - 类中, `this` 这种特殊的类型动态指向当前类. 下面的代码中, `set` 的返回类型时 `this` 而不是 `Box1`
+4. `class` 中的 `this` 类型
+    - 类中, `this` 这种特殊的类型动态指向当前类. 下面的代码中, `set` 的返回类型是`this` 而不是 `Box1`, 但是函数调用之后的变量类型推断时, 仍然是 `Box1`
     - ```typescript
       class Box1 {
         content: string = '';
@@ -1746,7 +1745,11 @@
           return this;
         }
       }
-    - 如果使一个类, 继承 `Box1` 那么会做更智能的类型
+
+      let a1 = new Box1()
+      let box = a1.set('hello');
+    - ![](../../image/Snipaste_2023-02-21_09-18-27.png)
+    - 如果使一个类继承 `Box1` 那么会做更智能的类型推断
     - ```typescript
       class ClearableBox extends Box1 {
         clear() {
@@ -1765,7 +1768,7 @@
           return other.content === this.content;
         }
       }
-    - 📕这不同于 `other: Box`, 因为如果有一个子类, 子类的 `sameAs` 方法将只接受从子类继承的类
+    - 📕这不同于 `other: Box1`, 因为如果有一个子类, 子类的 `sameAs` 方法将只接受从子类继承的类
     - ```typescript
       class Box1 {
         content: string = '';
@@ -1783,7 +1786,7 @@
       const b2 = new ClearableBox();
       b2.sameAs(a2);
       // Argument of type 'Box1' is not assignable to parameter of type 'ClearableBox'.
-5. `this`-based 类型守卫
+5. `this-based` 类型守卫
     - 可以在类或接口的方法的返回值的位置使用 `this is Type` 语法. 没看咋懂
     - ```typescript
       class FileSystemObject {
@@ -2402,7 +2405,7 @@
       len1([1]);
       len1(Math.random() < 0.5 ? '1' : [1]);
 #### 函数中的 `this`
-1. `TypeScript` 直到在很多情况下我们需要控制 `this` 究竟代表哪个对象, `JavaScript` 中 `this` 不能作为参数名, 因此 `TypeScript` 使用这个语法让我们声明方法体中 `this` 的类型
+1. `TypeScript` 知道在很多情况下我们需要控制 `this` 究竟代表哪个对象, `JavaScript` 中 `this` 不能作为参数名, 因此 `TypeScript` 使用这个特点让我们声明方法体中 `this` 的类型
     - ```typescript
       interface DB {
         // filter 是一个函数,不过函数参数中指定了 this 必须为 User实例
@@ -2418,6 +2421,35 @@
         return this.admin;
       });
     - 📕: 注意需要使用函数表达式而不是箭头函数来实现这种控制
+2. `--noImplicitThis`
+    - 这个配置项的值为 `true` 时, 表示 `this` 被推断为 `any` 类型时报错.
+    - ```ts
+      let obj1 = {
+        name: 'Levi',
+        sayName: function() {
+          return function() {
+            return this.name
+          }
+        }
+      }
+    - ![](../../image/Snipaste_2023-02-21_21-23-36.png)
+    - 如果想要手动消除这个错误, 那么必须指定 this 的类型究竟会指向什么类型
+    - ```ts
+      let obj1 = {
+        name: 'Levi',
+        sayName: function() {
+          // --------------这里
+          return function(this: { name: string }) {
+            return this.name
+          }
+        }
+      }
+    - 这样做之后就不会报错, 因为 `ts` 会在静态阶段检查 `this` 是否真的指向了我们手动指定的类型, 比如下面代码中直接调用 `func4()` 就会报错
+    - ```ts
+      let func3 = obj1.sayName
+      let func4 = func3()
+      let result = func4()
+    - ![](../../image/Snipaste_2023-02-21_21-29-00.png)
 #### 其他类型
 > `void`, `object`, `unknown`, `never`, `Function`
 1. 和所有类型一样, 你可以在任何地方使用这些类型, 但是他们确和函数的语境相关
