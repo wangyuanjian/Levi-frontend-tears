@@ -29,7 +29,6 @@
     - [字面量类型](#%E5%AD%97%E9%9D%A2%E9%87%8F%E7%B1%BB%E5%9E%8B)
     - [元组](#%E5%85%83%E7%BB%84)
     - [枚举](#%E6%9E%9A%E4%B8%BE)
-      - [属性修饰符](#%E5%B1%9E%E6%80%A7%E4%BF%AE%E9%A5%B0%E7%AC%A6)
     - [类](#%E7%B1%BB)
       - [类成员](#%E7%B1%BB%E6%88%90%E5%91%98)
       - [方法](#%E6%96%B9%E6%B3%95)
@@ -1270,14 +1269,6 @@
       }
     - 外部枚举和非外部枚举的一个重要不同是. 常规枚举的成员, 如果没有初始值但是这个成员的前一个成员是常量, 那么这个成员同样被当作常量. 相反, 外部枚举的成员如果没有初始值, 将会被当作计算成员.
 
-#### 属性修饰符
-1. 
-    - ```typescript
-    - ```typescript
-    - ```typescript
-    - ```typescript
-    - ```typescript
-    - ```typescript
 ### 类
 1. 最简单的类
     - ```typescript
@@ -1307,6 +1298,16 @@
       class Point2 {
         x!: number;
       }
+    - 关于属性初始化, 如下面的代码, 会对 `age` 属性报错因为在构造函数中没有对 `age` 赋值. 配置函数中有 `strictPropertyInitialization` 这一项用来强制检查属性是否有初始值或是否在构造函数中被赋值.
+    - ```ts
+      class A {
+        name: string;
+        age: number;
+        sex: string = 'male'
+        constructor(name: string) {
+          this.name = name
+        }
+      }
 2. 只读 `readonly`
     - 域可以在其前加上 `readonly` 修饰符. 这可以阻止其在 **`构造函数之外`** 的赋值.
     - ```typescript
@@ -1325,6 +1326,7 @@
       }
 
       new Greeter().name = 'n';
+    - `readonly` 不能修饰成员方法
 3. 构造函数(`Constructors`)
     - 构造函数可以重载, 可以有默认参数值. 但是
       - 构造函数不能有泛型类型参数
@@ -1351,6 +1353,7 @@
           this.k = 6;
         }
       }
+    - 不能在非构造函数或者构造函数中嵌套的函数中调用 `super()`
 #### 方法
 1. 方法就是类的函数属性
     - 在方法体中, 强势使用 `this` 来访问域或方法.
@@ -1400,6 +1403,21 @@
           }
 
           this._size = num;
+        }
+      }
+3. 通过 `super.methodName()` 的形式调用父类的方法
+    - 不能随便打印 `super`, 因为 `super` 后面必须加上函数调用表达式或者成员访问. 
+    - ```ts
+      class Base {
+        move() {
+          console.log('base class')
+        }
+      }
+      class Derived extends Base {
+        walk() {
+          // 'super' must be followed by an argument list or member access.
+          // console.log('super',super);
+          super.move()
         }
       }
 #### 类继承
@@ -1531,7 +1549,7 @@
       }
       new Greeter1().greet();
 2. `protected`
-    - `protected` 成员只在类和该类的子类中可见. 是没有办法通过子类的实例调用的.
+    - `protected` 成员`只在类和该类的子类中可见`. 是没有办法通过子类的实例调用的.
     - ```typescript
       class Greeter2 {
         public greet() {
@@ -1562,13 +1580,10 @@
       const d3 = new Derived3();
       console.log('d3.m is', d3.m); // 15
 4. 跨层级 `protected` 访问
-    - 不同的面向对象语言在是否可以通过父类实例访问父类 `protected` 成员上看法不一. `Java` 认为是合法的, 但是 `C#` 和 `C++` 认为是不和反的. `TypeScript` 同样认为不合法.
+    - 不同的面向对象语言在是否可以通过父类实例访问父类 `protected` 成员上看法不一. `Java` 认为是合法的, 但是 `C#` 和 `C++` 认为是不合法的. `TypeScript` 同样认为不合法.
     - ```typescript
       class Base4 {
         protected x: number = 1;
-      }
-      class Derived4A extends Base4 {
-        protected x: number = 5;
       }
       class Derived4B extends Base4 {
         f1(other: Derived4B) {
@@ -1602,8 +1617,10 @@
         x = 1;
         // Class 'Derived6' incorrectly extends base class 'Base5'.
       }
+    - 如果构造函数被标记为 `private`, 将直接导致该类无法被继承
+      - ![](../../image/Snipaste_2023-02-26_17-01-28.png)
 6. 跨实例的 `private` 访问
-    - 不同面向对象语言对于同一个类的不同实例是否能访问互相的 `priavte` 成员看法不同, `Java`, `C#` 允许, 但是 `Ruby` 不允许. `TypeScript` 允许跨实例的 `private` 成员访问.
+    - 不同面向对象语言对于同一个类的不同实例是否能访问互相的 `private` 成员看法不同, `Java`, `C#` 允许, 但是 `Ruby` 不允许. `TypeScript` 允许跨实例的 `private` 成员访问.
     - ```typescript
       class A1 {
         private x = 10;
@@ -1612,6 +1629,10 @@
           return other.x === this.x;
         }
       }
+    - 上面的例子并不说明 `private` 属性可以通过实例访问, 实际上 `private` 属性只能在 `class` 内访问, 上面就是这种情况
+    - ```ts
+      let a = new A1()
+      a.x; // Property 'x' is private and only accessible within class 'A1'
 #### 静态成员
 1. 静态成员并不和类的实例关联. 静态会员也有 `public`, `protected` 和 `private` 的可见性
     - ```typescript
@@ -1873,6 +1894,7 @@
       }
       const a5 = new Params(1, 2, 3);
       console.log(a5.x);
+    - 在上面的代码中, 即便 `constructor` 中没有任何代码, 在调用 `new` 时传入参数依然会给 `x, y, z` 赋值.
 2. 类表达式(`class expression`)
     - 类表达式与类声明很像, 唯一不同的是类表达式不需要名字, 尽管我们可以通过类表达式被赋值的变量访问
     - ```typescript
