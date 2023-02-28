@@ -1634,7 +1634,7 @@
       let a = new A1()
       a.x; // Property 'x' is private and only accessible within class 'A1'
 #### 静态成员
-1. 静态成员并不和类的实例关联. 静态会员也有 `public`, `protected` 和 `private` 的可见性
+1. 静态成员并不和类的实例关联. 静态成员也有 `public`, `protected` 和 `private` 的可见性
     - ```typescript
       class MyClass {
         static x = 0;
@@ -1864,21 +1864,48 @@
         name: string = 'hello';
       }
       new Derived6().printName();
-2. 抽象构造签名
-    - 有时, 你希望接受某个抽象类的子类类的构造函数, 以便创建一个类的实例
+2. 构造函数签名
+    - 有时, 你希望接受某个抽象类的子类的构造函数, 以便创建一个类的实例
     - ```typescript
       function greet(ctor: typeof Base6) {
         const instance = new ctor();
         // Cannot create an instance of an abstract class.
         instance.printName();
       }
-    - 相反, 应该这样写. emmm, 我有点不懂
+    - 相反, 应该这样写
     - ```typescript
       function greet1(ctor: new () => Base6) {
         const instance = new ctor();
-        // Cannot create an instance of an abstract class.
         instance.printName();
       }
+    - 继续, 应该如何调用 `greet1` 方法呢?
+      - 创建一个 `Base6` 的子类, 并且将子类作为参数传入
+      - ```typescript
+        class ConcreteClass implements Base6 {
+          getName(): string {
+            return this.name;
+          }
+          name: string = 'Levi';
+          printName(): void {
+          console.log('this.name',this.name)
+          }
+        }
+
+        let cc = new ConcreteClass()
+        greet1(ConcreteClass);
+      - `new () => Base6` 就是一个构造函数签名, 用于描述一个类的构造函数类型
+    - 看多点例子
+      - ```typescript
+        const myCtor: new () => Base6 = ConcreteClass;
+        const myInstance = new myCtor()
+        myInstance.printName()
+    - 如果我们想把最上面报错的 `typeof Base6` 改一改让其不报错, 应该怎么办呢? 答案就是将 `Base6` 替换为 `ConcreteClass`
+      - ```ts
+        function greet2(ctor: typeof ConcreteClass) {
+          const instance = new ctor();
+          instance.printName();
+        }
+      - 上面报错的原因就是 `typeof` 的参数如果是 `class`, 那么就表示的是类的类型, 例如 `typeof Base6` 表示的是 `Base6` 的类型, 又因为 `Base6` 是抽象类, 所以其不能实例化
 #### 其他
 1. 参数属性(`parameter property`)
     - `TypeScript` 提供特殊的语法将构造函数的参数转换成类的同名同值属性. 这就是`参数属性`, 通过在构造函数的参数前加上可见性修饰符 `public`, `protected`, `private` 或 `readonly`. 
