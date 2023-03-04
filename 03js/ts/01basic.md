@@ -302,6 +302,7 @@
     - `index signature` 类型必须是 `string` 或者 `number`
     - `string` 类型的 `index signature` 强制要求所有属性必须匹配其返回类型.🤨
       - 这是因为 `string` 类型的索引既可以通过 `obj.propName` 调用, 也可以通过 `obj['propName']` 调用.
+      - 或者说, 当使用 `number` 来索引时, `JavaScript` 会将其转换为 `string` 再去索引.
       - ```typescript
         interface NumberDictionary {
           [index: string]: number;
@@ -389,7 +390,7 @@
       // draw({ color: 'red', radius111: 12 });
     - 相交类型和继承接口有什么不同的? 主要不同在于如何处理冲突,
 #### 泛型对象类型
-1. 
+1. 泛型对象类型
     - 如果我们像创建一个又能装 `string`, 又能装 `number` 的接口, 就可以使用泛型对象类型. 下面代码的意思是, 创建了一个 `contents` 类型为 `T` 的 `T` `Box`. 当真正引用 `Box` 时, 需要使用具体的类型来替换 `T`
     - ```typescript
       interface Box<T> {
@@ -1438,7 +1439,7 @@
           console.log('pang');
         }
       }
-    - `implements` 并没有改变 `class` 或者 `class` 中的 方法本身.
+    - `implements` 并没有改变 `class` 或者 `class` 中的方法本身.
     - ```typescript
       interface Checkable {
         check(s: string): boolean;
@@ -1683,6 +1684,20 @@
       }
       new Bar();
     - ![](../../../image/Snipaste_2022-04-01_14-27-51.png)
+4. 类的静态部分
+    - `constructor` 存在于 `class` 的静态部分, 没有办法通过定义在 `interface` 中进行检查. 当 `class` 实现接口时, 只对 `class` 的实例部分做类型检查.
+    - ```ts
+      interface ClockConstructor {
+        currentDate: Date
+        new (h: number): any
+      }
+
+      // Type 'Clock' provides no match for the signature 'new (h: number): any'.
+      class Clock implements ClockConstructor {
+        currentDate: Date = new Date()
+        constructor(h: number) {
+        }
+      }
 #### 泛型类
 1. 当一个泛型类使用 `new` 实例化时, 其类型参数将会从推断
     - ```typescript
@@ -1963,6 +1978,43 @@
       fn(window);
       fn({});
       fn(fn);
+4. `typeof`
+    - ```ts
+      class Greet {
+        static content: string = 'Good Morning'
+        otherwise: string
+        constructor(otherwise: string) {
+          this.otherwise = otherwise
+        }
+      }
+
+      let G1: Greet = new Greet('bye');
+
+      let G2: typeof Greet = Greet;
+      G2.content = 'Good Evening';
+
+      let G2_instance = new G2('hi')
+    - 📖注意上文中 `G1` 与 `G2` 的不同.
+5. `interface extends class`
+    - 接口也可以继承类, 只不过这时类中 `protected` 和 `private` 没法继承, 要从 `class` 中移去
+    - ```ts
+      class Greet {
+        static content: string = 'Good Morning'
+        otherwise: string
+        constructor(otherwise: string) {
+          this.otherwise = otherwise
+        }
+        say() {
+        }
+      }
+      interface Greet1 extends Greet {
+        p: number;
+      }
+      let g11: Greet1 = {
+        p: 0,
+        otherwise: "",
+        say(){},
+      }
 ### narrowing
 1. 有一个需求, 一个函数接收一个参数, 如果是 `number` 类型就将 `input` 重复 `number` 次; 如果是 `string` 类型就将其和 `input` 拼接在一起
     - ```typescript
@@ -2036,7 +2088,7 @@
       }
     - ![](../../../image/Snipaste_2022-04-07_22-08-41.png)
 5. `instanceof narrowing`
-    - `intanceof` 是一个检查一个值是否为另一个值的实例, 实际上 `x instanceof Foo` 是检查是否 `x` 的原型链上包含 `Foo.prototype`. `TypeScript` 同样使用其进行类型 `narrowing`
+    - `instanceof` 是一个检查一个值是否为另一个值的实例, 实际上 `x instanceof Foo` 是检查是否 `x` 的原型链上包含 `Foo.prototype`. `TypeScript` 同样使用其进行类型 `narrowing`
     - ```typescript
       function logValue(x: Date | string) {
         if (x instanceof Date) {
