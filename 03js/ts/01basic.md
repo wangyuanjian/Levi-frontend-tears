@@ -14,6 +14,7 @@
     - [类型推断](#%E7%B1%BB%E5%9E%8B%E6%8E%A8%E6%96%AD)
     - [联合类型Union Types](#%E8%81%94%E5%90%88%E7%B1%BB%E5%9E%8Bunion-types)
     - [接口interface](#%E6%8E%A5%E5%8F%A3interface)
+      - [接口的基本内容](#%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%86%85%E5%AE%B9)
       - [泛型对象类型](#%E6%B3%9B%E5%9E%8B%E5%AF%B9%E8%B1%A1%E7%B1%BB%E5%9E%8B)
     - [数组的类型](#%E6%95%B0%E7%BB%84%E7%9A%84%E7%B1%BB%E5%9E%8B)
     - [函数的类型](#%E5%87%BD%E6%95%B0%E7%9A%84%E7%B1%BB%E5%9E%8B)
@@ -240,6 +241,7 @@
 ### 接口(`interface`)
 > 使用接口 (`Interfaces`) 来定义对象的类型 \
 > An interface declaration is another way to name an object type.
+#### 接口的基本内容
 1. 在 `JavaScript` 中, 组织和传递数据的基本方式是通过`对象`; 在 `TypeScript` 中, 是通过`对象类型(object types)`
     - `对象类型` 是可以匿名的
     - ```typescript
@@ -1687,19 +1689,28 @@
 4. 类的静态部分
     - `constructor` 存在于 `class` 的静态部分, 没有办法通过定义在 `interface` 中进行检查. 当 `class` 实现接口时, 只对 `class` 的实例部分做类型检查.
     - ```ts
-      interface ClockConstructor {
+      interface ClockInterface {
         currentDate: Date
-        new (h: number): any
       }
-
-      // Type 'Clock' provides no match for the signature 'new (h: number): any'.
-      class Clock implements ClockConstructor {
+      interface ClockConstructor {
+        new (h: number): any;
+        getTime(): void;
+      }
+      class Clock implements ClockInterface {
         currentDate: Date = new Date()
         constructor(h: number) {
         }
+        static getTime() {}
       }
+
+      function createClock(C: ClockConstructor, h: number) {
+        return new C(h)
+      }
+
+      const c = createClock(Clock, 1)
+    - 上面方法中 `ClockConstructor` 是构造函数接口类型, 如果要在其中添加方法的话必须是静态方法
 #### 泛型类
-1. 当一个泛型类使用 `new` 实例化时, 其类型参数将会从推断
+1. 当一个泛型类使用 `new` 实例化时, 其类型参数将会从参数推断
     - ```typescript
       class Box<Type> {
         contents: Type;
@@ -1708,6 +1719,7 @@
         }
       }
       const b = new Box('hello');
+    - 其中 `class Box<Type>` 中的泛型参数不能不写
 2. 泛型静态成员
     - 泛型类中的静态成员永远不能指向类的泛型. 因为运行时, 只有一个 `Box.defaultValue` 属性, 如果设置 `Box<string>.defaultValue` 将会改变 `Box<number>.defaultValue`, 这是不可能的.
     - ```typescript
@@ -1995,7 +2007,7 @@
 
       let G2_instance = new G2('hi')
     - 📖注意上文中 `G1` 与 `G2` 的不同.
-5. `interface extends class`
+5. 接口继承类
     - 接口也可以继承类, 只不过这时类中 `protected` 和 `private` 没法继承, 要从 `class` 中移去
     - ```ts
       class Greet {
@@ -2190,7 +2202,7 @@
             return _exhaustiveCheck;
         }
       }
- ### 函数
+### 函数
 ### 函数类型表达式
 1. 描述函数最简单的方式就是`函数类型表达式`, 这种类型在语法上很像箭头函数
     - ```typescript
@@ -2295,7 +2307,7 @@
       function firstElement(arr: any[]) {
         return arr[0];
       }
-    - 这个函数不好的点就是返回了 `any` 类型. 在 TypeScript 中, 当我们想要描述两个值之间的关系时就使用 `泛型`, 通过在函数签名中声明一个类型参数就可以啦
+    - 这个函数不好的点就是返回了 `any` 类型. 在 `TypeScript` 中, 当我们想要描述两个值之间的关系时就使用 `泛型`, 通过在函数签名中声明一个类型参数就可以啦
     - ```typescript
       function firstElement1<Type>(arr: Type[]): Type | undefined {
         return arr[0];
@@ -2310,6 +2322,7 @@
       const s1 = firstElement1<string>(['a', 'b', 'c']);
       const n1 = firstElement1<number>([1, 2, 3]);
       const u1 = firstElement1<any>([])
+    - 泛型究竟是什么, 我们知道 `let s: string`, 其中 `string` 是 `a` 的类型, 那么泛型就是 `string` 的类型, 即类型的类型
 2. 泛型类型
     - 泛型函数类型, 就像非泛型函数类型一样
     - ```typescript
@@ -2331,7 +2344,7 @@
         <T>(arg: T): T;
       }
       let myIdentity2: GenericInterfaceFn = identity;
-    - 泛型接口的代码可以进一步优化, 即将泛型参数上移. 这使得泛型参数 `T` 对接口的其他成员也都是可见的.
+    - 泛型接口的代码可以进一步优化, 即将泛型参数上移. 这使得泛型参数 `T` 对接口的其他成员也是可见的.
     - ```typescript
       interface GenericInterfaceFn1<T> {
         (arg: T): T;
@@ -2347,7 +2360,7 @@
       // function map<string, number>(arr: string[], func: (arg: string) => number): number[]
       const parsed = map(['1', '2', '3'], (n) => parseInt(n));
 3. 约束类型参数
-    - 比如我们像写一个函数, 返回两个值中更长的那个. 为了做到这个, 需要比较两个值的 `length` 属性, 因此我们约束参数类型通过 `extends` 必须拥有 `length` 属性
+    - 比如我们想写一个函数, 返回两个值中更长的那个. 为了做到这个, 需要比较两个值的 `length` 属性, 因此我们通过 `extends` 约束参数必须拥有 `length` 属性
     - ```typescript
       function longer<T extends { length: number }>(a: T, b: T) {
         if (a.length >= b.length) {
@@ -2356,11 +2369,11 @@
         return b;
       }
 
-      const longerArrag = longer([1, 2], [1, 2, 3]);
+      const longerArray = longer([1, 2], [1, 2, 3]);
       const longerString = longer('12', '123');
       const longerNumber = longer(1, 23);
       // Argument of type 'number' is not assignable to parameter of type '{ length: number; }'.
-    - 下面时使用泛型约束的常见错误
+    - 下面是使用泛型约束的常见错误
     - ```typescript
       function minLength<T extends { length: number }>(
         obj: T, minimum: number
@@ -2371,7 +2384,7 @@
         // 报错
         return { length: minimum }; 
       }
-    - 上面的函数看起来好像没问题, 函数的返回值要么是 `T` 要么是满足约束的值, 但是函数本意是返回和 `obj` 一样类型的值,, 而不是满足泛型约束的值.
+    - 上面的函数看起来好像没问题, 函数的返回值要么是 `T` 要么是满足约束的值, 但是函数本意是返回和 `obj` 一样类型的值, 而不是满足泛型约束的值.
 4. 在泛型约束中使用类型参数
     - 我们同样可以声明被另一个类型参数(`A`)约束的类型参数(`B`), 例如我们想要根据名字访问某个对象的属性, 我们需要确保对象存在该属性
     - ```typescript
@@ -2656,7 +2669,20 @@
         [k: string]: unknown;
       };
       type M = keyof Mapish; // type M = string | number
-    - 📕`M` 是 `string | number` 因为 JavaScript 的对象键总是可以转为 `string`, 例如 `obj[0]` 和 `obj['0']` hi一样的.
+    - 📕`M` 是 `string | number` 因为 `JavaScript` 的对象键总是可以转为 `string`, 例如 `obj[0]` 和 `obj['0']` hi一样的.
+3. 不同类型数据的 `keyof` 值
+    - ```ts
+      type T1 = keyof string; // number | typeof Symbol.iterator | "length" | "toString" | "charAt" ...
+      type T2 = keyof number; // "toString" | "toFixed" | "toExponential" | "toPrecision" | "valueOf" | "toLocaleString"
+      type T3 = keyof boolean; // "valueof"
+      type T4 = keyof { name: '', age: '' }; // "name" | "age"
+
+      enum Gender {
+        MALE,
+        FEMALE
+      }
+      type T5 = keyof Gender; // "toString" | "toFixed" | "toExponential" | "toPrecision" | "valueOf" | "toLocaleString"
+
 #### `Typeof`
 1. 在 `JavaScript` 中已经有了 `typeof` 修饰符, 可以用在表达式语境中. 在 `TypeScript` 新增其可以用在类型语句中以推断某个变量或属性的类型.
     - ```typescript
@@ -2674,7 +2700,7 @@
       type Predicate = (x: number) => boolean;
       type K = ReturnType<Predicate>;
       // type K = boolean
-    - 📕注意接收的时`函数类型`, 而不是`函数值`. 所以下面的写法是报错的.
+    - 📕注意接收的s是`函数类型`, 而不是`函数值`. 所以下面的写法是报错的.
     - ```typescript
       function f9() {
         return { x: 10, y: 3};
@@ -2686,7 +2712,7 @@
       type P2 = ReturnType<typeof f9>;
       // type P2 = { : number; y: number; }
 3. 限制
-    - `TypeScript` 有意限制可以作为 `typepf` 参数的表达式, 基本上, 只能在标识符(比如变量名)或者其属性上使用 typepf, 有助于帮助我们避免写一些自己以为可以但实际不可以的带啊吗
+    - `TypeScript` 有意限制可以作为 `typepf` 参数的表达式, 基本上, 只能在标识符(比如变量名)或者其属性上使用 `typeof`, 有助于帮助我们避免写一些自己以为可以但实际不可以的代码
     - ```typescript
 #### `Indexed Access Types`
 1. 我们可以使用 `Indexed Access Types` 查找某个类型上的指定属性. 当然尝试访问不存在的属性会报错
