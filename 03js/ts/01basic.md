@@ -59,7 +59,6 @@
     - [声明合并](#%E5%A3%B0%E6%98%8E%E5%90%88%E5%B9%B6)
       - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
     - [合并接口](#%E5%90%88%E5%B9%B6%E6%8E%A5%E5%8F%A3)
-      - [合并名称空间](#%E5%90%88%E5%B9%B6%E5%90%8D%E7%A7%B0%E7%A9%BA%E9%97%B4)
   - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- /TOC -->
@@ -373,8 +372,8 @@
       interface AddressWithUnit extends BasicAddress {
         unit: string;
       }
-8. 相交类型(`Intersection Types`)
-    - `TypeScript` 提供了 `相交类型`, 主要用于将已经存在的`对象类型`结合起来. 使用 `&` 符号定义相交类型. 如下面的例子, `ColorfulCircle` 要求同时拥有 `Colorful` 和 `Circle` 的所有成员.
+8. 交叉类型(`Intersection Types`)
+    - `TypeScript` 提供了 `交叉类型`, 主要用于将已经存在的`对象类型`结合起来. 使用 `&` 符号定义交叉类型. 如下面的例子, `ColorfulCircle` 要求同时拥有 `Colorful` 和 `Circle` 的所有成员.
     - ```typescript
       interface Colorful {
         color: string;
@@ -390,7 +389,24 @@
       draw({ color: 'red', radius: 12 });
       // Object literal may only specify known properties, and 'radius111' does not exist in type 'ColorfulCircle'
       // draw({ color: 'red', radius111: 12 });
-    - 相交类型和继承接口有什么不同的? 主要不同在于如何处理冲突,
+    - 交叉类型和继承接口有什么不同的? 主要不同在于如何处理冲突,
+    - ```typescript
+      function extend<T, U>(first: T, second: U): T & U {
+        let result = <T & U> {};
+        for (let key in first) {
+          (result as any)[key] = first[key]
+        }
+        for (let key in second) { 
+          if (!Object.prototype.hasOwnProperty.call(result, key)) {
+            (result as any)[key] = second[key]
+          }
+        }
+
+        return result
+      }
+
+      let r1 = extend({ name: 'Levi' }, { age: 19 })
+      console.log('r1',r1) // r1 { name: 'Levi', age: 19 }
 #### 泛型对象类型
 1. 泛型对象类型
     - 如果我们像创建一个又能装 `string`, 又能装 `number` 的接口, 就可以使用泛型对象类型. 下面代码的意思是, 创建了一个 `contents` 类型为 `T` 的 `T` `Box`. 当真正引用 `Box` 时, 需要使用具体的类型来替换 `T`
@@ -1333,7 +1349,7 @@
 3. 构造函数(`Constructors`)
     - 构造函数可以重载, 可以有默认参数值. 但是
       - 构造函数不能有泛型类型参数
-      - 构造函数没有返回类型. 它返回的就是类的实例, 既对象.
+      - 构造函数没有返回类型. 它返回的就是类的实例, 即对象.
     - ```typescript
       class Point3 {
         x: number;
@@ -2037,7 +2053,7 @@
         return padding + input;
       }
 ### typeof
-1. TypeScript 中 typeof 返回下面类型
+1. `TypeScript` 中 `typeof` 返回下面类型
     - `string`
     - `number`
     - `bigint`
@@ -2396,7 +2412,7 @@
       getProperty(x, 'a');
       getProperty(x, 'd');
       // Argument of type '"d"' is not assignable to parameter of type '"a" | "b" | "c"'.
-5. 在泛型使用 `class` 类型
+5. 在泛型使用 `class` 类型 (类类型)
     - 在 `TypeScript` 中使用泛型构建工厂时, 使用构造函数推断 `class` 类型是很有必要的.
     - ```typescript
       function create<T>(c: { new (): T }): T {
@@ -2414,7 +2430,7 @@
         hasMask: boolean = true;
       }
       class ZooKeeper {
-        nameTag: string = 'Mikle';
+        nameTag: string = 'Mike';
       }
       
       class Animal {
@@ -2547,7 +2563,7 @@
         }
       }
     - ![](../../image/Snipaste_2023-02-21_21-23-36.png)
-    - 如果想要手动消除这个错误, 那么必须指定 this 的类型究竟会指向什么类型
+    - 如果想要手动消除这个错误, 那么必须指定 `this` 的类型究竟会指向什么类型
     - ```ts
       let obj1 = {
         name: 'Levi',
@@ -2576,7 +2592,7 @@
     - 在 `JavaScript` 中, 如果一个函数不返回任何值将隐式返回 `undefined`, 但是 `void` 和 `undefined` 在 `TypeScript` 不是一回事, 稍后讨论.
 3. `object`
     - 表示任何不是基础类型的值, 基础类型包括(`string`, `number`, `bigint`, `null`, `undefined`, `symbol`, `boolean`). 这不同于空对象类型 `{}`, 也不同于全局类型 `Object`.
-    - > object 不是 Object❗ 总是使用 object
+    - > `object` 不是 `Object❗` 总是使用 `object`
     - 在 `JavaScript` 中, 函数是对象. 在 `TypeScript` 中函数同样是 `object`
 4. `unknown`
     - 表示任何值, 有些像 `any` 但是 `unknown` 更安全, 因为访问 `unknown` 的任何属性或方法都是不行的
@@ -2730,7 +2746,7 @@
     - ```typescript
       type MessageOf<T> = T['message'];
       // Type '"message"' cannot be used to index type 'T'.
-2. 索引名本身就是类型, 因此可以整体使用联合类型, keyof 或其他类型
+2. 索引名本身就是类型, 因此可以整体使用联合类型, `keyof` 或其他类型
     - ```typescript
       type I1 = Person['age' | 'name']; // string | number
       type I2 = Person[keyof Person]; // string | number | boolean
@@ -2751,7 +2767,7 @@
       // type Age2 = number
       type Age3 = Person1['age'];
       // type Age3 = number
-3. 在索引时, 只能使用`类型`, 意味着不能使用 `const` 作变量引用
+3. 在索引时, 只能使用 `类型`, 意味着不能使用 `const` 作变量引用
     - ```typescript
       const key = 'age';
       type Age4 = Person1[key];
@@ -2814,7 +2830,7 @@
       interface Email {
         message: string;
       }
-      type EmailMeesage = MessageOf<Email>;
+      type EmailMessage = MessageOf<Email>;
     - 再高级一点? 希望 `MessageOf` 接受任何类型, 如果没有 `message` 属性就默认返回 `never`? 可以将对 `T` 的约束移到外面, 使用条件类型代替!
     - ```typescript 
       type MessageOf1<T> = T extends { message: unknown } ? T['message'] : never;
@@ -2984,7 +3000,7 @@
       } */
 #### 模板字面量类型(`Template Literal Types`)
 1. 模板字面量类型基于字符串字面量类型构造, 并有通过联合类型扩展成为更多字符串的能力
-    - 模板字符串类型和 Javascript 中的模板字符串一样的语法, 不过是用在 `type` 的位置. 
+    - 模板字符串类型和 `JavaScript` 中的模板字符串一样的语法, 不过是用在 `type` 的位置. 
     - ```typescript
       type World = 'world';
       type Greeting = `hello, ${World}`;
@@ -2998,7 +3014,7 @@
       type EmailTypes2 = 'morning' | 'evening';
       type EmailIDS_NEW = `${EmailTypes1 | EmailTypes2}_email`;
       // type EmailIDS_NEW = "welcome_email" | "bye_email" | "morning_email" | "evening_email" 
-    - 来试试笛卡尔乘机版
+    - 来试试笛卡尔乘积版
     - ```typescript 
       type Way = 'weixin' | 'QQ';
       type Message = 'text' | 'audio' | 'video';
@@ -3009,7 +3025,7 @@
     - 比如一个函数 `A` 将传来的参数 `obj` 上新增加一个 `on()` 的函数. 这个 `on` 函数接收两个参数
       - `eventName: string`: 必须时 `obj` 中的某个属性名(`key`) 加上 `Changed`, 来监听这个属性的改变, 比如 `firstNameChanged`
       - `callback: (arg: ?) => void`: 当这个函数调用时, 期望传递一个和 `eventName` 对应的函数类型. 比如, 如果是 `firstName` 改变了, 期望传递 `string` 类型; 如果是 `age` 改变了, 期望传递 `number` 类型
-      - 基于上面两地, 我们可以大概写出 on 函数的签名 `on(eventName: string, callback: (arg: any) => void)`, 但是, 这个签名却没有刚才分析出的类型关系进行约束
+      - 基于上面两地, 我们可以大概写出 `on` 函数的签名 `on(eventName: string, callback: (arg: any) => void)`, 但是, 这个签名却没有刚才分析出的类型关系进行约束
     - ```typescript
       const obj = {
         firstName: 'Tom',
@@ -3027,7 +3043,7 @@
       a4.on('firstName', () => {});
       // Argument of type '"firstName"' is not assignable to parameter of type '"firstNameChanged" | "lastNameChanged" | "ageChanged"'.
 3. 模板字面量的推断
-    - 上面的例子一点不足就是没有解决 `eventName` 指代属性的类型和 `callback` 参数类型的关联. 如何做? 💡关键在于将 on 函数变为泛型函数, `泛型` 就是存在于 `eventName` 的字面量类型
+    - 上面的例子一点不足就是没有解决 `eventName` 指代属性的类型和 `callback` 参数类型的关联. 如何做? 💡关键在于将 `on` 函数变为泛型函数, `泛型` 就是存在于 `eventName` 的字面量类型
     - ```typescript 
       type PropEventSource1<T> = {
         on<Key extends string & keyof T>
@@ -3063,7 +3079,7 @@
 ### 声明合并
 1. 声明合并的意思是, 将两个同名的单独声明合并为一个定义. 合并之后的定义保留之前声明的所有特征. 当然, 不止两个, 多个同名声明也可以合并
 #### 基本概念
-1. 在 TypeScript 中, 一个声明至少创建了下面`namespace`, `type` 或 `value` 中的一个实体.
+1. 在 `TypeScript` 中, 一个声明至少创建了下面`namespace`, `type` 或 `value` 中的一个实体.
     - 名称空间声明语句, 创建了一个名称空间, 就可以使用 `.` 访问其中的属性
     - 类型声明语句, 声明了一个类型
     - 值声明语句, 创建了一个可以在输出的 `JavaScript` 中看到的值
@@ -3115,16 +3131,5 @@
         createElement(tagName: string): HTMLElement;
         createElement(tagName: any): Element;
       }
-#### 合并名称空间
-1. 
-    - ```typescript 
-    - ```typescript 
-    - ```typescript 
-    - ```typescript 
-    - ```typescript 
-    - ```typescript 
-    - ```typescript 
-    - ```typescript 
-    - ```typescript 
 ## 参考
 1. [TypeScript 入门教程](http://ts.xcatliu.com/basics/primitive-data-types.html)
