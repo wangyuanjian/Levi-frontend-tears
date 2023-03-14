@@ -720,8 +720,8 @@
       - ```shell
         npm install @types/jquery --save-dev
 ### 书写声明文件
-1. 当第三方库没有提供声明文件时, 需要自己写声明文件. 不同场景下, 声明文件的内容盒使用方式会有区别.
-2. 一个第三方库的使用场景主要有一下集中
+1. 当第三方库没有提供声明文件时, 需要自己写声明文件. 不同场景下, 声明文件的内容和使用方式会有区别.
+2. 一个第三方库的使用场景主要有一下几种
     - `全局变量`: 通过 `<script>` 标签引入第三方库, 注入全局变量;
     - `npm包`: 通过 `import foo from 'foo'`, 符合 `ES6` 语法规范; 
     - `UMD包`: 既可以通过 `<script>` 引入, 又可以通过 `import` 引入;
@@ -729,7 +729,7 @@
     - `在 npm 包或 UMD 库中扩展全局变量`: 引入 `npm` 包或 `UMD` 库后, 改变一个全局变量的结构; 
     - `模块插件`: 通过 `<script>` 或 `import` 引入后, 改变另一个模块的结构;
 3. 全局变量
-    - 使用全局变量的声明文件是, 如果是以 `npm install` 安装的, 不需要任何配置. 如果是将声明文件直接存放于当前项目, 建议放在对应的源码目录下, 如果没有生效, 可以检查 `tsconfig.json` 中的 `files`, `include` 和 `exclude` 配置
+    - 使用全局变量的声明文件时, 如果是以 `npm install` 安装的, 不需要任何配置. 如果是将声明文件直接存放于当前项目, 建议放在对应的源码目录下, 如果没有生效, 可以检查 `tsconfig.json` 中的 `files`, `include` 和 `exclude` 配置
     - 全局变量的声明文件主要有一下几种语法
       - `declare var`: 声明全局变量
       - `declare function`: 声明全局方法
@@ -798,8 +798,8 @@
           }
         }
       - `interface` 和 `type`
-        - 除了全局变量, 又是希望一些类型能暴露出来, 在类型声明文件中, 可以直接使用 `interface` 或 `type` 声明一个全局的接口或类型, 如下面的 `AjaxSettings`
-        - 但如果不像将其暴露, 可以把 `interface` 或 `type` 放在 `namespace` 中, 如下面的 `AjaxSettingsInside`
+        - 除了全局变量, 有时希望一些类型能暴露出来, 在类型声明文件中, 可以直接使用 `interface` 或 `type` 声明一个全局的接口或类型, 如下面的 `AjaxSettings`
+        - 但如果不想将其暴露, 可以把 `interface` 或 `type` 放在 `namespace` 中, 如下面的 `AjaxSettingsInside`
         - ```typescript
           interface AjaxSettings {
             method?: 'GET' | 'POST';
@@ -929,15 +929,10 @@
           // 单个导入
           import bar = foo.bar;
       - ```typescript
-      - ```typescript
-      - ```typescript
-      - ```typescript
-      - ```typescript
-      - ```typescript
 ### 内置对象
 1. `JavaScript` 中有很多内置对象, 它们可以在 `TypeScript` 中可以被当作定义好了的类型
 2. `ECMAScript` 的内置对象
-    - 包括 `Boolean`, `Date`, `Date`, `RegExp` 等.
+    - 包括 `Boolean`, `Date`, `RegExp` 等.
     - ```typescript
       let b: Boolean = new Boolean(1);
       let d: Date = new Date();
@@ -950,7 +945,7 @@
         // ...
       });
 4. `TypeScript` 核心库的定义文件
-    - 定义了苏哦有浏览器环境需要用到的类型, 并且是预置在 `TypeScript` 中的. 当使用 `Math.pow()` 等常用方法时, `TypeScript` 已经帮我们做了很多类型判断的工作.
+    - 定义了有浏览器环境需要用到的类型, 并且是预置在 `TypeScript` 中的. 当使用 `Math.pow()` 等常用方法时, `TypeScript` 已经帮我们做了很多类型判断的工作.
     - ```typescript
       Math.pow(10, '2');
       // Argument of type 'string' is not assignable to parameter of type 'number'
@@ -976,7 +971,6 @@
 ### 字面量类型
 1. 除了通常的 `string` 和 `number` 类型, 我们还可以在类型的位置使用具体的 `string` 和 `number`
     - ![](../../../image/Snipaste_2022-04-05_16-13-56.png)
-    - ```typescript
     - 换种说法, 字面量类型不能重新赋值
     - ```typescript
       let x2: 'Hello' = 'Hello';
@@ -1030,11 +1024,6 @@
           method: 'GET' ,
         } as const;
         handleRequest(req1.url, req1.method);
-      - ```typescript
-      - ```typescript
-      - ```typescript
-      - ```typescript
-      - ```typescript
 
 ### 元组
 1. 元组是另一种类型的数组, 因为元组已经明确一共有多少个元素, 并且元组每个位置的元素类型也已经确定了.
@@ -1054,7 +1043,7 @@
         pair = ['jerry', 175];
       }
       doSomething(pair);
-2. 使用s `解构赋值` 语法解构元组
+2. 使用 `解构赋值` 语法解构元组
     - ```typescript
       let pair: StringNumberPair = ['tom', 185];
       const [name1, height1] = pair;
@@ -1103,6 +1092,18 @@
         // Cannot assign to '0' because it is a read-only property.
       }
       setInfo(['hello', 2]);
+6. 访问越界元素
+    - ```typescript
+      let x: [string, number] = ['levi', 1]
+      x.push(123)
+      x.push('123')
+      x.push(false) // Argument of type 'boolean' is not assignable to parameter of type 'string | number'
+      console.log('x',x)
+    - 我们可以访问越界元素, 但是当访问越界元素时, 会使用联合类型代替
+    - ```ts
+      let x: [string, number] = ['levi', 1]
+      let x2 = x.pop()
+      // let x2: string | number | undefined
 ### 枚举
 1. 枚举允许开发者定义一组命名常量. 使用枚举可以提高文档可读性. `TypeScript` 提供了数字枚举和字符串枚举
 2. 数字枚举
