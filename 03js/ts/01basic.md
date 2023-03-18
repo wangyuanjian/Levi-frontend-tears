@@ -59,7 +59,17 @@
     - [声明合并](#%E5%A3%B0%E6%98%8E%E5%90%88%E5%B9%B6)
       - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
     - [合并接口](#%E5%90%88%E5%B9%B6%E6%8E%A5%E5%8F%A3)
-  - [参考](#%E5%8F%82%E8%80%83)
+    - [内置类型](#%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B)
+      - [Awaited<Type> v4.5+](#awaitedtype-v45)
+      - [Partial<Type>](#partialtype)
+      - [Required<Type>](#requiredtype)
+      - [Record<Keys, Type>](#recordkeys-type)
+      - [Pick<Type, Keys>](#picktype-keys)
+      - [Omit<Type, Keys>](#omittype-keys)
+      - [Awaited<Type>](#awaitedtype)
+      - [Awaited<Type>](#awaitedtype)
+      - [Awaited<Type>](#awaitedtype)
+      - [Awaited<Type>](#awaitedtype)
 
 <!-- /TOC -->
 
@@ -99,7 +109,7 @@
     - ```shell
       tsc hello.ts
     - 我们约定使用 `TypeScript` 编写的文件以 `.ts` 为后缀, 用 `TypeScript` 编写 `React` 时，以 `.tsx` 为后缀. 
-    - 📕即便编译报错, 仍能生成对应的 `JavaScript` 文件
+    - 📕即便编译报错, 仍能生成对应的 `JavaScript` 文件. 并且编译文件时将会忽略 `tsconfig.json` 中的配置, 需要手动通过 `--xxx` 的形式制定配置. 其中 `--project` 不能用于编译特定文件因为其意思是制定 `tsconfig.json`. 还有, 如果配置项的值时数组, 需要将数组值单独拎出用英文逗号无空格地拼接, 比如 `--lib NS2015,DOM` 这样
 ## 基础
 ### 简单命令
 1. `tsc --init`
@@ -704,11 +714,11 @@
 ### 声明文件
 1. 当使用第三方库时, 需要引用其声明文件才能获取对应的代码补全和接口提示等功能.
 2. 声明语句
-    - 加入我们要使用第三方库 `jQuery`, 常见方式就是在 `HTML` 中通过 `<script>` 标签引入 `jQuery`, 然后就可以使用全局变量 `$` 或 `jQuery` 了
+    - 加入我们要使用第三方库 `jQuery`, 常见方式就是在 `HTML` 中通过 `<script>` 标签引入 `jQuery`, 然后就可以使用全局变量 `$` 或 `jQuery` 了. 比如下面的代码是在 `index.ts` 下
     - ```typescript
       jQuery('#foo');
-    - 但是编辑器并不知道 `$` 或 `jQuery` 是什么, 这时就需要使用 `declare var` 来定义其类型
-    - ```typescript
+    - 但是编辑器并不知道 `$` 或 `jQuery` 是什么, 这时就需要使用 `declare var` 来定义其类型. 📖注意: 声明文件 `index.d.ts` 如果放在和 `index.ts` 同级目录下, 仍然会提示找不到, 这时候可以将 `index.d.ts` 放在 `types` 目录下, 保证 `types` 与 `index.ts` 同级
+    - ```typescript`
       declare var jQuery: (selector: string) => any;
     - 上面的 `declare var` 并没有真正定义一个变量, 而是定义了全局变量 `jQuery` 的类型, 仅仅用于编译时检查, 在编译结果中会被删除. 
     - 除了 `declare var` 之外还有很多种声明语句
@@ -3132,5 +3142,83 @@
         createElement(tagName: string): HTMLElement;
         createElement(tagName: any): Element;
       }
+### 内置类型
+#### Awaited<Type> (v4.5+)
+1. 旨在模拟 `async` 函数中的 `await` 或者 `Promise` 中的 `then()`.
+    - ```typescript 
+      type T = Awaited<number>;
+      let n1: T = 1;
+
+
+      type T22 = Awaited<Promise<string>>;
+      (async function () {
+        let name22: T22 = await new Promise((resolve: (param: string) => void) => {
+          resolve('levi')
+        })
+        console.log('name22',name22)
+      })()
+#### Partial<Type>
+1. 构建一个类型, 将 `Type` 中所有属性都设置为可选.
+    - ```typescript
+      interface P22 {
+        name: string;
+        age: number;
+      }
+
+      function updateInfo(info: Partial<P22> = { name: 'levi' }) {}
+#### Required<Type>
+1. 构建一个类型, 将 `Type` 中所有属性都设置为必需
+    - ```typescript
+      interface P23 {
+        name?: string;
+        age?: number;
+      }
+      // Property 'age' is missing in type '{ name: string; }' but required in type 'Required<P23>'
+      let p23: Required<P23> = {
+        name: 'levi'
+      }
+#### Record<Keys, Type>
+1. 构造一个对象类型, 键为 `Keys` 类型, 值为 `Type` 类型
+    - ```typescript
+      interface P22 {
+        name: string;
+        age: number;
+      }
+
+      type Gender1 = "MALE" | "FEFALE";
+      const person: Record<Gender1, P22> = {
+        MALE: { name: 'levi', age: 18 },
+        FEFALE: { name: 'levi', age: 18 },
+      }
+    - 📖 `person` 中要存在 Gender1 的所有可能的值作为键
+#### Pick<Type, Keys>
+1. 从 `Type` 中选择部分 `Keys` 来构造一个类型
+    - ```typescript
+      interface P23 {
+        name?: string;
+        age?: number;
+        address: string;
+      }
+      type NameAgeOnly = Pick<P22, "name" | "age" >
+      let p24: NameAgeOnly = {
+        name: 'levi',
+        age: 18
+      }
+
+
+      type S1 = Pick<string, "charAt" | "length">
+#### Omit<Type, Keys>
+1. 与 `Pick` 刚好相反, 从 `Type` 中删除部分 `Keys` 并用剩下的键构造一个类型
+    - ```typescript
+      type NameAgeOnly2 = Omit<P23, "address">
+      let p25: NameAgeOnly2 = {
+        name: 'levi',
+        age: 18
+      }
+#### Awaited<Type>
+#### Awaited<Type>
+#### Awaited<Type>
+#### Awaited<Type>
+```typescript
 ## 参考
 1. [TypeScript 入门教程](http://ts.xcatliu.com/basics/primitive-data-types.html)
