@@ -60,16 +60,22 @@
       - [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
     - [合并接口](#%E5%90%88%E5%B9%B6%E6%8E%A5%E5%8F%A3)
     - [内置类型](#%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B)
-      - [Awaited<Type> v4.5+](#awaitedtype-v45)
-      - [Partial<Type>](#partialtype)
-      - [Required<Type>](#requiredtype)
+      - [Awaited<Type\> v4.5+](#awaitedtype%5C-v45)
+      - [Partial<Type\>](#partialtype%5C)
+      - [Required<Type\>](#requiredtype%5C)
       - [Record<Keys, Type>](#recordkeys-type)
       - [Pick<Type, Keys>](#picktype-keys)
       - [Omit<Type, Keys>](#omittype-keys)
+      - [Exclude<UnionType, ExcludedMembers>](#excludeuniontype-excludedmembers)
+      - [Extract<Type, Union>](#extracttype-union)
+      - [NonNullable<Type\>](#nonnullabletype%5C)
+      - [Parameters<Type\>](#parameterstype%5C)
+      - [ConstructorParameters<Type\>](#constructorparameterstype%5C)
+      - [ReturnType<Type\>](#returntypetype%5C)
       - [Awaited<Type>](#awaitedtype)
       - [Awaited<Type>](#awaitedtype)
       - [Awaited<Type>](#awaitedtype)
-      - [Awaited<Type>](#awaitedtype)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- /TOC -->
 
@@ -3143,7 +3149,7 @@
         createElement(tagName: any): Element;
       }
 ### 内置类型
-#### Awaited<Type> (v4.5+)
+#### Awaited<Type\> (v4.5+)
 1. 旨在模拟 `async` 函数中的 `await` 或者 `Promise` 中的 `then()`.
     - ```typescript 
       type T = Awaited<number>;
@@ -3157,7 +3163,7 @@
         })
         console.log('name22',name22)
       })()
-#### Partial<Type>
+#### Partial<Type\>
 1. 构建一个类型, 将 `Type` 中所有属性都设置为可选.
     - ```typescript
       interface P22 {
@@ -3166,7 +3172,7 @@
       }
 
       function updateInfo(info: Partial<P22> = { name: 'levi' }) {}
-#### Required<Type>
+#### Required<Type\>
 1. 构建一个类型, 将 `Type` 中所有属性都设置为必需
     - ```typescript
       interface P23 {
@@ -3185,10 +3191,10 @@
         age: number;
       }
 
-      type Gender1 = "MALE" | "FEFALE";
+      type Gender1 = "MALE" | "FEMALE";
       const person: Record<Gender1, P22> = {
         MALE: { name: 'levi', age: 18 },
-        FEFALE: { name: 'levi', age: 18 },
+        FEMALE: { name: 'levi', age: 18 },
       }
     - 📖 `person` 中要存在 Gender1 的所有可能的值作为键
 #### Pick<Type, Keys>
@@ -3215,10 +3221,62 @@
         name: 'levi',
         age: 18
       }
+#### Exclude<UnionType, ExcludedMembers>
+1. 通过排除联合类型 `UnionType` 中的 `ExcludedMembers` 成员, 返回剩下的成员
+    - ```typescript
+      type T11 = Exclude<1 | 2 | 3, 1> // type T11 = 2 | 3
+      type T12 = Exclude<1 | 2 | 3, 1 | 2> // type T12 = 3
+#### Extract<Type, Union>
+1. 从 `Type` 中提取所有可以分配给联合类型 `Union` 的成员
+    - ```typescript
+      type T13 = Extract<1, 1 | 2 | 3> // type T13 = 1
+      type T14 = Extract<1 | 2 | '4', 1 | 2 | 3> // type T14 = 1 | 2
+#### NonNullable<Type\>
+1. 从 `Type` 中排除 `null` 和 `undefined` 来构造类型
+    - ```typescript
+      type T15 = NonNullable<string | null | undefined> // type T15 = string
+      type T16 = NonNullable<null | undefined> // type T16 = never
+#### Parameters<Type\>
+1. 从函数类型 `Type` 的参数使用的类型构造元组类型
+    - ```typescript
+      declare function f1(person: P22, newName: string): void;
+      type T17 = Parameters<() => void>; // type T17 = []
+      type T18 = Parameters<(n: string) => void>; // type T18 = [n: string]
+      type T19 = Parameters<<T>(n: T) => void>; // type T19 = [n: unknown]
+      type T20 = Parameters<(n: string, ...args: any[]) => void>; // type T20 = [n: string, ...args: any[]]
+      type T21 = Parameters<any>; // type T21 = unknown[]
+      type T23 = Parameters<never>; // type T23 = never
+      type T25 = Parameters<typeof f1>; // type T25 = [person: P22, newName: string]
+    - 📖 `Parameters` 的参数是函数类型, 所以 `Parameters<f1>` 是错误的语法, 因为 `f1` 是具体的值而不是函数类型
+#### ConstructorParameters<Type\>
+1. 从构造函数类型的类型构造元组或者数组. ConstructorParameters 生成一个包含所有参数类型的元组类型, 如果 Type 不是函数那么生成 never.
+    - ```typescript
+      class Person22 {
+        constructor(public age: number, private name: string) {
+        }
+      }
+      type MyConstructor = new (s: string) => string;
+      type T26 = ConstructorParameters<MyConstructor>; // type T26 = [s: string]
+      type T27 = ConstructorParameters<typeof Person22>; // type T27 = [age: number, name: string]
+#### ReturnType<Type\>
+1. 构造一个由函数 `Type` 的返回类型组成的类型
+    - ```typescript
+      declare function f2(): { a: number; b: string };
+      type T28 = ReturnType<() => void>; // type T28 = void
+      type T29 = ReturnType<(n: string) => string>; // type T29 = string
+      type T30 = ReturnType<<T>(n: T) => T>; // type T19 = unknown
+      type T31 = ReturnType<any>; // type T31 = any
+      type T32 = ReturnType<never>; // type T32 = never
+      /**
+      * type T33 = {
+          a: number;
+          b: string;
+        }
+      */
+      type T33 = ReturnType<typeof f2>;
 #### Awaited<Type>
 #### Awaited<Type>
 #### Awaited<Type>
-#### Awaited<Type>
-```typescript
+- ```typescript
 ## 参考
 1. [TypeScript 入门教程](http://ts.xcatliu.com/basics/primitive-data-types.html)
