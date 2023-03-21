@@ -72,9 +72,10 @@
       - [Parameters<Type\>](#parameterstype%5C)
       - [ConstructorParameters<Type\>](#constructorparameterstype%5C)
       - [ReturnType<Type\>](#returntypetype%5C)
-      - [Awaited<Type>](#awaitedtype)
-      - [Awaited<Type>](#awaitedtype)
-      - [Awaited<Type>](#awaitedtype)
+      - [InstanceType<Type\>](#instancetypetype%5C)
+      - [ThisParameterType<Type\>](#thisparametertypetype%5C)
+      - [OmitThisParameter<Type\>](#omitthisparametertype%5C)
+      - [ThisType<Type\>](#thistypetype%5C)
   - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- /TOC -->
@@ -3274,9 +3275,72 @@
         }
       */
       type T33 = ReturnType<typeof f2>;
-#### Awaited<Type>
-#### Awaited<Type>
-#### Awaited<Type>
-- ```typescript
+#### InstanceType<Type\>
+1. 构造一个由 Type 的构造函数的实例组成的类型
+    - ```typescript
+      class Person22 {
+        constructor(public age: number, private name: string) {
+        }
+      }
+      type MyConstructor = new (s: string) => string;
+
+      type T34 = InstanceType<typeof Person22>; // type T34 = Person22
+      type T35 = InstanceType<MyConstructor>; // type T35 = string
+      type T36 = InstanceType<any>; // type T36 = any
+      type T37 = InstanceType<never>; // type T37 = never
+#### ThisParameterType<Type\>
+1. 提取一个函数类型 `this` 参数的类型, 如果函数类型没有 `this` 参数, 那么返回 `unknown`
+    - ```typescript
+      function f3() {}
+      function f4(this: { name: string }) {}
+
+      type T38 = ThisParameterType<typeof f3>; // type T38 = unknown
+      /**
+      * type T39 = {
+          name: string;
+          }
+      */
+      type T39 = ThisParameterType<typeof f4>; 
+#### OmitThisParameter<Type\>
+1. 从 `Type` 中移除 `this` 参数. 如果 `Type` 中没有明确声明 `this` 参数, 那么结果就是 `Type`. 否则就根据 `Type` 创建一个没有 `Type` 参数的新的函数类型. 泛型被擦除, 只有最后一个重载签名被传到新的函数类型中.
+    - ```typescript
+      function f5(this: { name: string }) {}
+      function f6<T>(this: { name: T }): T { return this.name }
+
+      function f7(this: { name: string }, name: string): void;
+      function f7(this: { name: string }, name: number): void; // 最后一个重载参数
+      function f7(this: { name: string }, name: number | string) {}
+
+      type T40 = OmitThisParameter<typeof f5>; // type T40 = () => void
+      type T41 = OmitThisParameter<typeof f6>; // type T41 = () => unknown
+      type T42 = OmitThisParameter<typeof f7>; // type T42 = (name: number) => void
+#### ThisType<Type\>
+1. `ThisType` 不返回转换后的类型, 相反, 它标注了上下文的 `this` 类型. 📖必须要开启 `noImplicitThis` 标志才能使用 `ThisType`.
+    - ```typescript
+      type VueComponent<D, M> = {
+        data?: D;
+        methods?: M & ThisType<D & M>;
+      }
+      function initComponent<D, M>(desc: VueComponent<D, M>): D & M {
+        let data = desc.data || {}
+        let methods = desc.methods || {}
+        return {
+          ...data,
+          ...methods
+        } as D & M;
+      }
+      /**
+      * D: { x: 0, y: 0}
+      * M: { moveBy(dx: number, dy: number): void; }
+      */
+      let component = initComponent({
+        data: { x: 0, y: 0},
+        methods: {
+          moveBy(dx: number, dy: number) {
+            this.x += dx
+            this.y += dy
+          }
+        }
+      })
 ## 参考
 1. [TypeScript 入门教程](http://ts.xcatliu.com/basics/primitive-data-types.html)
