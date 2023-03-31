@@ -4,11 +4,11 @@
 
 当一个函数通过 `new` 方式调用时, 这个函数被当作一个构造函数. `new` 将做下面的事情
 1. 创建一个空的纯 `JS` 对象. 我们称之为 `newInstance`.
-2. 将 newInstance 的 `[[Prototype]]` 指向构造函数的 prototype 属性如果 prototype 是一个对象. 否则指向 Object.prototype.
-    - 📖原型链, 从构造函数创建的所有实例都可以访问添加到构造函数的 prototype 上的属性或对象
-3. 用给定的参数执行构造函数, 将 newInstance 绑定为 this 上下文. 即在构造函数中所有对 this 的引用都将指向 newInstance
-4. 如果构造函数返回 non-primitive, 那么其将作为 new 操作符的返回值返回. 否则, 如果构造函数并不返回任何值或者返回了 primitive, new 操作符返回 newInstance.
-    - 📖primitive: 指 null/undefined/string/number/boolean/bigint/symbol
+2. 将 `newInstance` 的 `[[Prototype]]` 指向构造函数的 `prototype` 属性如果 `prototype` 是一个对象. 否则指向 `Object.prototype`.
+    - 📖原型链, 从构造函数创建的所有实例都可以访问添加到构造函数的 `prototype` 上的属性或对象
+3. 用给定的参数执行构造函数, 将 `newInstance` 绑定为 `this` 上下文. 即在构造函数中所有对 `this` 的引用都将指向 `newInstance`
+4. 如果构造函数返回 `non-primitive`, 其将作为 `new` 操作符的返回值返回. 否则, 如果构造函数不返回任何值或者返回了 `primitive`, `new` 操作符返回 `newInstance`.
+    - 📖`primitive`: 指 `null/undefined/string/number/boolean/bigint/symbol`
     - 通常构造函数不返回值, 但是可以通过返回值来覆盖正常对象的返回过程.
 
 有了上面的介绍, 就可以开始写代码了
@@ -62,6 +62,4 @@ console.log('m1',m1)
 ```
 ![](../image/Snipaste_2023-03-23_21-09-47.png)
 
-
-![](../image/)
 谢谢你看到这里😊
