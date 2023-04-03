@@ -735,7 +735,31 @@ context.fill()
 - `strokeText`: 同上
 ### 文字样式
 - `font`
-  - 指定当前文字的字体. 和 CSS font 属性语法相同. 默认值是 `10px sans-serif`
+  - 指定当前文字的字体. 和 `CSS font` 属性语法相同. 默认值是 `10px sans-serif`
+  - 值可以是 `css font` 属性的任意合法值, 要知道的是 `css` 中的 `font` 必须指定 `font-size` 与 `font-family`, 这也是 `font` 的默认值是 `10px sans-serif` 的一个原因. 📖另一个要注意的是 `font-weight` 必须在 `font-size` 之前. 可以参考我之前关于 `css font` 的[介绍](../02CSS3/33font.md)
+  - ```js
+    context.font = '10px PingFang'
+    context.fillText('Hello, 你好', 10, 20)
+
+    context.font = '30px PingFang'
+    context.fillText('Hello, 你好', 10, 50)
+    context.fillRect(10, 50, 100, 1) // 画了一条辅助线
+
+    context.font = 'bold 30px PingFang'
+    context.fillText('Hello, 你好', 10, 80)
+  - ![](../image/Snipaste_2023-04-03_21-33-37.png)
+  - 如果需要使用其他字体, 比如 [Google Fonts](https://fonts.google.com/), 可以使用 `FontFace API` 
+  - ```js
+    function testLoadFont() {
+      const fontFace = new FontFace('Server Font', 'url(https://fonts.gstatic.com/s/fasthand/v26/0yb9GDohyKTYn_ZEERkiaE0Urhg0xTY.woff2)')
+
+      document.fonts.add(fontFace);
+      fontFace.load().then(() => {
+        context.font = '30px "Server Font"'
+        context.fillText('Hello, 你好', 10, 50)
+      })
+    }
+  - ![](../image/Snipaste_2023-04-03_21-52-29.png)
 - `textAlign`
 - `textBaseline`
 - `direction`
@@ -746,7 +770,8 @@ context.fill()
 ```html
 ```
 
-![](../image/)
+![](../image/.png)
+谢谢你看到这里😊
 
 
 

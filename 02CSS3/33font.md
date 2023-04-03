@@ -31,7 +31,7 @@
 - `font-style`, `font-variant`, `font-weight` 必须在 `font-size` 之前.
 - `font-variant` 只包含定义在 `CSS 2.1` 中的属性值, 也就是 `normal` 和 `small-caps`
 - `font-stretch` 只能使用单个关键词的值
-- `line-height` 必须立刻跟在 `font-size` 之后并用 / 分割, 比如 `16px/1.5` 表示 `font-size` 是 `16px`, `line-height` 是 `1.5`
+- `line-height` 必须立刻跟在 `font-size` 之后并用 `/` 分割, 比如 `16px/1.5` 表示 `font-size` 是 `16px`, `line-height` 是 `1.5`
 - `font-family` 必须是所有属性值的最后一个.
 
 ![](../image/Snipaste_2022-12-28_15-21-46.png)
