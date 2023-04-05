@@ -761,8 +761,46 @@ context.fill()
     }
   - ![](../image/Snipaste_2023-04-03_21-52-29.png)
 - `textAlign`
-- `textBaseline`
+  - 指定绘制文字时的对齐方向. 这个和 CSS 中的对齐有些不一样, CSS 中时将文字在一个宽度一定的盒子中对齐, 而是指文字相对于绘制文字的点是如何对齐的. 也就是相对于 `fillText()` 的第二个参数, `x` 坐标.
+  - 支持 `left`, `right`, `center`, `start`, `end` 五个属性. 默认是 `start`.
+  - ```js
+    function textAlignTest() {
+      context.font = '20px PingFang';
+      
+      context.textAlign = 'left'
+      context.fillText('Hello, World', 130, 100)
+
+      context.textAlign = 'center'
+      context.fillText('Hello, World', 130, 120)
+
+      context.textAlign = 'right'
+      context.fillText('Hello, World', 130, 140)
+
+      // 画一条辅助线
+      context.fillRect(130, 0, 1, 200)
+    }
+  - ![](../image/Snipaste_2023-04-04_22-07-49.png)
 - `direction`
+  - 用来指定文字的绘制方向. 上面的 `textAlign` 并没有演示 `start` 和 `end` 的情况
+  - 可以取值 `ltr`, `rtl` 和 `inherit`. 默认是 `inherit`
+  - ```js
+    function testDirection() {
+      context.font = '20px PingFang';
+      
+      context.direction = 'lrt'
+      context.textAlign = 'start'
+      context.fillText('Hello, World', 130, 100)
+      context.textAlign = 'end'
+      context.fillText('Hello, World', 130, 120)
+
+      context.direction = 'rtl'
+      context.textAlign = 'start'
+      context.fillText('Hello, World', 130, 140)
+      context.textAlign = 'end'
+      context.fillText('Hello, World', 130, 160)
+    }
+  - ![](../image/Snipaste_2023-04-04_22-28-06.png)
+- `textBaseline`
 ### 高级文字测量
 ### 可访问性
 ```js 
