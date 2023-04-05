@@ -801,7 +801,19 @@ context.fill()
     }
   - ![](../image/Snipaste_2023-04-04_22-28-06.png)
 - `textBaseline`
+  - 指定绘制文字的基线(`baseline`)
+  - 取值
+    - `top`: 基线是 `em` 盒子的顶部
+    - `handing`: 基线是悬挂基线(`hanging baseline`), 藏文和其他印度文字使用
+    - `middle`: 基线是 `em` 盒子正中间
+    - `alphabetic`: 基线是正常字母基线. 默认值
+    - `ideographic`: 基线是表意基线. 如果字符的主体突出到字母基线(`alphabetic baseline`) 的下方, 那么字符的底部就是表意基线. 中文、日文和韩文使用
+    - `bottom`: `bounding box` 的底边. 与表意基线不同的是表意基线不考虑 `descender`. 什么是 `descender` 呢? 比如小写字母 `p`, 其一部分在整个字母主体的下方, 所以在下方的就叫做 `descender`.
+  - ![](../image/Snipaste_2023-04-05_09-33-14.png)
+  - 下图是 `MDN` 中关于不同文字边界的介绍.
+  - ![](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_text/baselines.png)
 ### 高级文字测量
+如果你想获得关于文本的更多细节, 可以使用 `measureText()`
 ### 可访问性
 ```js 
 ```
