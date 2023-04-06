@@ -813,8 +813,23 @@ context.fill()
   - 下图是 `MDN` 中关于不同文字边界的介绍.
   - ![](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_text/baselines.png)
 ### 高级文字测量
-如果你想获得关于文本的更多细节, 可以使用 `measureText()`
+如果你想获得关于文本的更多细节, 可以使用 `measureText()`. 这个方法返回 `TextMetrics` 对象, 包含了测量文本的宽度等信息.
+
+```js
+function testMeasureText() {
+  context.font = '20px PingFang';
+  let text = 'Hello, 世界'
+  context.fillText(text, 10, 30)
+
+  let metrics = context.measureText(text)
+  console.log('metrics',metrics)
+}
+```
+![](../image/Snipaste_2023-04-06_21-12-18.png)
 ### 可访问性
+`<canvas>` 元素只是一个位图(bitmap), 并不提供任何关于绘制的对象的信息. 绘制的文字对需要屏幕放大的用户带来易读性问题, 这是因为 `<canvas>` 中的像素不会缩放会随着放大而模糊.
+
+如果担心访问性问题, 只能使用 `HTML` 或者 `SVG` 代替
 ```js 
 ```
 ```html
