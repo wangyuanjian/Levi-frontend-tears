@@ -1,4 +1,4 @@
-## prefers-color-scheme 与 matchMedia()
+## CSS prefers-color-scheme 与 matchMedia()
 > `prefers-color-scheme` 这个媒体查询特性用来检测用户是否设置亮色(`light`)或暗色(`dark`) 的主题色
 
 ### 使用 CSS 设置
@@ -74,5 +74,5 @@ let matchResult = window.matchMedia('(prefers-color-scheme: dark) and (max-width
 ```
 ![](../../image/Snipaste_2022-08-20_15-33-48.png)
 
-谢谢你看到这里, 希望下次可以在写在 `Vue` 中实现深色和浅色模式的切换~
+谢谢你看到这里😊, 希望下次可以在写在 `Vue` 中实现深色和浅色模式的切换~
 
