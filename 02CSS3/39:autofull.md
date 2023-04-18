@@ -1,4 +1,4 @@
-# :autofill 如何覆盖浏览器自动填充表单的样式与
+# CSS :autofill 如何覆盖浏览器自动填充表单的样式与
 
 `:autofill` 伪类匹配浏览器自动填充值的 `input` 元素. 如果用户继续编辑这个元素内容就会停止匹配.
 
@@ -48,7 +48,7 @@
 多说一嘴, 输入框外边的蓝色框框是 `outline`, 不属于自动填充的样式哦(^_^)~
 
 
-还有一个方法, 也是 [stackoverflow](https://stacko(^_^)verflow.com/questions/61083813/how-to-avoid-internal-autofill-selected-style-to-be-applied). 不过这个方法有一定的不合适, 特别在前面的方法使用起来没有明显缺陷的情况下. 这个方法就是使用过渡, 尽可能延长颜色变化的时长, 使得看起来颜色好像没有变化. 
+还有一个方法, 也是 [stackoverflow](https://stackoverflow.com/questions/61083813/how-to-avoid-internal-autofill-selected-style-to-be-applied). 不过这个方法有一定的不合适, 特别在前面的方法使用起来没有明显缺陷的情况下. 这个方法就是使用过渡, 尽可能延长颜色变化的时长, 使得看起来颜色好像没有变化. 
 ```css
 #name:-webkit-autofill,
 #name:-webkit-autofill:focus {
@@ -61,7 +61,7 @@
 通过 `color-scheme: dark;` 指定元素在自动填充时以暗色主题渲染. 可以看到暗色背景下, 背景色颜色更深. 实际上应该适应系统的颜色模式, 在暗色模式下使用 `dark`, 否则使用 `light`, 这里不具体展开
 ![](../image/Snipaste_2023-04-01_10-42-19.png)
 ## 兼容性
-谷歌浏览器和比较久的 `Firefox` 和比较久的 `Safari` 还需要使用 `-webkit-` 私有前缀. 所以保险的写法是下面这样, 都写上
+谷歌浏览器和比较旧的 `Firefox` 和比较旧的 `Safari` 还需要使用 `-webkit-` 私有前缀. 所以保险的写法是下面这样, 都写上
 ```css
 input:autofill,
 input:-webkit-autofill {
