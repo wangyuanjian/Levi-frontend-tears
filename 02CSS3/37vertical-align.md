@@ -5,17 +5,17 @@
 我们先来看一段代码, 分析一下为什么第二行的行高, 也就是 `line-height` 比第一行和第三行还要高?
 
 ```html
-<p class="border-dash-black max-w-12em text-40">
+<p class="border-dash-black max-w-12em text-40 Helvetica">
   Hello, where are you from?
   <span class="border-dash-orange Helvetica">xHelp</span>
-  <span class="border-dash-orange">xHelp</span>
+  <span class="border-dash-orange PingFang">xHelp</span>
   <span class="border-dash-orange Times-New-Roman">xHelp</span>
   I am from China.
 </p>
 ```
-![](../image/Snipaste_2023-04-30_16-21-19.png)
+![](../image/Snipaste_2023-05-01_09-27-22.png)
 
-要知道 line-height 就一定要先了解行盒子(line box), 因为 line-height 的定义就是行盒子的高度.
+要知道 line-height 就一定要先了解行盒子(`line box`), 因为 line-height 的定义就是行盒子的高度.
 
 以上面的 `<p>` 标签为例, 在英文从左到右的书写顺序下, 每一个内联标签和不在内联标签中的文字都是从左到右排列的. 由于宽度限制, 一行不能容下更多文字的情况下就会另起一行排列. 上图中一共有 3 行, 每一行其实就是一个看不见行盒子. 行盒子就是要容下这一行中所有的元素.
 
@@ -58,11 +58,76 @@
 ![](../image/Snipaste_2023-04-30_17-48-30.png)
 ![](../image/Snipaste_2023-04-13_19-13-41.png)
 
-不论什么原因, 我们都知道了字体的 line-height 的 normal 值是怎么大概计算出来的了.
+不论什么原因, 我们都知道了字体的 line-height 的 normal 值是怎么大概计算出来的了. 我们也可以回答为什么第二行比第一行和第三行还要高了, 就是因为第二行中的 PingFang 字体在设计时的 normal 行高就比 Helvetica 的行高要高. 由于行盒子要容纳一行中所有元素, 所以相应的就变高了.
+
+### 行距
+下面就出现了新的问题, 既然第二行的最高最高并且是由 PingFang 字体撑起来, 那么其他字体呢? Helvetica 和 Times New Roman 如果处理高出来部分呢? 于是引入了`行距`的概念
+
+如果我们用鼠标选中第二行出现蓝色北京, 你就会发现 Helvetica 和 Times New Roman 的橘色边框的区域处于蓝色背景垂直居中的位置. 达到这样效果就是把高出的部分一分为二, 上面放一份下面放一份. 这也就是行距.
+![](../image/Snipaste_2023-05-01_09-30-53.png)
+
+行距翻译自英文 leading, 其中 lead 的意思是铅. 在印刷时为了增加两行文字之间的距离就会在行与行之间加上铅条. 但是注意区分行距时两行文字 baseline 之间的距离, 行高是文字高度加上行距.
+
+## 进入正题
+vertical-align 字如其名, 就是垂直方向的对齐. 但是这个属性只对 display 为 inline, inline-block 和 table-cell 的元素有效, 这里我们不讨论 table-cell 😅
+
+vertical-align 的默认值就是 baseline, 也就是把子元素的 baseline 与父元素的 baseline 对齐. 我们先看一个面试题, 为什么图片的下面有一条空隙?
+
+###  从一道面试题开始
+```html
+<p class="border-dash-black">
+  <img src="../../s.jpg" width="200px" alt="">
+</p>
+```
+![](../image/Snipaste_2023-05-01_09-50-59.png)
+
+要回答这个问题需要有两个知识点
+1. `<img>` 元素本身没有 baseline, 又因为 vertical-align 的默认值是 baseline, 所以图片的下边缘刚好在父元素的下边缘.
+2. `<p>` 元素中压根没有一个字, 如何确定其 baseline 呢? 非也非也, 有东西, 只是看不见.
+    - [CSS 规范](https://www.w3.org/TR/CSS2/visudet.html#strut)中提到, 如果一个块元素由内联元素构成, 那么 line-height 指定了这个块元素的最低高度. 最低高度由两部分构成, baseline 上方的高度和 baseline 下方的高度. 好像每一个行盒子都以一个宽度为 0 的 inline 盒子开始, 这个 inline 盒子的 font-size 和 line-height 继承父元素, 规范中将这个宽度为 0 的 inline 盒子成为 strut, 其中文意思是支柱.
+    - 有了 strut 即便块元素没有任何元素, 也可以确定块元素的 baseline.
+
+有了上面两个概念, 解决这个问题就可以从两方面入手
+1. 出现空隙的本质是因为 line-height 不是 0, 我们直接把 line-height 改成 0 或者把 font-size 改成 0. (修改 font-size 也有效可以理解是因为 line-height 是相对于 font-size 计算的)
+2. 既然 vertical-align 的默认值是 baseline, 那有没有其他值, 使得图片下边缘刚好就在父元素的行盒子的下边缘呢?
+
+你别说, 还真有, 就是 bottom.
+
+### vertical 的关键字属性
+1. 第一组: 与 `line box` 有关
+    - `top`: 元素的 `上边界` 与 `line box` 的 `上边界` 对齐
+    - `bottom`: 元素的 `下边界` 与 `line box` 的 `下边界` 对齐
+2. 第二组: 与 `content area` 有关
+    - `text-top`: 元素的 `上边界` 与 `content area` 的 `上边界` 对齐
+    - `text-bottom`: 元素的 `下边界` 与 `content area` 的 `下边界` 对齐
+    - `super`: 元素的 baseline 与 `content area` 的 sup 元素的 baseline 对齐
+    - `super`: 元素的 baseline 与 `content area` 的 sub 元素的 baseline 对齐
+    - `middle`
+
+我知道你有点晕, 先别晕, 先来看下 <sup> 和 <sub> 不常见, 但是在数学和化学中常常用到的标签.
+```html
+<p>
+  <span>x<sup>2</sup>y</span>
+  <span>H<sub>2</sub>O</span>
+</p>
+```
+![](../image/Snipaste_2023-05-01_10-30-33.png)
+
+上面又出现了 content area 这个奇怪的新概念, 没关系, [CSS 2.1](https://www.w3.org/TR/CSS2/visudet.html#inline-non-replaced) 并没有定义 inline 元素的 content area 是什么, 在这里我们就简单理解成 content-box.
+
+![](../image/Snipaste_2023-05-01_10-50-50.png)
+
+
+
 ## 参考
 1. [https://iamvdo.me/en/blog/css-font-metrics-line-height-and-vertical-align](https://iamvdo.me/en/blog/css-font-metrics-line-height-and-vertical-align)
 2. [https://christopheraue.net/design/vertical-align#centering-an-icon](https://christopheraue.net/design/vertical-align#centering-an-icon)
-2. [https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align](https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align)
+3. [https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align](https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align)
+4. [https://www.w3.org/TR/CSS2/visudet.html#strut](https://www.w3.org/TR/CSS2/visudet.html#strut)
+
+
+
+
 
 
 ![](../image/)
