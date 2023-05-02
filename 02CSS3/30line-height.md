@@ -81,7 +81,7 @@
 
 2️⃣ 通过将 `line-height` 和容器的 `height` 设置为一样的大小可以实现单行文字的垂直居中
 
-3️⃣想要实现类似圆形文字头像的效果, 如果想要通过设置四边相等的 padding 来实现的话, 就一定要注意 line-height,
+3️⃣想要实现类似圆形文字头像的效果, 如果想要通过设置四边相等的 `padding` 来实现的话, 就一定要注意 `line-height`,
 ```css
 .circle {
   display: inline-block;

@@ -11,7 +11,7 @@
   - [!important 最佳实践](#important-%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5)
 
 <!-- /TOC -->
-在开始之前, 先来规范一下文中的用于, 首先看 [W3C](https://www.w3schools.com/css/css_syntax.ASP) 中关于 `CSS` 的一些术语定义吧. 下图来自 W3C
+在开始之前, 先来规范一下文中的用语, 首先看 [W3C](https://www.w3schools.com/css/css_syntax.ASP) 中关于 `CSS` 的一些术语定义吧. 下图来自 W3C
 
 ![](../image/css_syntax_w3c.gif)
 

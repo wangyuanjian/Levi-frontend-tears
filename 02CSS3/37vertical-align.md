@@ -73,7 +73,7 @@
 
 `vertical-align` 的默认值就是 `baseline`, 也就是把子元素的 `baseline` 与父元素的 `baseline` 对齐. 我们先看一个面试题, 为什么图片的下面有一条空隙?
 
-###  从一道面试题开始
+### 从一道面试题开始始
 ```html
 <p class="border-dash-black">
   <img src="../../s.jpg" width="200px" alt="">
@@ -137,6 +137,7 @@
 - `无内容`: `baseline` 是元素的下边界
 
 所以在遇到不同类型的对齐需求时的一定要注意.
+
 ## 参考
 1. [https://iamvdo.me/en/blog/css-font-metrics-line-height-and-vertical-align](https://iamvdo.me/en/blog/css-font-metrics-line-height-and-vertical-align)
 2. [https://christopheraue.net/design/vertical-align#centering-an-icon](https://christopheraue.net/design/vertical-align#centering-an-icon)
