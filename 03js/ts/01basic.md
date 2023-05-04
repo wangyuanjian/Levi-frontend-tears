@@ -76,6 +76,9 @@
       - [ThisParameterType<Type\>](#thisparametertypetype%5C)
       - [OmitThisParameter<Type\>](#omitthisparametertype%5C)
       - [ThisType<Type\>](#thistypetype%5C)
+  - [其他](#%E5%85%B6%E4%BB%96)
+    - [三斜线指令Triple-Slash Directives](#%E4%B8%89%E6%96%9C%E7%BA%BF%E6%8C%87%E4%BB%A4triple-slash-directives)
+    - [import type](#import-type)
   - [参考](#%E5%8F%82%E8%80%83)
 
 <!-- /TOC -->
@@ -3342,5 +3345,23 @@
           }
         }
       })
+## 其他
+### 三斜线指令(Triple-Slash Directives)
+> `/// <reference path="..." />`
+
+三斜线指令是指只包含一个 `XML` 标签的单行注释. 注释的内容用作编译器指令.
+
+三斜线指令 **`仅`** 在文件的顶部有效, 在文件的其他地方是无效的. 当然三斜线指令的前面可以是单行(多行)注释或其他三斜线指令. 否则三斜线指令被当作常规的单行注释, 没有其他特殊含义.
+
+1. `/// <reference path="..." />`
+    - 是最常见的, 它用作文件之间的依赖关系声明. 三条斜杠指示编译器在编译过程中包含其他文件. 
+
+    - 在使用 out 或者 outFile 时, 还用于对输出进行排序的方法.在与处理之后, 文件以与输入相同的顺序发送到输出文件.
+2. `/// <reference types="..." />`
+    - 指令声明对包的依赖. 解析这些包名称的过程类似于在 import 语句中解析模块名称的过程. 将 types 类型的三斜线指令视为声明包的 import 简单语法.
+    - 例如在声明文件中包含 `/// <reference types="node" />` 表示该文件使用 `@types/node/index.d.ts` 中声明的名称. 因此, 这个包需要与声明文件一起包含在编译中.
+### `import type`
+1. [import 和 import type的区别](https://juejin.cn/post/7111203210542448671)
+2. [你不知道的 「 import type 」](https://segmentfault.com/a/1190000039800522)
 ## 参考
 1. [TypeScript 入门教程](http://ts.xcatliu.com/basics/primitive-data-types.html)
