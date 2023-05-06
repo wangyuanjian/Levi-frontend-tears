@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body, html {
+      padding: 0;
+      margin: 0;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      padding: 10px 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+    }
+    ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    ul li a {
+      text-decoration: none;
+      color: inherit;
+    }
+    @media screen and (max-width: 2048px) {
+      main {
+        max-width: 60%;
+        min-width: 550px;
+        margin: 0 auto;
+      }
+    }
+    .grid {
+      margin-top: 20px;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, 130px);
+      padding: 0 20px;
+    }
+    .part {
+      width: 130px;
+      height: 100px;
+      background: url('https://interactive-examples.mdn.mozilla.net/media/examples/firefox-logo.svg');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      border: 1px dashed #333;
+    }
+    .part::before {
+      content: 'Hello';
+      display: block;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.5em;
+      padding: 0 0 30px 0;
+      margin-top: 20px;
+      background-color: rgba(255, 255, 255, .05);
+    }
+    .none::before {
+      content: 'none';
+    }
+    .blur::before {
+      content: 'blur';
+      backdrop-filter: blur(2px);
+    }
+    .brightness::before {
+      content: 'brightness';
+      backdrop-filter: brightness(50%);
+    }
+    .contrast::before {
+      content: 'contrast';
+      backdrop-filter: contrast(150%);
+    }
+    
+    .drop-shadow::before {
+      content: 'drop-shadow';
+      font-size: 1em;
+      backdrop-filter: drop-shadow(1px 1px 10px red);
+    }
+    .drop-shadow {
+      backdrop-filter: drop-shadow(1px 1px 10px red);
+    }
+    .grayscale::before {
+      content: 'grayscale';
+      backdrop-filter: grayscale(150%);
+    }
+    .hue-rotate::before {
+      content: 'hue-rotate';
+      backdrop-filter: hue-rotate(60deg);
+    }
+    .invert::before {
+      content: 'invert';
+      backdrop-filter: invert(60%);
+    }
+    .opacity::before {
+      content: 'opacity';
+      backdrop-filter: opacity(10%);
+    }
+    .opacity1::before {
+      content: 'opacity';
+      backdrop-filter: opacity(90%) hue-rotate(60deg);
+    }
+    .opacity2::before {
+      content: 'opacity';
+      backdrop-filter: opacity(30%) hue-rotate(60deg);
+    }
+    .sepia::before {
+      content: 'sepia';
+      backdrop-filter: sepia(90%);
+    }
+    .saturate::before {
+      content: 'saturate';
+      backdrop-filter: saturate(40%);
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h3>Levi</h3>
+    <ul>
+      <li><a href="#">Github</a></li>
+      <li><a href="#">CSS</a></li>
+    </ul>
+  </nav>
+  <main>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique deleniti quisquam accusantium nobis iure eos et. Quas eveniet esse officiis error quam voluptates natus, inventore eum laboriosam. Repudiandae, ea.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique deleniti quisquam accusantium nobis iure eos et. Quas eveniet esse officiis error quam voluptates natus, inventore eum laboriosam. Repudiandae, ea.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique deleniti quisquam accusantium nobis iure eos et. Quas eveniet esse officiis error quam voluptates natus, inventore eum laboriosam. Repudiandae, ea.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique deleniti quisquam accusantium nobis iure eos et. Quas eveniet esse officiis error quam voluptates natus, inventore eum laboriosam. Repudiandae, ea.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique deleniti quisquam accusantium nobis iure eos et. Quas eveniet esse officiis error quam voluptates natus, inventore eum laboriosam. Repudiandae, ea.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique deleniti quisquam accusantium nobis iure eos et. Quas eveniet esse officiis error quam voluptates natus, inventore eum laboriosam. Repudiandae, ea.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique deleniti quisquam accusantium nobis iure eos et. Quas eveniet esse officiis error quam voluptates natus, inventore eum laboriosam. Repudiandae, ea.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique deleniti quisquam accusantium nobis iure eos et. Quas eveniet esse officiis error quam voluptates natus, inventore eum laboriosam. Repudiandae, ea.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique deleniti quisquam accusantium nobis iure eos et. Quas eveniet esse officiis error quam voluptates natus, inventore eum laboriosam. Repudiandae, ea.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique deleniti quisquam accusantium nobis iure eos et. Quas eveniet esse officiis error quam voluptates natus, inventore eum laboriosam. Repudiandae, ea.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique deleniti quisquam accusantium nobis iure eos et. Quas eveniet esse officiis error quam voluptates natus, inventore eum laboriosam. Repudiandae, ea.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique deleniti quisquam accusantium nobis iure eos et. Quas eveniet esse officiis error quam voluptates natus, inventore eum laboriosam. Repudiandae, ea.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique deleniti quisquam accusantium nobis iure eos et. Quas eveniet esse officiis error quam voluptates natus, inventore eum laboriosam. Repudiandae, ea.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique deleniti quisquam accusantium nobis iure eos et. Quas eveniet esse officiis error quam voluptates natus, inventore eum laboriosam. Repudiandae, ea.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore similique deleniti quisquam accusantium nobis iure eos et. Quas eveniet esse officiis error quam voluptates natus, inventore eum laboriosam. Repudiandae, ea.</p>
+  </main>
+  <section class="grid">
+    <div class="part none"></div>
+    <div class="part blur"></div>
+    <div class="part brightness"></div>
+    <div class="part contrast"></div>
+    <div class="part drop-shadow"></div>
+    <div class="part grayscale"></div>
+    <div class="part hue-rotate"></div>
+    <div class="part invert"></div>
+    <div class="part opacity"></div>
+    <div class="part sepia"></div>
+    <div class="part saturate"></div>
+  </section>
+  <div class="part opacity1"></div>
+  <div class="part opacity2"></div>
+  <div style="margin-top: 1200px"></div>
+</body>
+</html>
