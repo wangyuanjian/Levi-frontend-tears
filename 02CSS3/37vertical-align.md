@@ -93,7 +93,7 @@
 
 你别说, 还真有, 就是 `bottom`.
 
-### vertical 的关键字属性
+### vertical-align 的关键字属性
 1. 第一组: 与 `line box` 有关
     - `top`: 元素的 `上边界` 与 `line box` 的 `上边界` 对齐
     - `bottom`: 元素的 `下边界` 与 `line box` 的 `下边界` 对齐
