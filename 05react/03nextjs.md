@@ -7,6 +7,7 @@
 - [Next.js@12.1.6](#nextjs1216)
   - [安装与简介](#%E5%AE%89%E8%A3%85%E4%B8%8E%E7%AE%80%E4%BB%8B)
   - [页面Pages](#%E9%A1%B5%E9%9D%A2pages)
+    - [动态路由与嵌套动态路由](#%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1%E4%B8%8E%E5%B5%8C%E5%A5%97%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1)
   - [预渲染Pre-rendering](#%E9%A2%84%E6%B8%B2%E6%9F%93pre-rendering)
     - [Static GenerationSG](#static-generationsg)
       - [没有 data](#%E6%B2%A1%E6%9C%89-data)
@@ -35,6 +36,58 @@
       )
     }
   - ![](../../image/Snipaste_2022-06-17_10-42-33.png)
+### 动态路由与嵌套动态路由
+`Next.js` 允许我们创建动态路由页面, 比如我们创建 `pages/posts/cover.js`, 就可以通过 `http://localhost:3000/posts/cover` 访问
+  - ![](../../image/Snipaste_2022-06-17_14-40-41.png)
+  - 对于像 `http://localhost:3000/posts/038723423` 这样的路由, 可以创建 `pages/post/[id].jsx` 的文件来展示单个帖子的详情. 如果帖子的 `id` 为 `100`, 那么访问的 `URL` 就是 `http://localhost:3000/posts/100`
+  - 此时, `id` 就是我们在 `build` 时需要依赖外部数据. 如果数据库只有一条数据, 那我们可能只希望预渲染 `/posts/001` 的 `HTML`, 如果有两条, 就需要多渲染 `/posts/002` 的 `HTML`.
+  - 对于这样的路由, 我们可以使用 `useRouter` 来查看对应的参数. 最后拿到的结果其实保留在 `query` 中.
+  - ```jsx
+    import { useRouter } from "next/router"
+
+    function ProfolioProjectPage() {
+      const router = useRouter()
+      
+      console.log('router.pathname',router.pathname)
+      console.log('router.query',router.query)
+      return (
+        <>
+          <h1>The Profilio Project Page</h1>
+        </>
+      )
+    }
+  - ![](../image/Snipaste_2023-07-15_19-42-49.png)
+
+同样动态的路由也可以嵌套, 只需要文件夹名同样是`[]`的形式
+  - ![](../image/Snipaste_2023-07-15_20-19-53.png)
+  - 下面分别访问 [http://localhost:3000/clients/levi](http://localhost:3000/clients/levi) 和 [http://localhost:3000/clients/levi/project1](http://localhost:3000/clients/levi/project1). 可见, 访问二级动态路由时会携带一级动态路由参数
+  - ![](../image/Snipaste_2023-07-15_20-21-36.png)
+  - ```jsx
+    // 单个客户信息
+    import { useRouter } from "next/router"
+    function SingleClientPage() {
+      const router = useRouter()
+
+      console.log('router.query in client',router.query)
+      return (
+        <>
+          <h1>Single Client Page</h1>
+        </>
+      )
+    }
+    // 单个客户的单个项目信息
+    import { useRouter } from "next/router"
+
+    function ClientProjectId() {
+      const router = useRouter()
+
+      console.log('router.query in ClientProjectId',router.query)
+      return (
+        <>
+          <h1>The Specific Project for the Selected Client</h1>
+        </>
+      )
+    }
 ## 预渲染(`Pre-rendering`)
 默认情况, `Next.js` 预渲染每个页面, 这意味着 `Next.js` 提前生成页面的 `HTML` 而不是靠客户端 `JavaScript` 完成(`React` 是后者). 预渲染结束在性能和 `SEO(Search Engine Optimization)` 上都表现得更好.
 
@@ -131,11 +184,8 @@
   - ![](../../image/Snipaste_2022-06-17_14-25-36.png)
   - 可以通过下面的动图观察, 整个网页在加载时没有发出任何 `XHR/fetch` 请求, 而是直接返回了 `HTML`
   - ![](../../image/next-getStaticProps.gif)
+
 `情况2`: `路径` 需要外部数据
-  - `Next.js` 允许我们创建动态路由页面, 比如我们创建 `pages/posts/cover.js`, 就可以通过 `http://localhost:3000/posts/cover` 访问
-  - ![](../../image/Snipaste_2022-06-17_14-40-41.png)
-  - 对于像 `http://localhost:3000/posts/038723423` 这样的路由, 可以创建 `pages/post/[id].jsx` 的文件来展示单个帖子的详情. 如果帖子的 `id` 为 `100`, 那么访问的 `URL` 就是 `http://localhost:3000/posts/100`
-  - 此时, `id` 就是我们在 `build` 时需要依赖外部数据. 如果数据库只有一条数据, 那我们可能只希望预渲染 `/posts/001` 的 `HTML`, 如果有两条, 就需要多渲染 `/posts/002` 的 `HTML`.
   - `Next.js` 允许我们 `export` 一个名为 `getStaticPaths` 的 `async` 函数, 当然在这里例子中, 函数需要写在 `[id].jsx` 中. 这个函数在 `build` 时被调用并且其返回值用来指明预渲染哪些页面.
   - 首先, 还是搭载服务器的内容
   - ```jsx  
