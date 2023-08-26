@@ -9,6 +9,8 @@
     - [srcset](#srcset)
     - [实际看一看](#%E5%AE%9E%E9%99%85%E7%9C%8B%E4%B8%80%E7%9C%8B)
   - [<picture>: <img> 的好姐妹](#picture-img-%E7%9A%84%E5%A5%BD%E5%A7%90%E5%A6%B9)
+    - [<source>](#source)
+    - [实际看一看](#%E5%AE%9E%E9%99%85%E7%9C%8B%E4%B8%80%E7%9C%8B)
   - [其他注意事项](#%E5%85%B6%E4%BB%96%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9)
 
 <!-- /TOC -->
@@ -82,10 +84,65 @@
 
 这里有两点需要特别说明
 
-1️⃣ 我在 Chrome 测试时表现和预期并不一样, 直到我切换 Firefox 并且选择 (物理像素/逻辑像素) 为 1, 才可以看到预期结果. 后来我在 Chrome 找到了设置 DPR 的地方. 但是如果你在开发者工具中手动拖拽改变 viewpoint 宽度也没有效果, 你必须先手动切换到某一宽度, 然后刷新页面, 才可以看到预期效果, 但是 Firefox 就不是这样, Firefox 中的效果预览是实时的. 
+1️⃣ 我在 Chrome 测试时表现和预期并不一样, 直到我切换 Firefox 并且选择 DPR (物理像素/逻辑像素) 为 1, 才可以看到预期结果. 后来我在 Chrome 找到了设置 DPR 的地方. 但是如果你在开发者工具中手动拖拽改变 viewpoint 宽度也没有效果, 你必须先手动切换到某一宽度, 然后刷新页面, 才可以看到预期效果, 但是 Firefox 就不是这样, Firefox 中的效果预览是实时的. 
 2️⃣ 实际上这三个图片的大小是一样的, 都是 200*200, 但是我们在 srcset 中的宽度可以不同于实际宽度从而来达到选择图片的目的哦~
 
-## `<picture>`: `<img>` 的好姐妹 
+现在你明白了使用如果在 `<img>` 上配置 sizes 和 srcset 并且一个页面中有很多图像, 那么在移动端可以节省的流量将相当可观并且网页的加载速度也将大大加快! 不支持 srcset 和 sizes 的旧浏览器将正常加载 src 属性指定的图像.
+
+<hr />
+
+接下来我们要看看在不同屏幕屏幕分辨率下应该如何设置
+```html
+<h1 id="devicePixelRatio"></h1>
+<img 
+  src="blue.png"
+  alt="test image"
+  srcset="
+    blue.png,
+    green.png 2x,
+    red.png 3x
+  "
+>
+ <div style="width: 300px; border: 1px solid red;"></div>
+```
+我们可以使用 window.devicePixelRatio 这个 API 获取有关设备物理分辨率和逻辑分辨率的比值
+```js
+document.getElementById('devicePixelRatio').innerHTML = `devicePixelRatio: ${window.devicePixelRatio}`
+```
+从下图可以看出, 有一点值得注意, 就是图片实际展示的大小在不同分辨率屏幕上不同, 这三张图片大小都是 200*200, 在一倍屏上图像大小就是 200, 在二倍屏上变为 100(1/2), 在三倍屏上变为 66.67(1/3).
+
+![](../image/Snipaste_2023-08-26_16-16-38.png)
+## `<picture>`: `<img>` 的好姐妹
+`<picture>` 元素包含零个或多个 `<source>` 和 `<img>` 元素来为不同的显示或设备场景提供图像.
+
+浏览器将考虑每一个 `<source>` 元素并找到最匹配的, 如果没有找到匹配项或者浏览器不支持 `<picture>` 元素, 那么最后就展示 `<img>` 这个兜底元素. 因此 `<picture>` 就有以下的使用场景
+- `art direction`: 根据不同的 media 条件来裁剪或修改图像, 比如在较窄的屏幕上显示具有更多图片细节的版本
+- `提供替代的图片格式`: 针对某些不支持的图片格式提供替代的图片格式. 比如较新的 AVIF 和 WEBP 有很多优点但是浏览器可能不支持, 这时候我们需要提供 PNG 或者 JPG 版本的图片来兜底.
+- `节省带宽, 加快页面加载`: 注意这个场景和 art direction 不同, 因为在节省带宽的情况是我们通常加载相同图片的低分辨率版本, 而不是像 art direction 一样裁切图片以便显示图片的细节或特定区域.
+
+再看例子之前我们还需要多了解一下 `<source>`
+### `<source>`
+`<source>` 为 `<picture>`, `<audio>` 和 `<video>` 元素提供媒体资源. `<source>` 标签没有结束标签并且也没有内容(即开始标签和结束标签之间的内容). `<source>` 通常用于为相同的媒体内容提供不同的文件格式, 以便与不同的浏览器兼容. 有几个属性需要留意
+- `type`: 媒体类型的 MIME 类型, 比如 `image/png`
+  - MIME: Multipurpose Internet Mail Extensions, 多用途互联网邮件扩展类型
+- `src`: 资源地址, 如果父元素是 `<audio>` 或 `<video>` 那么 src 不能为空; 如果父元素是 `<picture>` 可以为空
+- `media`: 媒体查询条件. 如果父元素是 `<picture>` 可以有这个属性, 否则不可以有这个属性.
+- `srcset`: 同 `<img>` 的 srcset.
+
+回到正题, `<picture>` 要决定加载那个 URL, 浏览器就会检查 `<source>` 的 srcset, media 和 type 属性以选择最兼容的 URL 来匹配当前的布局和设备.
+
+### 实际看一看
+```html
+<picture>
+  <source media="(orientation: portrait)" srcset="blue.png">
+  <source media="(orientation: landscape)" srcset="green.png">
+  <img src="blue.png" />
+</picture>
+```
+可以从下图看出, 当屏幕高度大于宽度时, 显示的是蓝色图, 高度小于宽度时显示的是绿色图.
+![](../image/Snipaste_2023-08-26_17-14-42.png)
+
+其实案例还可以更复杂, 就是在 srcset 中匹配不同的 DPR, 当然篇幅有限就不一一尝试了.
 
 ## 其他注意事项
 在使用图片时常遇到的一个问题, 就是图片会超过父容器的宽度, 好巧不巧的是 CSS 中 overflow 的默认值是 visible, 就导致图像溢出, 因此可以考虑给所有的 `<img>` 或者 `<video>` 等元素设置最大宽度 (当然, `<img>` 的默认 display 是 inline, 但是一般的组件库或者 CSS 库都会修改 `<img>` 的 display 为 block 或者 inline-block)
