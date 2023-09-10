@@ -1,3 +1,11 @@
+<!-- TOC -->
+- [CSS 滚动驱动动画 view](#css-%E6%BB%9A%E5%8A%A8%E9%A9%B1%E5%8A%A8%E5%8A%A8%E7%94%BB-view)
+  - [语法](#%E8%AF%AD%E6%B3%95)
+  - [例子](#%E4%BE%8B%E5%AD%90)
+    - [两个 inset](#%E4%B8%A4%E4%B8%AA-inset)
+    - [一个 inset](#%E4%B8%80%E4%B8%AA-inset)
+
+<!-- /TOC -->
 # CSS 滚动驱动动画 view()
 > `animation-timeline` 通过 `view()` 表示一个元素 `A` 将提供匿名的、 用来控制动画的 `view progressive timeline`. 
 
@@ -23,7 +31,6 @@
 - `view(inline 20px)`:
 - `view(inline 20px 10%)`:
 
-## 例子
 ### 两个 inset
 ```html
 <div class="container">
