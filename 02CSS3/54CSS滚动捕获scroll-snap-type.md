@@ -1,3 +1,14 @@
+  <!-- TOC -->
+
+- [scroll-snap-type](#scroll-snap-type)
+  - [语法](#%E8%AF%AD%E6%B3%95)
+  - [实例](#%E5%AE%9E%E4%BE%8B)
+    - [捕获轴 y 捕获严格程度 mandatory](#%E6%8D%95%E8%8E%B7%E8%BD%B4-y-%E6%8D%95%E8%8E%B7%E4%B8%A5%E6%A0%BC%E7%A8%8B%E5%BA%A6-mandatory)
+    - [捕获轴 y 捕获严格程度 proximity](#%E6%8D%95%E8%8E%B7%E8%BD%B4-y-%E6%8D%95%E8%8E%B7%E4%B8%A5%E6%A0%BC%E7%A8%8B%E5%BA%A6-proximity)
+    - [同理看下捕获轴 x](#%E5%90%8C%E7%90%86%E7%9C%8B%E4%B8%8B%E6%8D%95%E8%8E%B7%E8%BD%B4-x)
+
+<!-- /TOC -->
+
 # scroll-snap-type
 > 用来指定一个滚动容器(scroll container) 是否是滚动捕获容器(scroll snap container)、捕获的严格程度以及在什么方向上执行捕获.
 
@@ -61,6 +72,44 @@ scroll-snap-type 的内容由两部分组成, 滚动捕获轴和滚动捕获严�
 你会看到, 我们可以明确在两个子元素之间停住, 就像定义中说的那样, 当滚动行为停止后, 是否发生捕获是根据浏览器的参数决定的.
 ![](../image/sroll-snap-y-proximity.gif)
 ### 同理看下捕获轴 `x`
+先来捕获严格程度 `mandatory`
+
+![](../image/sroll-snap-x-mandatory.gif)
+
+再来捕获严格程度 `proximity`
+
+![](../image/sroll-snap-x-proximity.gif)
+
+## 一些注意事项
+我们前面展示的内容, 每个子元素都和父元素同高, 假如某个子元素比父元素高呢?
+```css
+.first-tall div:first-of-type {
+  height: 200%;
+  position: relative;
+}
+.first-tall div:first-of-type::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 50%;
+  outline: 5px dashed black;
+}
+```
+```html
+<div class="container first-tall y-mandatory">
+  <div>1</div>
+  <div>2</div>
+  <div>3</div>
+  <div>4</div>
+</div>
+```
+对于内容过长的元素, 滑动到其最底端之前都不会出现捕获.
+
+![](../image/sroll-snap-y-mandatory-tall.gif)
+
+兼容性不错
+
+![](../image/Snipaste_2023-09-29_10-01-33.png) 
 
 ![](../image/)
 谢谢你看到这里😊
