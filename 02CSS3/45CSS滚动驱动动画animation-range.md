@@ -1,4 +1,6 @@
-# animation-range
+# animation-range (animation-range-start ❤️ animation-range-end)
+
+这是一个简写属性, 分别是 `animation-range-start` 和 `animation-range-end` 的简写
 
 另外, 有时候你可能不想让动画推迟开始或者提前结束, 也就是自定义动画的位置, 这可以通过两种方式实现
 - 1️⃣ 第一是在定义 `@keyframes` 时, 通过改变关键帧来控制动画在滚动过程中何时开始, 何时结束.

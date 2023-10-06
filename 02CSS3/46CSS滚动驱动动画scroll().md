@@ -41,11 +41,14 @@
 }
 ```
 ![](../image/timeline-scroll1.gif)
+
 如果我们加上下面的代码, 改变文字书写方向, 从上到下, 从左到右
 ```css
 html { writing-mode: vertical-lr; }
 ```
 ![](../image/timeline-scroll2.gif)
+
+📖 注意 `CSS` 规则的书写顺序, 因为 `animation` 是简写属性并且包含 `animation-timeline`, 因此一定要先写 `animation` 再写 `animation-timeline`, 否则 `animation-timeline` 就会被重置
 
 ### 最近滚动祖先?
 来看一个例子, 这个例子出现了问题, 为什么动画没有效果呢? 📖注意这里我们使用了两个非 `static` 定位的元素.
