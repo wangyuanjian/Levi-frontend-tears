@@ -16,6 +16,11 @@ animation-range =
 
 animation-range 是一个简写属性, `animation-range-start` 和 `animation-range-end` 的简写. 如果同时指定两个值, 那么第一个值会作为 `animation-range-start` 第二个值会作为 `animation-range-end`. 
 
+
+### 具名时间线范围 named timeline range
+📖 百分比的是根据[具名时间线范围, named timeline range](https://drafts.csswg.org/scroll-animations/#named-timeline-range)计算的, 如果没有具名时间线范围则根据整个时间线计算.
+
+
 不论是 `animation-range-start` 还是 `animation-range-end`, 他们的取值都是一样的
 - `normal`:
 - `<length-percentage>`
@@ -91,8 +96,37 @@ animation-range 是一个简写属性, `animation-range-start` 和 `animation-ra
 ![](../image/animation-range4.gif)
 
 ### length-percentage
+同样先看 view progress timeline
+```css
+.box {
+  animation-range: 20%;
+}
+```
+记得之前说过什么吗? 如果只有一个 `<length-percentage>` 值, 那么这个值被分配给 `animation-range-start` 而 `animation-range-end` 保持默认值 normal 不变. 下图表现得符合预期, 动画在 20% 的位置开始, 在元素完全离开滚动容器时结束.
+
+![](../image/animation-range5.gif)
+
+然后是 scroll progress timeline
+```css
+.container1 .top {
+  animation-range: 50%;
+}
+```
+动画效果符合预期, 顶部水平条在滚动 50% 的位置开始出现, 在滚动到结束时完全展开.
+
+![](../image/animation-range6.gif)
+
 ### timeline-range-name
-### normal
+再继续往下之前, 我必须说的是 [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-range#values) 关于这几个关键字的解释和含义不如 [规范](https://drafts.csswg.org/scroll-animations/#view-timelines-ranges) 解释的清楚明白. 因此, 下面的关键字我都会采用规范中的定义, 以便更清楚地说明他们之间的不同之处.
+
+1. `cover`
+2. `contain`
+3. `entry`
+4. `exit`
+5. `entry-crossing`
+6. `exit-crossing`
+
+## 与 view-timeline-inset 的关系
 
 ![](../image/)
 谢谢你看到这里😊
