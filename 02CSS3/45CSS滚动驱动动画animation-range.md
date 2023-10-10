@@ -119,12 +119,44 @@ animation-range 是一个简写属性, `animation-range-start` 和 `animation-ra
 ### timeline-range-name
 再继续往下之前, 我必须说的是 [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-range#values) 关于这几个关键字的解释和含义不如 [规范](https://drafts.csswg.org/scroll-animations/#view-timelines-ranges) 解释的清楚明白. 因此, 下面的关键字我都会采用规范中的定义, 以便更清楚地说明他们之间的不同之处.
 
-1. `cover`
-2. `contain`
-3. `entry`
-4. `exit`
-5. `entry-crossing`
-6. `exit-crossing`
+💡 还有一点, 下面的属性和 scroll progress timeline 无缘了
+
+📮 本节所有的例子演示都来自 [这个网站](https://scroll-driven-animations.style/tools/view-timeline/ranges/#range-start-name=cover&range-start-percentage=0&range-end-name=cover&range-end-percentage=100&view-timeline-axis=block&view-timeline-inset=0&subject-size=smaller&subject-animation=reveal&interactivity=clicktodrag&show-areas=yes&show-fromto=yes&show-labels=yes). 强烈推荐, 因为演示效果非常清晰易懂
+
+- `cover`: 表示 view progress timeline 的全部范围
+  - 0% 表示元素的 [principle box](https://drafts.csswg.org/css-display-4/#principal-box) 的 [start border edge 开始边框边界](https://drafts.csswg.org/css-box-4/#border-edge) 和时间线的 [view progress visibility range](https://drafts.csswg.org/scroll-animations/#view-progress-visibility-range) 的 end edge 结束边界的相交位置.
+  - 我知道大家看到这里这么多名词又看到哐哐哐好多链接🔗有一点害怕, 不过不要紧, 我慢慢简化到大家最熟悉的情景
+  - `principle box`: 就理解为 border box 就行, 为什么会多一个新的名字呢, 因为像 li 这样的元素, 它不光光有自己的盒子, 还会有前面的 marker box. 但这里我们不考虑这种情况就简化为 border box
+  - `start border edge`: 这个更容易解释, 因为这里用 start 表示的逻辑方向. 如果是从下到上滚动, 表示上边框; 如果是从左到右滚动, 表示右边框
+  - `view progress visibility range`: 这个就是纯纯新概念, 还记得我们之前写过 [view-timeline-inset](./51CSS滚动驱动动画view-timeline-inset.md) 吗? 这个范围表示的就是滚动区域减去 view-timeline-inset 的值剩下的区域
+  - 所以, 解释了这么多, 0% 表示元素的上边框和滚动区域下边界相交的位置. 这样说起来, 是不是容易多了呢? 😊
+  - 100% 表示元素的 [principle box](https://drafts.csswg.org/css-display-4/#principal-box) 的 [end border edge 结束边框边界](https://drafts.csswg.org/css-box-4/#border-edge) 和时间线的 [view progress visibility range](https://drafts.csswg.org/scroll-animations/#view-progress-visibility-range) 的 start edge 开始边界的相交位置.
+
+来看例子,
+
+![](../image/animation-range7.gif)
+
+接下来, 我们要叠 buff 了, 也就是增加百分比和 view-timeline-inset
+```css
+#subject {
+  animation-timeline: view(block);
+  animation-range: cover 50% cover 100%;
+  view-timeline-inset: 10%;
+}
+```
+
+![](../image/animation-range8.gif)
+
+所以, 再次印证了 animation-range 的百分比是根据谁的百分比, 根据的应该是 timeline-range-name 指定的范围, 这里也就是 cover 的范围百分比, 也就是整个滚动窗口去掉 view-timeline-inset 后的范围百分比.
+- `contain`: contain 的情况稍微复杂, 为啥嘞, 因为存在着元素和滚动窗口谁大谁小的问题
+  - 熟悉 CSS 的朋友都知道, cover 和 contain 这两个关键字出现在很多 CSS 属性中, 比如 object-fit 和 background-size. 以 background-size 为例, cover 表示占满背景不留下一点空白(也就是放大图片和背景宽高中较大值相同); 而 contain 表示把图片完全显示出来, 有可能留下空白.
+  - 我们先说元素小于滚动窗口的情况
+    - 0% 表示元素的 [principle box](https://drafts.csswg.org/css-display-4/#principal-box) 的 [end border edge 结束边框边界](https://drafts.csswg.org/css-box-4/#border-edge) 和时间线的 [view progress visibility range](https://drafts.csswg.org/scroll-animations/#view-progress-visibility-range) 的 end edge 结束边界的相交位置.
+    - 100% 表示元素的 [principle box](https://drafts.csswg.org/css-display-4/#principal-box) 的 [start border edge 开始边框边界](https://drafts.csswg.org/css-box-4/#border-edge) 和时间线的 [view progress visibility range](https://drafts.csswg.org/scroll-animations/#view-progress-visibility-range) 的 start edge 开始边界的相交位置.
+- `entry`
+- `exit`
+- `entry-crossing`
+- `exit-crossing`
 
 ## 与 view-timeline-inset 的关系
 
