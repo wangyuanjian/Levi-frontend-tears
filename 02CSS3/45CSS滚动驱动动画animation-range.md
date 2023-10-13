@@ -150,15 +150,56 @@ animation-range 是一个简写属性, `animation-range-start` 和 `animation-ra
 所以, 再次印证了 animation-range 的百分比是根据谁的百分比, 根据的应该是 timeline-range-name 指定的范围, 这里也就是 cover 的范围百分比, 也就是整个滚动窗口去掉 view-timeline-inset 后的范围百分比.
 - `contain`: contain 的情况稍微复杂, 为啥嘞, 因为存在着元素和滚动窗口谁大谁小的问题
   - 熟悉 CSS 的朋友都知道, cover 和 contain 这两个关键字出现在很多 CSS 属性中, 比如 object-fit 和 background-size. 以 background-size 为例, cover 表示占满背景不留下一点空白(也就是放大图片和背景宽高中较大值相同); 而 contain 表示把图片完全显示出来, 有可能留下空白.
-  - 我们先说元素小于滚动窗口的情况
+  - 我们先说元素高度小于滚动窗口的情况
     - 0% 表示元素的 [principle box](https://drafts.csswg.org/css-display-4/#principal-box) 的 [end border edge 结束边框边界](https://drafts.csswg.org/css-box-4/#border-edge) 和时间线的 [view progress visibility range](https://drafts.csswg.org/scroll-animations/#view-progress-visibility-range) 的 end edge 结束边界的相交位置.
     - 100% 表示元素的 [principle box](https://drafts.csswg.org/css-display-4/#principal-box) 的 [start border edge 开始边框边界](https://drafts.csswg.org/css-box-4/#border-edge) 和时间线的 [view progress visibility range](https://drafts.csswg.org/scroll-animations/#view-progress-visibility-range) 的 start edge 开始边界的相交位置.
+    - ![](../image/animation-range9.gif)
+  - 如果是元素高度大于滚动窗口的情况
+    - 0% 表示元素的 [principle box](https://drafts.csswg.org/css-display-4/#principal-box) 的 [start border edge 开始边框边界](https://drafts.csswg.org/css-box-4/#border-edge) 和时间线的 [view progress visibility range](https://drafts.csswg.org/scroll-animations/#view-progress-visibility-range) 的 start edge 开始边界的相交位置.
+    - 100% 表示元素的 [principle box](https://drafts.csswg.org/css-display-4/#principal-box) 的 [end border edge 结束边框边界](https://drafts.csswg.org/css-box-4/#border-edge) 和时间线的 [view progress visibility range](https://drafts.csswg.org/scroll-animations/#view-progress-visibility-range) 的 end edge 结束边界的相交位置.
+    - ![](../image/animation-range10.gif)
+
+同样下面要叠 buff 了, 也就是增加百分比和 view-timeline-inset
+
+```css
+#subject {
+  animation-timeline: view(block);
+  animation-range: contain 20% contain 100%;
+  view-timeline-inset: 10%;
+}
+```
+
+![](../image/animation-range11.gif)
+
 - `entry`
-- `exit`
+  - 0% 与 `cover` 的 0% 相同.
+  - 100% 与 `contain` 的 0% 相同.
 - `entry-crossing`
+  - 0% 与 `cover` 的 0% 相同. (这一点规范没有明确说相同, 但是看定义他们确实是相通的)
+  - 100% 表示元素的 [principle box](https://drafts.csswg.org/css-display-4/#principal-box) 的 [end border edge 结束边框边界](https://drafts.csswg.org/css-box-4/#border-edge) 和时间线的 [view progress visibility range](https://drafts.csswg.org/scroll-animations/#view-progress-visibility-range) 的 end edge 结束边界的相交位置.
+  - 有意思的事情来了, 首先 `entry` 和 `entry-crossing` 看起来就很像, 而且他们 0% 的位置一模一样, 不一样的地方就是 100%. 因为 `contain` 的 0% 包含了两种情况.
+
+对于元素高度小于窗口高度的情况, 这两个属性的标签完全相同.
+
+先看 entry
+
+![](../image/animation-range12.gif)
+
+再看 `entry-crossing`
+
+![](../image/animation-range13.gif)
+
+
+
+
+
+
+- `exit`
 - `exit-crossing`
 
 ## 与 view-timeline-inset 的关系
+
+
 
 ![](../image/)
 谢谢你看到这里😊
