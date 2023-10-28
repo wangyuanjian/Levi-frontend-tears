@@ -16,7 +16,7 @@
 
 ![](../image/scroll-padding1.gif)
 
-这样看起来没有问题, 但往往通过锚点定位时我们不希望内容紧贴着上边界, 那我们就给左侧的滚动容器增加 scroll-padding
+这样看起来没有问题, 但往往通过锚点定位时我们不希望内容紧贴着上边界, 那我们就给左侧的滚动容器增加 `scroll-padding`
 ```css
 main {
   height: 100vh;
@@ -27,7 +27,7 @@ main {
 ```
 ![](../image/scroll-padding2.gif)
 
-可以看到, 除了第一部分之外剩余的部分通过锚点定位都会在其上方空出 10px 的位置. 但实际上, `main` 是没有 padding 的, 即布局没有改变, 只是在滚动时多了这么个视觉上的效果.
+可以看到, 除了第一部分之外剩余的部分通过锚点定位都会在其上方空出 `10px` 的位置. 但实际上, `main` 是没有 `padding` 的, 即布局没有改变, 只是在滚动时多了这么个视觉上的效果.
 
 ### 滚动捕获容器
 ```html
@@ -57,7 +57,7 @@ main {
 
 
 ## 语法
-和 padding 一样, scroll-padding 也是一个简写属性, 是 scroll-padding-bottom、 scroll-padding-left、 scroll-padding-right、 scroll-padding-top 四个属性的简写.
+和 `padding` 一样, `scroll-padding` 也是一个简写属性, 是 `scroll-padding-bottom`、 `scroll-padding-left`、 `scroll-padding-right`、 `scroll-padding-top` 四个属性的简写.
 
 支持两种类型的值
 - `auto`: 默认值, 具体多少由浏览器决定, 通常默认为 0px. 但是浏览器可能使用其他值.
