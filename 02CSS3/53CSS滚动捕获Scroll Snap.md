@@ -21,7 +21,7 @@
 下面三个名词是针对滚动容器
 - `scroll container(滚动容器)`: 很容易理解, 可以滚动的盒子就是滚动容器.
 - `scroll snap container(滚动捕获容器)`: 滚动容器不一定是滚动捕获容器, 除非其 `scroll-snap-type` 不是 `none`
-- `snapport(捕获窗口)`: 滚动容器减去其 `padding` 后的区域.
+- `snapport(捕获窗口)`: 滚动容器减去其 `scroll-padding` 后的区域.
 
 下面的名词针对滚动容器的子元素
 - `scroll snap area(滚动捕获位置)`: 既然是针对子元素的, 你可能想当然以为就是子元素的 `border box`, 其实不是, 而是 `border box` 加上 `scroll-margin` 指定的区域.
@@ -30,5 +30,4 @@
 滚动捕获所涉及到的所有属性, 在 `Chrome 75` 都得到了完整支持, 当然其他浏览器也支持, 不过可能在更新的版本.
 ![](../image/Snipaste_2023-09-19_09-13-31.png)
 
-![](../image)
 谢谢你看到这里😊
