@@ -25,7 +25,7 @@
 
 下面的名词针对滚动容器的子元素
 - `scroll snap area(滚动捕获位置)`: 既然是针对子元素的, 你可能想当然以为就是子元素的 `border box`, 其实不是, 而是 `border box` 加上 `scroll-margin` 指定的区域.
-- `snap position(捕获位置)`: 不要被位置这两个字欺骗了, 所谓的位置其实是元素的 `scroll snap area` 和滚动容器的 `snapport` 的对齐方式(`alignment`).
+- `snap position(捕获位置)`: 所谓的位置其实是元素的 `scroll snap area` 和滚动容器的 `snapport` 的产生特殊对齐方式(`alignment`)的滚动位置.
 ## 兼容性
 滚动捕获所涉及到的所有属性, 在 `Chrome 75` 都得到了完整支持, 当然其他浏览器也支持, 不过可能在更新的版本.
 ![](../image/Snipaste_2023-09-19_09-13-31.png)

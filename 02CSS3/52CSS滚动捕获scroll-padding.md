@@ -8,7 +8,7 @@
 
 <!-- /TOC -->
 
-# scroll-padding
+#  CSS滚动捕获 scroll-padding
 > 设置元素的滚动内边距, 就像 `padding` 所做的那样. 但并不影响布局.
 
 ### 非滚动捕获容器
