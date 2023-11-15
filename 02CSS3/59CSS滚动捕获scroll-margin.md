@@ -80,7 +80,16 @@ section {
 
 ![](../image/scroll-margin3.gif)
 
-总之, 我还没有发现浏览器表现有规律可循, .
+代码里 `scroll-snap-align: start;` 约束了对齐方式就是顶部对齐, 所以 `Firefox` 和 `Safari` 表现符合预期. 我们可以将 `scroll-snap-align` 改为 `end` 试一下, 为了说明问题, 先将所有元素的 `scroll-margin` 都设置为 `20px`
+
+可以看到, 在 `Firefox` 中发生滚动捕获时, 只会底部对齐, 符合预期
+
+![](../image/scroll-margin4.gif)
+
+什么情况会让 `Firefox` 也出现问题呢? 那就是将第三个元素的 `scroll-margin` 设置为 `40px`. 看到了吗, 我们指定的 `mandatory` 严格捕获在动图的最后失效了, 滚动停在了第二个元素.
+
+![](../image/scroll-margin5.gif)
+
 
 ## 语法
 和 `margin` 一样, `scroll-margin` 也是一个简写属性, 是 `scroll-margin-bottom`、 `scroll-margin-left`、 `scroll-margin-right`、 `scroll-margin-top` 四个属性的简写.
